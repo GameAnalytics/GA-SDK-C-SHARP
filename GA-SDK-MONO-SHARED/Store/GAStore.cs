@@ -1,11 +1,6 @@
 ﻿using System;
 #if MONO
-using SqliteConnection = System.Data.SQLite.SQLiteConnection;
-using SqliteTransaction = System.Data.SQLite.SQLiteTransaction;
-using SqliteCommand = System.Data.SQLite.SQLiteCommand;
-using SqliteDataReader = System.Data.SQLite.SQLiteDataReader;
-using SqliteException = System.Data.SQLite.SQLiteException;
-using SqliteConnectionStringBuilder = System.Data.SQLite.SQLiteConnectionStringBuilder;
+using Mono.Data.Sqlite;
 #elif UNITY_WSA || !UNITY || WINDOWS_UWP
 using Microsoft.Data.Sqlite;
 using System.Reflection;
