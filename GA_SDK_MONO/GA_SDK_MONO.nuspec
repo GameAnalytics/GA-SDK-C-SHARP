@@ -1,18 +1,25 @@
 <?xml version="1.0"?>
 <package >
-  <metadata>
-    <id>GameAnalytics.Mono.SDK</id>
-    <version>1.0.0</version>
-    <title>GameAnalytics Xamarin SDK</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <licenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</licenseUrl>
-    <projectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</projectUrl>
-    <iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
-    <copyright>Copyright 2016</copyright>
-    <tags>Tag1 Tag2</tags>
-  </metadata>
+    <metadata>
+        <id>GameAnalytics.Mono.SDK</id>
+        <version>1.0.0</version>
+        <title>GameAnalytics Mono SDK</title>
+        <authors>GameAnalytics</authors>
+        <owners>GameAnalytics</owners>
+        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+        <projectUrl>https://github.com/GameAnalytics/GA-SDK-C-SHARP</projectUrl>
+        <iconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>GameAnalytics SDK for Mono / .Net 4.5</description>
+        <tags>gameanalytics</tags>
+        <dependencies>
+            <group targetFramework="net45">
+                <dependency id="NLog" version="4.3.8" />
+                <dependency id="System.Data.SQLite.Core" version="1.0.102.0" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin/Release/GameAnalytics.Mono.dll" target="lib/net45" />
+    </files>
 </package>
