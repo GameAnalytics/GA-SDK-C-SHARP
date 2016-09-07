@@ -63,7 +63,8 @@ namespace GameAnalyticsSDK.Net.Logging
 #endif
 #if WINDOWS_UWP
             session = new FileLoggingSession("ga-session");
-            logger = new LoggingChannel("ga-channel");
+            var options = new LoggingChannelOptions();
+            logger = new LoggingChannel("ga-channel", options);
             session.AddLoggingChannel(logger);
 #elif MONO
 			logger = LogManager.GetCurrentClassLogger();
