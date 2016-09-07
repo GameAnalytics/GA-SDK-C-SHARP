@@ -1,0 +1,781 @@
+﻿using System;
+#if !UNITY_WEBGL
+using System.Net;
+using System.IO;
+#else
+using System.Collections;
+using GameAnalyticsSDK.Net.Events;
+#endif
+using System.Text;
+using GameAnalyticsSDK.Net.Logging;
+using GameAnalyticsSDK.Net.Utilities;
+using GameAnalyticsSDK.Net.State;
+using GameAnalyticsSDK.Net.Validators;
+using System.Collections.Generic;
+using GameAnalyticsSDK.Net.Tasks;
+#if !UNITY_WEBGL && !WINDOWS_UWP
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+#endif
+#if WINDOWS_UWP
+using System.Threading.Tasks;
+#endif
+
+namespace GameAnalyticsSDK.Net.Http
+{
+	internal class GAHTTPApi
+	{
+		#region Fields and properties
+
+		private static readonly GAHTTPApi _instance = new GAHTTPApi();
+		private string protocol;
+		private string hostName;
+		private string version;
+		private string baseUrl;
+		private string initializeUrlPath;
+		private string eventsUrlPath;
+		private bool useGzip;
+
+		public static GAHTTPApi Instance
+		{
+			get
+			{
+				return _instance;
+			}
+		}
+
+		#endregion // Fields and properties
+
+		// Constructor - setup the basic information for HTTP
+		private GAHTTPApi()
+		{
+			// base url settings
+			this.protocol = "https";
+			this.hostName = "api.gameanalytics.com";
+			this.version = "v2";
+
+			// create base url
+			this.baseUrl = this.protocol + "://" + this.hostName + "/" + this.version;
+
+			this.initializeUrlPath = "init";
+			this.eventsUrlPath = "events";
+
+			this.useGzip = true;
+#if !UNITY_WEBGL && !WINDOWS_UWP
+            ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+#endif
+        }
+
+#if !UNITY_WEBGL && !WINDOWS_UWP
+        private bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            bool isOk = true;
+            // If there are errors in the certificate chain, look at each error to determine the cause.
+            if (sslPolicyErrors != SslPolicyErrors.None)
+            {
+                for (int i = 0; i < chain.ChainStatus.Length; i++)
+                {
+                    if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+                    {
+                        chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                        chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                        chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                        chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                        bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                        if (!chainIsValid)
+                        {
+                            isOk = false;
+                        }
+                    }
+                }
+            }
+            return isOk;
+        }
+#endif
+
+        #region Public methods
+
+#if UNITY_WEBGL
+
+		public void RequestInit()
+		{
+			string gameKey = GAState.GameKey;
+
+			// Generate URL
+			string url = baseUrl + "/" + gameKey + "/" + initializeUrlPath;
+			GALogger.D("Sending 'init' URL: " + url);
+
+			JSONClass initAnnotations = GAState.GetInitAnnotations();
+
+			// make JSON string from data
+			string JSONstring = initAnnotations.ToString();
+
+			if(string.IsNullOrEmpty(JSONstring))
+			{
+				GAState.StartNewSession(EGAHTTPApiResponse.JsonEncodeFailed, null);
+				return;
+			}
+
+			byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
+			List<string> extraArgs = new List<string>();
+			extraArgs.Add(JSONstring);
+			SendRequest(url, payloadData, extraArgs, useGzip, InitRequestCallback);
+		}
+
+		public void SendEventsInArray(List<JSONNode> eventArray, string putbackSql, string deleteSql)
+		{
+			if(eventArray.Count == 0)
+			{
+				GALogger.D("sendEventsInArray called with missing eventArray");
+			}
+
+			string gameKey = GAState.GameKey;
+
+			// Generate URL
+			string url = baseUrl + "/" + gameKey + "/" + eventsUrlPath;
+			GALogger.D("Sending 'events' URL: " + url);
+
+			// make JSON string from data
+			string JSONstring = GAUtilities.ArrayOfObjectsToJsonString(eventArray);
+
+			if(JSONstring.Length == 0)
+			{
+				GALogger.D("sendEventsInArray JSON encoding failed of eventArray");
+				GAEvents.ProcessEvents(EGAHTTPApiResponse.JsonEncodeFailed, null, putbackSql, deleteSql, eventArray.Count);
+				return;
+			}
+
+			byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
+			List<string> extraArgs = new List<string>();
+			extraArgs.Add(JSONstring);
+			extraArgs.Add(putbackSql);
+			extraArgs.Add(deleteSql);
+			extraArgs.Add(eventArray.Count.ToString());
+			SendRequest(url, payloadData, extraArgs, useGzip, SendEventInArrayRequestCallback);
+		}
+#else
+
+#if WINDOWS_UWP
+        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONClass>> RequestInitReturningDict()
+#else
+        public KeyValuePair<EGAHTTPApiResponse, JSONClass> RequestInitReturningDict()
+#endif
+        {
+            JSONClass json;
+            EGAHTTPApiResponse result = EGAHTTPApiResponse.NoResponse;
+			string gameKey = GAState.GameKey;
+
+			// Generate URL
+			string url = baseUrl + "/" + gameKey + "/" + initializeUrlPath;
+			GALogger.D("Sending 'init' URL: " + url);
+
+			JSONClass initAnnotations = GAState.GetInitAnnotations();
+
+			// make JSON string from data
+			string JSONstring = initAnnotations.ToString();
+
+			if (string.IsNullOrEmpty(JSONstring))
+			{
+				result = EGAHTTPApiResponse.JsonEncodeFailed;
+				json = null;
+				return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+			}
+
+			string body = "";
+			HttpStatusCode responseCode = (HttpStatusCode)0;
+			string responseDescription = "";
+			string authorization = "";
+			try
+			{
+				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
+				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
+				authorization = request.Headers[HttpRequestHeader.Authorization];
+#if WINDOWS_UWP
+                using (Stream dataStream = await request.GetRequestStreamAsync())
+#else
+                using(Stream dataStream = request.GetRequestStream())
+#endif
+                {
+                    dataStream.Write(payloadData, 0, payloadData.Length);
+                }
+
+#if WINDOWS_UWP
+                using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
+#else
+                using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+#endif
+                {
+                    using (Stream dataStream = response.GetResponseStream())
+                    {
+                        using (StreamReader reader = new StreamReader(dataStream))
+                        {
+                            string responseString = reader.ReadToEnd();
+
+                            responseCode = response.StatusCode;
+                            responseDescription = response.StatusDescription;
+
+                            // print result
+                            body = responseString;
+                        }
+                    }
+                }
+			}
+			catch (WebException e)
+			{
+                GALogger.E(e.ToString());
+				if(e.Response != null)
+				{
+                    using (HttpWebResponse response = (HttpWebResponse)e.Response)
+                    {
+                        using (Stream streamResponse = response.GetResponseStream())
+                        {
+                            using (StreamReader streamRead = new StreamReader(streamResponse))
+                            {
+                                string responseString = streamRead.ReadToEnd();
+
+                                responseCode = response.StatusCode;
+                                responseDescription = response.StatusDescription;
+
+                                body = responseString;
+                            }
+                        }
+                            
+                    }
+                        
+				}
+			}
+			catch(Exception e)
+			{
+				GALogger.E(e.ToString());
+			}
+
+			// process the response
+			GALogger.D("init request content : " + body);
+
+			JSONNode requestJsonDict = JSON.Parse(body);
+			EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Init");
+
+			// if not 200 result
+			if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Init Call. URL: " + url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
+				result = requestResponseEnum;
+				json = null;
+                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+            }
+
+			if (requestJsonDict == null)
+			{
+				GALogger.D("Failed Init Call. Json decoding failed");
+				result = EGAHTTPApiResponse.JsonDecodeFailed;
+				json = null;
+                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+            }
+
+			// print reason if bad request
+			if (requestResponseEnum == EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Init Call. Bad request. Response: " + requestJsonDict.AsObject.ToString());
+				// return bad request result
+				result = requestResponseEnum;
+				json = null;
+                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+            }
+
+			// validate Init call values
+			JSONClass validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict);
+
+			if (validatedInitValues == null)
+			{
+				result = EGAHTTPApiResponse.BadResponse;
+				json = null;
+                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+            }
+
+			// all ok
+			result = EGAHTTPApiResponse.Ok;
+			json = validatedInitValues;
+            return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+        }
+
+#if WINDOWS_UWP
+        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONNode>> SendEventsInArray(List<JSONNode> eventArray)
+#else
+        public KeyValuePair<EGAHTTPApiResponse, JSONNode> SendEventsInArray(List<JSONNode> eventArray)
+#endif
+        {
+            JSONNode json;
+
+            if (eventArray.Count == 0)
+			{
+				GALogger.D("sendEventsInArray called with missing eventArray");
+			}
+
+			EGAHTTPApiResponse result = EGAHTTPApiResponse.NoResponse;
+			string gameKey = GAState.GameKey;
+
+			// Generate URL
+			string url = baseUrl + "/" + gameKey + "/" + eventsUrlPath;
+			GALogger.D("Sending 'events' URL: " + url);
+
+			// make JSON string from data
+			string JSONstring = GAUtilities.ArrayOfObjectsToJsonString(eventArray);
+
+			if (JSONstring.Length == 0)
+			{
+				GALogger.D("sendEventsInArray JSON encoding failed of eventArray");
+				json = null;
+				result = EGAHTTPApiResponse.JsonEncodeFailed;
+				return new KeyValuePair<EGAHTTPApiResponse, JSONNode>(result, json);
+			}
+
+			string body = "";
+			HttpStatusCode responseCode = (HttpStatusCode)0;
+			string responseDescription = "";
+			string authorization = "";
+			try
+			{
+				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
+				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
+				authorization = request.Headers[HttpRequestHeader.Authorization];
+#if WINDOWS_UWP
+                using (Stream dataStream = await request.GetRequestStreamAsync())
+#else
+                using(Stream dataStream = request.GetRequestStream())
+#endif
+                {
+                    dataStream.Write(payloadData, 0, payloadData.Length);
+                }
+
+#if WINDOWS_UWP
+                using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
+#else
+                using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+#endif
+                {
+                    using (Stream dataStream = response.GetResponseStream())
+                    {
+                        using (StreamReader reader = new StreamReader(dataStream))
+                        {
+                            string responseString = reader.ReadToEnd();
+
+                            responseCode = response.StatusCode;
+                            responseDescription = response.StatusDescription;
+
+                            // print result
+                            body = responseString;
+                        }
+                    } 
+                }
+			}
+			catch (WebException e)
+			{
+				if(e.Response != null)
+				{
+                    using (HttpWebResponse response = (HttpWebResponse)e.Response)
+                    {
+                        using (Stream streamResponse = response.GetResponseStream())
+                        {
+                            using (StreamReader streamRead = new StreamReader(streamResponse))
+                            {
+                                string responseString = streamRead.ReadToEnd();
+
+                                responseCode = response.StatusCode;
+                                responseDescription = response.StatusDescription;
+
+                                body = responseString;
+                            }  
+                        }
+                    }
+				}
+			}
+			catch(Exception e)
+			{
+				GALogger.E(e.ToString());
+			}
+
+			GALogger.D("events request content: " + body);
+
+			EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Events");
+
+			// if not 200 result
+			if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed events Call. URL: " + url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
+				json = null;
+				result = requestResponseEnum;
+				return new KeyValuePair<EGAHTTPApiResponse, JSONNode>(result, json);
+			}
+
+			// decode JSON
+			JSONNode requestJsonDict = JSON.Parse(body);
+
+			if (requestJsonDict == null)
+			{
+				json = null;
+				result = EGAHTTPApiResponse.JsonDecodeFailed;
+				return new KeyValuePair<EGAHTTPApiResponse, JSONNode>(result, json);
+			}
+
+			// print reason if bad request
+			if (requestResponseEnum == EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Events Call. Bad request. Response: " + requestJsonDict.ToString());
+			}
+
+			// return response
+			json = requestJsonDict;
+			result = requestResponseEnum;
+			return new KeyValuePair<EGAHTTPApiResponse, JSONNode>(result, json);
+		}
+
+#endif
+
+        public void SendSdkErrorEvent(EGASdkErrorType type)
+		{
+			string gameKey = GAState.GameKey;
+			string secretKey = GAState.GameSecret;
+
+			// Validate
+			if (!GAValidator.ValidateSdkErrorEvent(gameKey, secretKey, type))
+			{
+				return;
+			}
+
+			// Generate URL
+			string url = baseUrl + "/" + gameKey + "/" + eventsUrlPath;
+			GALogger.D("Sending 'events' URL: " + url);
+
+			string payloadJSONString = "";
+
+			JSONClass json = GAState.GetSdkErrorEventAnnotations();
+
+			string typeString = SdkErrorTypeToString(type);
+			json.Add("type", typeString);
+
+			List<JSONNode> eventArray = new List<JSONNode>();
+			eventArray.Add(json);
+			payloadJSONString = GAUtilities.ArrayOfObjectsToJsonString(eventArray);
+
+			if(string.IsNullOrEmpty(payloadJSONString))
+			{
+				GALogger.W("sendSdkErrorEvent: JSON encoding failed.");
+				return;
+			}
+
+			GALogger.D("sendSdkErrorEvent json: " + payloadJSONString);
+			byte[] payloadData = Encoding.UTF8.GetBytes(payloadJSONString);
+			SdkErrorTask sdkErrorTask = new SdkErrorTask(type, payloadData, secretKey);
+			sdkErrorTask.Execute(url);
+		}
+
+#endregion // Public methods
+
+#region Private methods
+
+		private byte[] CreatePayloadData(string payload, bool gzip)
+		{
+			byte[] payloadData;
+
+			if(gzip)
+			{
+				payloadData = GAUtilities.GzipCompress(payload);
+				GALogger.D("Gzip stats. Size: " + Encoding.UTF8.GetBytes(payload).Length + ", Compressed: " + payloadData.Length + ", Content: " + payload);
+			}
+			else
+			{
+				payloadData = Encoding.UTF8.GetBytes(payload);
+			}
+
+			return payloadData;
+		}
+
+		private static string SdkErrorTypeToString(EGASdkErrorType value)
+		{
+			switch(value)
+			{
+				case EGASdkErrorType.Rejected:
+					{
+						return "rejected";
+					}
+
+				default:
+					{
+						return "";
+					}
+			}
+		}
+
+#if UNITY_WEBGL
+
+		private static IEnumerator RequestCoroutine(UnityEngine.WWW www, string [] args, Action<UnityEngine.WWW, string[]> callback)
+		{
+			while(!www.isDone)
+			{
+				yield return www;
+			}
+			callback(www, args);
+		}
+
+		private static void SendRequest(string url, byte[] payloadData, List<string> extraArgs, bool gzip, Action<UnityEngine.WWW, string[]> callback)
+		{
+			// create headers
+			Dictionary<string, string> headers = new Dictionary<string, string>();
+			headers.Add("Content-Type", "application/json");
+
+			// create authorization hash
+			string key = GAState.GameSecret;
+			headers.Add("Authorization", GAUtilities.HmacWithKey(key, payloadData));
+
+			//headers.Add("Content-Length", payloadData.Length.ToString());
+			if(gzip)
+			{
+				headers.Add("Content-Encoding", "gzip");
+			}
+
+			UnityEngine.WWW www = new UnityEngine.WWW(url, payloadData, headers);
+			List<string> args = new List<string>();
+			args.Add(headers["Authorization"]);
+			foreach(string s in extraArgs)
+			{
+				args.Add(s);
+			}
+
+			GameAnalytics.RequestCoroutineQueue.Enqueue(RequestCoroutine(www, args.ToArray(), callback));
+		}
+
+		private static void InitRequestCallback(UnityEngine.WWW www, string[] args)
+		{
+			string authorization = args[0];
+			string JSONstring = args[1];
+			string body = "";
+			string responseDescription = "";
+			int responseCode = 0;
+
+			if(!string.IsNullOrEmpty(www.error))
+			{
+				string[] split = www.error.Split(new string[] { " " }, 2, StringSplitOptions.None);
+				if(int.TryParse(split[0], out responseCode))
+				{
+					body = www.text;
+				}
+				if(split.Length > 1)
+				{
+					responseDescription = split[1];
+				}
+			}
+			else
+			{
+				body = www.text;
+				responseCode = 200;
+			}
+
+			// process the response
+			GALogger.D("init request content : " + body);
+
+			JSONNode requestJsonDict = JSON.Parse(body);
+			EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Init");
+
+			// if not 200 result
+			if(requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Init Call. URL: " + www.url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
+				GAState.StartNewSession(requestResponseEnum, null);
+				return;
+			}
+
+			if(requestJsonDict == null)
+			{
+				GALogger.D("Failed Init Call. Json decoding failed");
+				GAState.StartNewSession(EGAHTTPApiResponse.JsonDecodeFailed, null);
+				return;
+			}
+
+			// print reason if bad request
+			if(requestResponseEnum == EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Init Call. Bad request. Response: " + requestJsonDict.AsObject.ToString());
+				// return bad request result
+				GAState.StartNewSession(requestResponseEnum, null);
+				return;
+			}
+
+			// validate Init call values
+			JSONClass validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict);
+
+			if(validatedInitValues == null)
+			{
+				GAState.StartNewSession(EGAHTTPApiResponse.BadResponse, null);
+				return;
+			}
+
+			// all ok
+			GAState.StartNewSession(EGAHTTPApiResponse.Ok, validatedInitValues);
+		}
+
+		private static void SendEventInArrayRequestCallback(UnityEngine.WWW www, string[] args)
+		{
+			string authorization = args[0];
+			string JSONstring = args[1];
+			string putbackSql = args[2];
+			string deleteSql = args[3];
+			int eventCount;
+			int.TryParse(args[4], out eventCount);
+			string body = "";
+			string responseDescription = "";
+			int responseCode = 0;
+
+			if(!string.IsNullOrEmpty(www.error))
+			{
+				string[] split = www.error.Split(new string[] { " " }, 2, StringSplitOptions.None);
+				if(int.TryParse(split[0], out responseCode))
+				{
+					body = www.text;
+				}
+				if(split.Length > 1)
+				{
+					responseDescription = split[1];
+				}
+			}
+			else
+			{
+				body = www.text;
+				responseCode = 200;
+			}
+
+			GALogger.D("events request content: " + body);
+
+			EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Events");
+
+			// if not 200 result
+			if(requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed events Call. URL: " + www.url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
+				GAEvents.ProcessEvents(requestResponseEnum, null, putbackSql, deleteSql, eventCount);
+				return;
+			}
+
+			// decode JSON
+			JSONNode requestJsonDict = JSON.Parse(body);
+
+			if(requestJsonDict == null)
+			{
+				GAEvents.ProcessEvents(EGAHTTPApiResponse.JsonDecodeFailed, null, putbackSql, deleteSql, eventCount);
+				return;
+			}
+
+			// print reason if bad request
+			if(requestResponseEnum == EGAHTTPApiResponse.BadRequest)
+			{
+				GALogger.D("Failed Events Call. Bad request. Response: " + requestJsonDict.ToString());
+			}
+
+			// return response
+			GAEvents.ProcessEvents(requestResponseEnum, requestJsonDict, putbackSql, deleteSql, eventCount);
+		}
+
+		private static EGAHTTPApiResponse ProcessRequestResponse(int responseCode, string responseMessage, string body, string requestId)
+		{
+			// if no result - often no connection
+			if(string.IsNullOrEmpty(body))
+			{
+				GALogger.D(requestId + " request. failed. Might be no connection. Description: " + responseMessage + ", Status code: " + responseCode);
+				return EGAHTTPApiResponse.NoResponse;
+			}
+
+			// ok
+			if(responseCode == 200)
+			{
+				return EGAHTTPApiResponse.Ok;
+			}
+
+			// 401 can return 0 status
+			if(responseCode == 0 || responseCode == 401)
+			{
+				GALogger.D(requestId + " request. 401 - Unauthorized.");
+				return EGAHTTPApiResponse.Unauthorized;
+			}
+
+			if(responseCode == 400)
+			{
+				GALogger.D(requestId + " request. 400 - Bad Request.");
+				return EGAHTTPApiResponse.BadRequest;
+			}
+
+			if(responseCode == 500)
+			{
+				GALogger.D(requestId + " request. 500 - Internal Server Error.");
+				return EGAHTTPApiResponse.InternalServerError;
+			}
+
+			return EGAHTTPApiResponse.UnknownResponseCode;
+		}
+#else
+
+		private HttpWebRequest CreateRequest(string url, byte[] payloadData, bool gzip)
+		{
+			HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+			request.Method = "POST";
+#if WINDOWS_UWP
+            request.Headers[HttpRequestHeader.ContentLength] = payloadData.Length.ToString();
+#else
+            request.ContentLength = payloadData.Length;
+#endif
+
+            if (gzip)
+			{
+				request.Headers[HttpRequestHeader.ContentEncoding] = "gzip";
+			}
+
+			// create authorization hash
+			String key = GAState.GameSecret;
+
+			request.Headers[HttpRequestHeader.Authorization] = GAUtilities.HmacWithKey(key, payloadData);
+			request.ContentType = "application/json";
+
+			return request;
+		}
+
+		private EGAHTTPApiResponse ProcessRequestResponse(HttpStatusCode responseCode, string responseMessage, string body, string requestId)
+		{
+			// if no result - often no connection
+			if(string.IsNullOrEmpty(body))
+			{
+				GALogger.D(requestId + " request. failed. Might be no connection. Description: " + responseMessage + ", Status code: " + responseCode);
+				return EGAHTTPApiResponse.NoResponse;
+			}
+
+			// ok
+			if (responseCode == HttpStatusCode.OK)
+			{
+				return EGAHTTPApiResponse.Ok;
+			}
+
+			// 401 can return 0 status
+			if (responseCode == (HttpStatusCode)0 || responseCode == HttpStatusCode.Unauthorized)
+			{
+				GALogger.D(requestId + " request. 401 - Unauthorized.");
+				return EGAHTTPApiResponse.Unauthorized;
+			}
+
+			if (responseCode == HttpStatusCode.BadRequest)
+			{
+				GALogger.D(requestId + " request. 400 - Bad Request.");
+				return EGAHTTPApiResponse.BadRequest;
+			}
+
+			if (responseCode == HttpStatusCode.InternalServerError)
+			{
+				GALogger.D(requestId + " request. 500 - Internal Server Error.");
+				return EGAHTTPApiResponse.InternalServerError;
+			}
+
+			return EGAHTTPApiResponse.UnknownResponseCode;
+		}
+
+#endif
+
+#endregion // Private methods
+        }
+    }
+

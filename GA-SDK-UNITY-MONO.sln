@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-SHARED", "GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.shproj", "{1577D2E0-959B-4106-A7D8-D77B41C09F0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA-SDK-UNITY-MONO_4.x", "GA-SDK-UNITY-MONO_4.x\GA-SDK-UNITY-MONO_4.x.csproj", "{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-UNITY-SHARED", "GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.shproj", "{1577D2E0-959B-4106-A7D8-D77B41C09F0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA-SDK-UNITY-MONO_5.x", "GA-SDK-UNITY-MONO_5.x\GA-SDK-UNITY-MONO_5.x.csproj", "{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems*{e3a7e6a1-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{e3a7e6a1-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+		GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems*{e3a7e6a2-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{e3a7e6a2-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
+		GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0d}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		WebGLDebug|Any CPU = WebGLDebug|Any CPU
+		WebGLRelease|Any CPU = WebGLRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.TabsToSpaces = False
+		$3.inheritsSet = null
+		$3.inheritsScope = text/plain
+		$3.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $4
+		$4.NewLinesForBracesInProperties = True
+		$4.NewLinesForBracesInAccessors = True
+		$4.NewLinesForBracesInAnonymousMethods = True
+		$4.NewLinesForBracesInControlBlocks = True
+		$4.NewLinesForBracesInAnonymousTypes = True
+		$4.NewLinesForBracesInObjectCollectionArrayInitializers = True
+		$4.NewLinesForBracesInLambdaExpressionBody = True
+		$4.NewLineForElse = True
+		$4.NewLineForCatch = True
+		$4.NewLineForFinally = True
+		$4.SpacingAfterMethodDeclarationName = False
+		$4.SpaceAfterMethodCallName = False
+		$4.SpaceAfterControlFlowStatementKeyword = False
+		$4.SpaceBeforeOpenSquareBracket = False
+		$4.inheritsSet = Mono
+		$4.inheritsScope = text/x-csharp
+		$4.scope = text/x-csharp
+		$4.IndentSwitchSection = True
+	EndGlobalSection
+EndGlobal

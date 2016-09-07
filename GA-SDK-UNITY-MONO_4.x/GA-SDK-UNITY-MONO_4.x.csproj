@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GameAnalyticsSDK.Mono</RootNamespace>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AssemblyName>GameAnalytics</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Unity4</OutputPath>
+    <DefineConstants>DEBUG; UNITY;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Unity4</OutputPath>
+    <DefineConstants>UNITY;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\3rd\Mono.Data.Sqlite\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <HintPath>..\3rd\Mono\Unity4\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="UnityEngine">
+      <HintPath>..\3rd\Unity\4.7.1f1\UnityEngine.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup />
+  <Import Project="..\GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems')" />
+  <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" />
+</Project>

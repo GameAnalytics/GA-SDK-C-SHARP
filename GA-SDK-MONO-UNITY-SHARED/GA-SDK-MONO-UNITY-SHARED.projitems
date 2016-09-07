@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1577d2e0-959b-4106-a7d8-d77b41c09f0c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>GA_SDK_MONO_SHARED</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Checksums\Adler32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Checksums\CRC32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Checksums\IChecksum.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\Deflater.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\GZip\GZIPConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\GZip\GzipOutputStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\Zip\SharpZipBaseException.cs" />
+  </ItemGroup>
+</Project>
