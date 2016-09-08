@@ -20,9 +20,9 @@ namespace GameAnalyticsSDK.Net.Device
 	internal static class GADevice
 	{
 #if WINDOWS_UWP
-        private const string _sdkWrapperVersion = "uwp 1.0.1";
+        private const string _sdkWrapperVersion = "uwp 1.0.5";
 #else
-        private const string _sdkWrapperVersion = "mono 1.0.1";
+        private const string _sdkWrapperVersion = "mono 1.0.5";
 #endif
 #if UNITY
 		private static readonly string _buildPlatform = UnityRuntimePlatformToString(Application.platform);

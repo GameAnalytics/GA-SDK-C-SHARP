@@ -51,9 +51,6 @@
     <AssemblyName>GameAnalytics.WebGL</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Data.Sqlite">
-      <HintPath>..\3rd\Mono.Data.Sqlite\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <HintPath>..\3rd\Mono\Unity5\System.Core.dll</HintPath>
@@ -62,6 +59,9 @@
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rd\Unity\5.4.0f3\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>..\3rd\Mono.Data.Sqlite\Unity\Mono.Data.Sqlite.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
