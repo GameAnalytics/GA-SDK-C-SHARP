@@ -228,7 +228,7 @@ namespace GameAnalyticsSDK.Net.Store
 			// Open database
 			try
 			{
-#if UNITY
+#if UNITY || MONO
                 Instance.SqlDatabase = new SqliteConnection("URI=file:" + Instance.dbPath + ";Version=3");
 #else
                 Instance.SqlDatabase = new SqliteConnection(new SqliteConnectionStringBuilder
