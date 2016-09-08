@@ -38,8 +38,8 @@
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Data.Sqlite">
-      <HintPath>..\3rd\Mono.Data.Sqlite\Mono\Mono.Data.Sqlite.dll</HintPath>
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\3rd\System.Data.SQLite\System.Data.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +47,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="native\" />
+    <Folder Include="native\win32\" />
+    <Folder Include="native\win64\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="native\win32\sqlite3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="native\win64\sqlite3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

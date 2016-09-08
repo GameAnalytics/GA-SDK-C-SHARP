@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>GameAnalytics.Mono.SDK</id>
-        <version>1.0.5</version>
+        <version>1.0.12</version>
         <title>GameAnalytics Mono SDK</title>
         <authors>GameAnalytics</authors>
         <owners>GameAnalytics</owners>
@@ -20,6 +20,9 @@
     </metadata>
     <files>
         <file src="bin/Release/GameAnalytics.Mono.dll" target="lib/net45" />
-        <file src="bin/Release/Mono.Data.Sqlite.dll" target="lib/net45" />
+        <file src="bin/Release/System.Data.SQLite.dll" target="lib/net45" />
+        <file src="bin/Release/native/win32/sqlite3.dll" target="build/net45/x86" />
+        <file src="bin/Release/native/win64/sqlite3.dll" target="build/net45/x64" />
+        <file src="GameAnalytics.Mono.SDK.targets" target="build/net45/GameAnalytics.Mono.SDK.targets" />
     </files>
 </package>

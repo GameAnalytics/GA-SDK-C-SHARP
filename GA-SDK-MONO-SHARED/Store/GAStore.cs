@@ -1,6 +1,11 @@
 ﻿using System;
 #if MONO
-using Mono.Data.Sqlite;
+using SqliteConnection = System.Data.SQLite.SQLiteConnection;
+using SqliteTransaction = System.Data.SQLite.SQLiteTransaction;
+using SqliteCommand = System.Data.SQLite.SQLiteCommand;
+using SqliteDataReader = System.Data.SQLite.SQLiteDataReader;
+using SqliteException = System.Data.SQLite.SQLiteException;
+using SqliteConnectionStringBuilder = System.Data.SQLite.SQLiteConnectionStringBuilder;
 #elif UNITY_WSA || !UNITY || WINDOWS_UWP
 using Microsoft.Data.Sqlite;
 using System.Reflection;
@@ -228,7 +233,7 @@ namespace GameAnalyticsSDK.Net.Store
 			// Open database
 			try
 			{
-#if UNITY || MONO
+#if UNITY
                 Instance.SqlDatabase = new SqliteConnection("URI=file:" + Instance.dbPath + ";Version=3");
 #else
                 Instance.SqlDatabase = new SqliteConnection(new SqliteConnectionStringBuilder
