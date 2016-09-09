@@ -7,6 +7,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-SHARED", "GA-SD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA_SDK_MONO", "GA_SDK_MONO\GA_SDK_MONO.csproj", "{AAC097AA-8041-4EFB-A8A0-7B68308E75FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA_SDK_MONO_TEST", "GA_SDK_MONO_TEST\GA_SDK_MONO_TEST.csproj", "{61BC7C80-E3B4-4319-AC06-B590D0612179}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
@@ -21,6 +23,10 @@ Global
 		{AAC097AA-8041-4EFB-A8A0-7B68308E75FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAC097AA-8041-4EFB-A8A0-7B68308E75FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAC097AA-8041-4EFB-A8A0-7B68308E75FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61BC7C80-E3B4-4319-AC06-B590D0612179}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61BC7C80-E3B4-4319-AC06-B590D0612179}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61BC7C80-E3B4-4319-AC06-B590D0612179}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61BC7C80-E3B4-4319-AC06-B590D0612179}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
