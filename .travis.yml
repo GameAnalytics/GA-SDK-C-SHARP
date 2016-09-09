@@ -7,7 +7,7 @@ install:
 
 script:
     - xbuild /p:Configuration=Release GA-SDK-MONO.sln
-    - mono ./testrunner/NUnit.Runners.3.4.1/tools/nunit-console.exe ./GA_SDK_MONO_TEST/bin/Release/GameAnalytics.Mono.Test.dll
+    - mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./GA_SDK_MONO_TEST/bin/Release/GameAnalytics.Mono.Test.dll
 
 notifications:
     slack:
