@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GAValidatorTest.cs" />
+    <Compile Include="GATestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
