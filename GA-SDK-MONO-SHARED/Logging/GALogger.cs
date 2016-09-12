@@ -1,8 +1,8 @@
-﻿using MetroLog;
-using MetroLog.Targets;
-using System;
+﻿using System;
 #if WINDOWS_UWP
 using Windows.Foundation.Diagnostics;
+using MetroLog;
+using MetroLog.Targets;
 #elif MONO
 using NLog;
 using NLog.Config;
