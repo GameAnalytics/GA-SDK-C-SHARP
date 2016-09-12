@@ -1,6 +1,8 @@
 ﻿using System;
 #if WINDOWS_UWP
 using Windows.Foundation.Diagnostics;
+using MetroLog;
+using MetroLog.Targets;
 #elif MONO
 using NLog;
 using NLog.Config;
@@ -24,6 +26,7 @@ namespace GameAnalyticsSDK.Net.Logging
 #if WINDOWS_UWP
         private IFileLoggingSession session;
         private ILoggingChannel logger;
+        private ILogger log;
 #elif MONO
 		private static ILogger logger;
 #elif !UNITY
@@ -66,6 +69,9 @@ namespace GameAnalyticsSDK.Net.Logging
             var options = new LoggingChannelOptions();
             logger = new LoggingChannel("ga-channel", options);
             session.AddLoggingChannel(logger);
+
+            LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new StreamingFileTarget());
+            log = LogManagerFactory.DefaultLogManager.GetLogger<GALogger>();
 #elif MONO
 			logger = LogManager.GetCurrentClassLogger();
 			var config = new LoggingConfiguration();
@@ -151,6 +157,7 @@ namespace GameAnalyticsSDK.Net.Logging
                         UnityEngine.Debug.LogError(message);
 #elif WINDOWS_UWP
                         logger.LogMessage(message, LoggingLevel.Error);
+                        log.Error(message);
                         GameAnalytics.MessageLogged(message, type);
 #elif MONO
 						logger.Error(message);
@@ -167,6 +174,7 @@ namespace GameAnalyticsSDK.Net.Logging
                         UnityEngine.Debug.LogWarning(message);
 #elif WINDOWS_UWP
                         logger.LogMessage(message, LoggingLevel.Warning);
+                        log.Warn(message);
                         GameAnalytics.MessageLogged(message, type);
 #elif MONO
 						logger.Warn(message);
@@ -183,6 +191,7 @@ namespace GameAnalyticsSDK.Net.Logging
                         UnityEngine.Debug.Log(message);
 #elif WINDOWS_UWP
                         logger.LogMessage(message, LoggingLevel.Information);
+                        log.Debug(message);
                         GameAnalytics.MessageLogged(message, type);
 #elif MONO
 						logger.Debug(message);
@@ -199,6 +208,7 @@ namespace GameAnalyticsSDK.Net.Logging
                         UnityEngine.Debug.Log(message);
 #elif WINDOWS_UWP
                         logger.LogMessage(message, LoggingLevel.Information);
+                        log.Info(message);
                         GameAnalytics.MessageLogged(message, type);
 #elif MONO
 						logger.Info(message);

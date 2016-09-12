@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata minClientVersion="3.2">
+        <id>GameAnalytics.UWP.SDK</id>
+        <version>1.0.13</version>
+        <title>GameAnalytics UWP SDK</title>
+        <authors>GameAnalytics</authors>
+        <owners>GameAnalytics</owners>
+        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+        <projectUrl>https://github.com/GameAnalytics/GA-SDK-C-SHARP</projectUrl>
+        <iconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>GameAnalytics SDK for UWP</description>
+        <tags>gameanalytics</tags>
+        <dependencies>
+            <group targetFramework="uap10.0">
+                <dependency id="Microsoft.Data.Sqlite" version="1.0.0" />
+				<dependency id="MetroLog" version="1.0.1" />
+				<dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.2.2" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin/Release/GameAnalytics.UWP.dll" target="lib/uap10.0" />
+        <file src="GameAnalytics.UWP.SDK.targets" target="build/uap10.0/GameAnalytics.UWP.SDK.targets" />
+    </files>
+</package>
