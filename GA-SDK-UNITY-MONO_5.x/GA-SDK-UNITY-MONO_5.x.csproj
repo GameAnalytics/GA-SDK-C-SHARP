@@ -50,6 +50,26 @@
     <DefineConstants>UNITY_WEBGL; UNITY_5; UNITY;</DefineConstants>
     <AssemblyName>GameAnalytics.WebGL</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WSARelease|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\Unity5</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <ErrorReport>prompt</ErrorReport>
+    <DefineConstants>UNITY_WSA; UNITY_5; UNITY;</DefineConstants>
+    <AssemblyName>GameAnalytics.WebGL</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WSADebug|AnyCPU' ">
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\Unity5</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+    <ConsolePause>false</ConsolePause>
+    <ErrorReport>prompt</ErrorReport>
+    <DefineConstants>DEBUG; UNITY_WSA; UNITY_5; UNITY;</DefineConstants>
+    <DebugType>full</DebugType>
+    <AssemblyName>GameAnalytics.WebGL</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">

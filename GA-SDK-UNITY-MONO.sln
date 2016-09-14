@@ -25,6 +25,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 		WebGLDebug|Any CPU = WebGLDebug|Any CPU
 		WebGLRelease|Any CPU = WebGLRelease|Any CPU
+		WSADebug|Any CPU = WSADebug|Any CPU
+		WSARelease|Any CPU = WSARelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.Build.0 = Debug|Any CPU
 		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.Build.0 = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WSADebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WSADebug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WSARelease|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.WSARelease|Any CPU.Build.0 = Release|Any CPU
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,6 +49,10 @@ Global
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.Build.0 = WebGLDebug|Any CPU
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.ActiveCfg = WebGLRelease|Any CPU
 		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.Build.0 = WebGLRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WSADebug|Any CPU.ActiveCfg = WSADebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WSADebug|Any CPU.Build.0 = WSADebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WSARelease|Any CPU.ActiveCfg = WSARelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WSARelease|Any CPU.Build.0 = WSARelease|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
