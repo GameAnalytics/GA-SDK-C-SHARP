@@ -1,5 +1,13 @@
 # GA-SDK-C-SHARP
-GameAnalytics Mono / .Net 4.5 and UWP SDK.
+GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
+
+Changelog
+---------
+**1.1.0**
+* Added support for Universal Windows 8 (Windows Phone 8 and Windows 8)
+
+**1.0.13**
+* Initial version
 
 Mono / .Net 4.5
 ---------------
@@ -51,6 +59,29 @@ Add **GameAnalytics.UWP.SDK** package from Nuget package manager. Nothing furthe
 
 Open **GA-SDK-UWP.sln** and compile the **GA_SDK_UWP** project. Add the **GameAnalytics.UWP.dll** as references to your UWP project. Add the following Nuget packages: **Microsoft.Data.Sqlite**, **MetroLog** and **Microsoft.NetCore.UniversalWindowsPlatform**.
 
+Universal Windows 8 (UWP)
+-------------------------
+
+###Requirements:
+
+* Windows 8 or higher
+
+###Dependencies:
+
+* Microsoft.Data.Sqlite.WinRT
+* MetroLog
+* System.Data.Common
+
+###How to install
+
+####Using Nuget
+
+Add **GameAnalytics.UWP.SDK** package from Nuget package manager. Nothing further needs to be done. Copying of files to the output directory happens automatically.
+
+####Manual installation
+
+Open **GA-SDK-WSA.sln** and compile the **GA-SDK-WSA** project. Add the **GameAnalytics.WSA.dll** and **System.Data.Common** as references to your UWP project. Add the following Nuget packages: **Microsoft.Data.Sqlite.WinRT** and **MetroLog**.
+
 
 Folderstructure
 ---------------
@@ -66,6 +97,7 @@ Folderstructure
 * **GA-SDK-UNITY-MONO_5.x** - project to compile DLL for Unity 5
 * **GA_SDK_MONO** - project to compile DLL for Mono / .Net 4.5
 * **GA_SDK_UWP** - project to compile DLL for UWP (requires Windows 10 and Windows 10 Universal SDK installed)
+* **GA-SDK-WSA** - project to compile DLL for Universal Windows 8 (requires Windows 8 or higher)
 
 Usage of the SDK
 ----------------
@@ -112,9 +144,3 @@ GameAnalytics.AddBusinessEvent("USD", 100, "boost", "super_boost", "shop");
 GameAnalytics.AddResourceEvent(EGAResourceFlowType.Source, "gems", 10, "lives", "extra_life");
 GameAnalytics.AddProgressionEvent(EGAProgressionStatus.Start, "progression01", "progression02");
 ```
-
-Changelog
----------
-
-**1.0.13**
-* Initial version
