@@ -13,11 +13,11 @@ using GameAnalyticsSDK.Net.State;
 using GameAnalyticsSDK.Net.Validators;
 using System.Collections.Generic;
 using GameAnalyticsSDK.Net.Tasks;
-#if !UNITY_WEBGL && !WINDOWS_UWP
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 #endif
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
 using System.Threading.Tasks;
 #endif
 
@@ -61,12 +61,12 @@ namespace GameAnalyticsSDK.Net.Http
 			this.eventsUrlPath = "events";
 
 			this.useGzip = true;
-#if !UNITY_WEBGL && !WINDOWS_UWP
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
 #endif
         }
 
-#if !UNITY_WEBGL && !WINDOWS_UWP
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
         private bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             bool isOk = true;
@@ -155,7 +155,7 @@ namespace GameAnalyticsSDK.Net.Http
 		}
 #else
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         public async Task<KeyValuePair<EGAHTTPApiResponse, JSONClass>> RequestInitReturningDict()
 #else
         public KeyValuePair<EGAHTTPApiResponse, JSONClass> RequestInitReturningDict()
@@ -190,7 +190,7 @@ namespace GameAnalyticsSDK.Net.Http
 				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
 				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
 #else
                 using(Stream dataStream = request.GetRequestStream())
@@ -199,7 +199,7 @@ namespace GameAnalyticsSDK.Net.Http
                     dataStream.Write(payloadData, 0, payloadData.Length);
                 }
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
 #else
                 using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
@@ -298,7 +298,7 @@ namespace GameAnalyticsSDK.Net.Http
             return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
         }
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         public async Task<KeyValuePair<EGAHTTPApiResponse, JSONNode>> SendEventsInArray(List<JSONNode> eventArray)
 #else
         public KeyValuePair<EGAHTTPApiResponse, JSONNode> SendEventsInArray(List<JSONNode> eventArray)
@@ -338,7 +338,7 @@ namespace GameAnalyticsSDK.Net.Http
 				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
 				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
-#if WINDOWS_UWP
+#if WINDOWS_UWPP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
 #else
                 using(Stream dataStream = request.GetRequestStream())
@@ -347,7 +347,7 @@ namespace GameAnalyticsSDK.Net.Http
                     dataStream.Write(payloadData, 0, payloadData.Length);
                 }
 
-#if WINDOWS_UWP
+#if WINDOWS_UWPP || WINDOWS_WSA
                 using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
 #else
                 using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
@@ -718,6 +718,9 @@ namespace GameAnalyticsSDK.Net.Http
 			request.Method = "POST";
 #if WINDOWS_UWP
             request.Headers[HttpRequestHeader.ContentLength] = payloadData.Length.ToString();
+#elif WINDOWS_WSA
+            //request.Headers[HttpRequestHeader.ContentLength] = payloadData.Length.ToString();
+            // Bug setting Content Length on WSA
 #else
             request.ContentLength = payloadData.Length;
 #endif

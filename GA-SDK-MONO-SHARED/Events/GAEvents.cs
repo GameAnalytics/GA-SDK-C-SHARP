@@ -351,7 +351,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private async static void ProcessEvents(string category, bool performCleanUp)
 #else
         private static void ProcessEvents(string category, bool performCleanUp)
@@ -445,7 +445,7 @@ namespace GameAnalyticsSDK.Net.Events
 				GAHTTPApi.Instance.SendEventsInArray(payloadArray, putbackSql, deleteSql);
 #else
                 // send events
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 KeyValuePair<EGAHTTPApiResponse, JSONNode> result = await GAHTTPApi.Instance.SendEventsInArray(payloadArray);
 #else
                 KeyValuePair<EGAHTTPApiResponse, JSONNode> result = GAHTTPApi.Instance.SendEventsInArray(payloadArray);
@@ -548,10 +548,14 @@ namespace GameAnalyticsSDK.Net.Events
 				// Add to store
 				AddEventToStore(sessionEndEvent.AsObject);
 			}
-		}
+        }
 
-		private static void AddEventToStore(JSONClass eventData)
-		{
+#if WINDOWS_WSA
+        private async static void AddEventToStore(JSONClass eventData)
+#else
+        private static void AddEventToStore(JSONClass eventData)
+#endif
+        {
 			// Check if datastore is available
 			if (!GAStore.IsTableReady)
 			{
@@ -568,9 +572,9 @@ namespace GameAnalyticsSDK.Net.Events
 
 			try
 			{
-				// Check db size limits (10mb)
-				// If database is too large block all except user, session and business
-				if (GAStore.IsDbTooLargeForEvents && !GAUtilities.StringMatch(eventData["category"].AsString, "^(user|session_end|business)$"))
+                // Check db size limits (10mb)
+                // If database is too large block all except user, session and business
+                if (GAStore.IsDbTooLargeForEvents && !GAUtilities.StringMatch(eventData["category"].AsString, "^(user|session_end|business)$"))
 				{
 					GALogger.W("Database too large. Event has been blocked.");
 					return;

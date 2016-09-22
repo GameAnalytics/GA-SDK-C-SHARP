@@ -6,7 +6,7 @@ using SqliteCommand = System.Data.SQLite.SQLiteCommand;
 using SqliteDataReader = System.Data.SQLite.SQLiteDataReader;
 using SqliteException = System.Data.SQLite.SQLiteException;
 using SqliteConnectionStringBuilder = System.Data.SQLite.SQLiteConnectionStringBuilder;
-#elif UNITY_WSA || !UNITY || WINDOWS_UWP
+#elif WINDOWS_WSA || !UNITY || WINDOWS_UWP
 using Microsoft.Data.Sqlite;
 using System.Reflection;
 #else
@@ -19,6 +19,11 @@ using GameAnalyticsSDK.Net.Device;
 using System.IO;
 #if UNITY_WEBGL
 using System.Runtime.InteropServices;
+#endif
+#if WINDOWS_WSA
+using Windows.Storage;
+using Windows.Storage.FileProperties;
+using System.Threading.Tasks;
 #endif
 
 namespace GameAnalyticsSDK.Net.Store
@@ -150,21 +155,8 @@ namespace GameAnalyticsSDK.Net.Store
 								continue;
 							}
 
-							Type t = reader.GetFieldType(i);
-
-							if(t.IsAssignableFrom(typeof(int)))
-							{
-								row[column] = reader.GetInt32(i).ToString();
-							}
-							else if(t.IsAssignableFrom(typeof(double)))
-							{
-								row[column] = reader.GetDouble(i).ToString();
-							}
-							else
-							{
-								row[column] = reader.GetString(i);
-							}
-						}
+                            row[column] = reader.GetValue(i).ToString();
+                        }
 						results.Add(row);
 					}
 				}
@@ -374,21 +366,30 @@ namespace GameAnalyticsSDK.Net.Store
 			}
 		}
 
-		public static long DbSizeBytes
-		{
-			get
-			{
-				return new FileInfo(Instance.dbPath).Length;
-			}
+        public static long DbSizeBytes
+        {
+            get
+            {
+#if WINDOWS_WSA
+                Task<StorageFile> fileTask = Task.Run<StorageFile>(async () => await StorageFile.GetFileFromPathAsync(Instance.dbPath));
+                StorageFile file = fileTask.GetAwaiter().GetResult();
+                Task<BasicProperties> propertiesTask = Task.Run<BasicProperties>(async () => await file.GetBasicPropertiesAsync());
+                BasicProperties properties = propertiesTask.GetAwaiter().GetResult();
+
+                return (long)properties.Size;
+#else
+                return new FileInfo(Instance.dbPath).Length;
+#endif
+            }
 		}
 
         #endregion // Public methods
 
         #region Private methods
 
-        private static bool TrimEventTable()
+        private static void TrimEventTable()
         {
-            if(DbSizeBytes > MaxDbSizeBytesBeforeTrim)
+            if (DbSizeBytes > MaxDbSizeBytesBeforeTrim)
             {
                 JSONArray resultSessionArray = ExecuteQuerySync("SELECT session_id, Max(client_ts) FROM ga_events GROUP BY session_id ORDER BY client_ts LIMIT 3");
 
@@ -410,18 +411,11 @@ namespace GameAnalyticsSDK.Net.Store
                     GALogger.W("Database too large when initializing. Deleting the oldest 3 sessions.");
                     ExecuteQuerySync(deleteOldSessionSql);
                     ExecuteQuerySync("VACUUM");
-
-                    return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
-            return true;
         }
 
-        #endregion
+#endregion
     }
 }
 

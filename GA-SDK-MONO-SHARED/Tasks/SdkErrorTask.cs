@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using GameAnalyticsSDK.Net.Logging;
 using Foundation.Tasks;
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
 using System.Threading.Tasks;
 #endif
 
@@ -32,7 +32,7 @@ namespace GameAnalyticsSDK.Net.Tasks
 		{
             AsyncTask.Run(() =>
 			{
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 DoInBackground(url).Wait();
 #else
                 DoInBackground(url);
@@ -40,7 +40,7 @@ namespace GameAnalyticsSDK.Net.Tasks
             });
         }
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         protected async Task DoInBackground(string url)
 #else
         protected void DoInBackground(string url)
@@ -63,7 +63,7 @@ namespace GameAnalyticsSDK.Net.Tasks
 			{
 				HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
 				request.Method = "POST";
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 request.Headers[HttpRequestHeader.ContentLength] = this.payloadData.Length.ToString();
 #else
                 request.ContentLength = payloadData.Length;
@@ -71,7 +71,7 @@ namespace GameAnalyticsSDK.Net.Tasks
                 request.Headers[HttpRequestHeader.Authorization] = this.hashHmac;
 				request.ContentType = "application/json";
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
 #else
                 using (Stream dataStream = request.GetRequestStream())
@@ -80,7 +80,7 @@ namespace GameAnalyticsSDK.Net.Tasks
                     dataStream.Write(this.payloadData, 0, payloadData.Length);
                 }
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
 #else
                 using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 #if UNITY
 using UnityEngine;
 #endif
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
 #elif !UNITY_WEBGL
 using System.Threading;
@@ -271,7 +271,7 @@ namespace Foundation.Tasks
 
 
 #if !UNITY_WEBGL
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
         protected async void RunOnBackgroundThread()
         {
             Status = TaskStatus.Pending;

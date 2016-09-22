@@ -471,7 +471,7 @@ namespace GameAnalyticsSDK.Net.State
 			GALogger.I("Use manual session handling: " + flag);
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         public async static void InternalInitialize()
 #else
         public static void InternalInitialize()
@@ -488,7 +488,7 @@ namespace GameAnalyticsSDK.Net.State
 
 			Initialized = true;
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             await StartNewSession();
 #else
             StartNewSession();
@@ -515,7 +515,7 @@ namespace GameAnalyticsSDK.Net.State
 			}
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         public async static void ResumeSessionAndStartQueue()
 #else
         public static void ResumeSessionAndStartQueue()
@@ -529,7 +529,7 @@ namespace GameAnalyticsSDK.Net.State
 			GALogger.I("Resuming session.");
 			if(!SessionIsStarted())
 			{
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 await StartNewSession();
 #else
                 StartNewSession();
@@ -795,7 +795,7 @@ namespace GameAnalyticsSDK.Net.State
 			}
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private async static System.Threading.Tasks.Task StartNewSession()
 #else
         private static void StartNewSession()
@@ -810,7 +810,7 @@ namespace GameAnalyticsSDK.Net.State
 			GAHTTPApi.Instance.RequestInit();
 #else
             // call the init call
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
 #else
             KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = GAHTTPApi.Instance.RequestInitReturningDict();

@@ -1,4 +1,4 @@
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
 using System;
 
 namespace Foundation.Tasks
