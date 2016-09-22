@@ -7,7 +7,7 @@ using GameAnalyticsSDK.Net.Utilities.Zip.GZip;
 #else
 using System.IO.Compression;
 #endif
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
 using Windows.Security.Cryptography.Core;
 using Windows.Security.Cryptography;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -62,16 +62,15 @@ namespace GameAnalyticsSDK.Net.Utilities
 
 		public static string HmacWithKey(string key, byte[] data)
 		{
-            ASCIIEncoding encoding = new ASCIIEncoding();
-            byte[] keyByte = encoding.GetBytes(key);
+            byte[] keyByte = Encoding.UTF8.GetBytes(key);
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             var hmacsha256 = MacAlgorithmProvider.OpenAlgorithm(MacAlgorithmNames.HmacSha256);
 #else
             using (var hmacsha256 = new HMACSHA256(keyByte))
 #endif
             {
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
                 var input = data.AsBuffer();
                 var signatureKey = hmacsha256.CreateKey(keyByte.AsBuffer());
                 var cypherMac = CryptographicEngine.Sign(signatureKey, input);

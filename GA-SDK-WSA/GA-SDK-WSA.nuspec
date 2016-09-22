@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata minClientVersion="3.2">
+        <id>GameAnalytics.WSA.SDK</id>
+        <version>1.1.0</version>
+        <title>GameAnalytics Universal Windows 8 SDK</title>
+        <authors>GameAnalytics</authors>
+        <owners>GameAnalytics</owners>
+        <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+        <projectUrl>https://github.com/GameAnalytics/GA-SDK-C-SHARP</projectUrl>
+        <iconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>GameAnalytics SDK for Universal Windows 8</description>
+        <tags>gameanalytics</tags>
+        <dependencies>
+            <group targetFramework="portable-win81+wpa81">
+                <dependency id="Microsoft.Data.Sqlite.WinRT" version="1.0.0" />
+				<dependency id="MetroLog" version="1.0.1" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin/Release/GameAnalytics.WSA.dll" target="lib/portable-win81+wpa81" />
+    </files>
+</package>

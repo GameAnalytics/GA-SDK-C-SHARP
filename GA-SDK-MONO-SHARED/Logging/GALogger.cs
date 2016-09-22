@@ -1,5 +1,5 @@
 ﻿using System;
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
 using Windows.Foundation.Diagnostics;
 using MetroLog;
 using MetroLog.Targets;
@@ -23,7 +23,7 @@ namespace GameAnalyticsSDK.Net.Logging
 		private static bool debugEnabled;
 		private const string Tag = "GameAnalytics";
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private IFileLoggingSession session;
         private ILoggingChannel logger;
         private ILogger log;
@@ -64,10 +64,14 @@ namespace GameAnalyticsSDK.Net.Logging
 #if DEBUG
 			debugEnabled = true;
 #endif
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             session = new FileLoggingSession("ga-session");
+#if WINDOWS_UWP
             var options = new LoggingChannelOptions();
             logger = new LoggingChannel("ga-channel", options);
+#else
+            logger = new LoggingChannel("ga-channel");
+#endif
             session.AddLoggingChannel(logger);
 
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new StreamingFileTarget());
@@ -155,7 +159,7 @@ namespace GameAnalyticsSDK.Net.Logging
 					{
 #if UNITY
                         UnityEngine.Debug.LogError(message);
-#elif WINDOWS_UWP
+#elif WINDOWS_UWP || WINDOWS_WSA
                         logger.LogMessage(message, LoggingLevel.Error);
                         log.Error(message);
                         GameAnalytics.MessageLogged(message, type);
@@ -172,7 +176,7 @@ namespace GameAnalyticsSDK.Net.Logging
 					{
 #if UNITY
                         UnityEngine.Debug.LogWarning(message);
-#elif WINDOWS_UWP
+#elif WINDOWS_UWP || WINDOWS_WSA
                         logger.LogMessage(message, LoggingLevel.Warning);
                         log.Warn(message);
                         GameAnalytics.MessageLogged(message, type);
@@ -189,7 +193,7 @@ namespace GameAnalyticsSDK.Net.Logging
 					{
 #if UNITY
                         UnityEngine.Debug.Log(message);
-#elif WINDOWS_UWP
+#elif WINDOWS_UWP || WINDOWS_WSA
                         logger.LogMessage(message, LoggingLevel.Information);
                         log.Debug(message);
                         GameAnalytics.MessageLogged(message, type);
@@ -206,7 +210,7 @@ namespace GameAnalyticsSDK.Net.Logging
 					{
 #if UNITY
                         UnityEngine.Debug.Log(message);
-#elif WINDOWS_UWP
+#elif WINDOWS_UWP || WINDOWS_WSA
                         logger.LogMessage(message, LoggingLevel.Information);
                         log.Info(message);
                         GameAnalytics.MessageLogged(message, type);

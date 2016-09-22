@@ -6,7 +6,7 @@ using System.IO;
 #endif
 using System.Text.RegularExpressions;
 using GameAnalyticsSDK.Net.Logging;
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
 using Windows.System.Profile;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage;
@@ -20,9 +20,11 @@ namespace GameAnalyticsSDK.Net.Device
 	internal static class GADevice
 	{
 #if WINDOWS_UWP
-        private const string _sdkWrapperVersion = "uwp 1.0.13";
+        private const string _sdkWrapperVersion = "uwp 1.1.0";
+#elif WINDOWS_WSA
+        private const string _sdkWrapperVersion = "wsa 1.1.0";
 #else
-        private const string _sdkWrapperVersion = "mono 1.0.13";
+        private const string _sdkWrapperVersion = "mono 1.1.0";
 #endif
 #if UNITY
 		private static readonly string _buildPlatform = UnityRuntimePlatformToString(Application.platform);
@@ -30,7 +32,7 @@ namespace GameAnalyticsSDK.Net.Device
 		private static string _writablepath = Application.persistentDataPath;
 #else
         private static readonly string _buildPlatform = RuntimePlatformToString();
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private static readonly string _deviceModel = GetDeviceModel();
         private static readonly string _advertisingId = AdvertisingManager.AdvertisingId;
         private static string _deviceId = GetDeviceId();
@@ -40,7 +42,7 @@ namespace GameAnalyticsSDK.Net.Device
         private static string _writablepath = GetPersistentPath();
 #endif
         private static readonly string _osVersion = GetOSVersionString();
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private static readonly string _deviceManufacturer = GetDeviceManufacturer();
 #else
         private static readonly string _deviceManufacturer = "unknown";
@@ -326,18 +328,23 @@ namespace GameAnalyticsSDK.Net.Device
             ulong minor = (version & 0x0000FFFF00000000L) >> 32;
             ulong build = (version & 0x00000000FFFF0000L) >> 16;
             return BuildPlatform + string.Format(" {0}.{1}.{2}", major, minor, build);
+#elif WINDOWS_WSA
+            // Always 8.1 on Universal Windows 8.1
+            return BuildPlatform + " 8";
 #else
-			Version v = Environment.OSVersion.Version;
+            Version v = Environment.OSVersion.Version;
 			return BuildPlatform + string.Format(" {0}.{1}.{2}", v.Major, v.Minor, v.Build);
 #endif
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private static string GetDeviceId()
         {
             string result = "";
 
+#if WINDOWS_UWP
             if(ApiInformation.IsTypePresent("Windows.System.Profile.HardwareIdentification"))
+#endif
             {
                 var token = HardwareIdentification.GetPackageSpecificToken(null);
                 var hardwareId = token.Id;
@@ -363,6 +370,8 @@ namespace GameAnalyticsSDK.Net.Device
             EasClientDeviceInformation eas = new EasClientDeviceInformation();
             return eas.SystemProductName;
         }
+
+#if WINDOWS_UWP
         private static string RuntimePlatformToString()
         {
             switch(AnalyticsInfo.VersionInfo.DeviceFamily)
@@ -398,6 +407,29 @@ namespace GameAnalyticsSDK.Net.Device
                     }
             }
         }
+#else
+        private static string RuntimePlatformToString()
+        {
+            EasClientDeviceInformation eas = new EasClientDeviceInformation();
+            switch(eas.OperatingSystem.ToUpperInvariant())
+            {
+                case "WINDOWSPHONE":
+                    {
+                        return "windows_phone";
+                    }
+
+                case "WINDOWS":
+                    {
+                        return "windows";
+                    }
+
+                default:
+                    {
+                        return eas.OperatingSystem;
+                    }
+            }
+        }
+#endif
 #else
         private static string RuntimePlatformToString()
 		{
@@ -445,7 +477,7 @@ namespace GameAnalyticsSDK.Net.Device
 
         private static string GetPersistentPath()
 		{
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             return ApplicationData.Current.LocalFolder.Path;
 #else
             string result = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + Path.DirectorySeparatorChar + "GameAnalytics" + Path.DirectorySeparatorChar + System.AppDomain.CurrentDomain.FriendlyName;

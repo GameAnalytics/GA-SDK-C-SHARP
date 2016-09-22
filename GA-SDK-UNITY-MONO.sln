@@ -25,6 +25,8 @@ Global
 		Release|Any CPU = Release|Any CPU
 		WebGLDebug|Any CPU = WebGLDebug|Any CPU
 		WebGLRelease|Any CPU = WebGLRelease|Any CPU
+		WSADebug|Any CPU = WSADebug|Any CPU
+		WSARelease|Any CPU = WSARelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E3A7E6A2-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

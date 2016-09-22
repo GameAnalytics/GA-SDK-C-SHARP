@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
 using System.Threading.Tasks;
 #elif !UNITY_WEBGL
@@ -60,7 +60,7 @@ namespace GameAnalyticsSDK.Net.Threading
 					}
 
 
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
                     Task.Delay(1000).Wait();
 #else
                     Thread.Sleep(ThreadWaitTimeInMs);
@@ -173,13 +173,13 @@ namespace GameAnalyticsSDK.Net.Threading
 			}
 		}
 
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
         private async static void StartThread()
 #else
         private static void StartThread()
 #endif
         {
-#if UNITY_WSA || WINDOWS_UWP
+#if WINDOWS_WSA || WINDOWS_UWP
             await ThreadPool.RunAsync(o => Run());
 #elif !UNITY_WEBGL
             Thread thread = new Thread(new ThreadStart(Run));
