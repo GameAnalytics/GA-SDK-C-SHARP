@@ -708,91 +708,98 @@ namespace GameAnalyticsSDK.Net.State
 
 		private static void EnsurePersistedStates()
 		{
-			// get and extract stored states
-			JSONClass state_dict = new JSONClass();
-			JSONArray results_ga_state = GAStore.ExecuteQuerySync("SELECT * FROM ga_state;");
+            if(GAStore.InMemory)
+            {
 
-			if (results_ga_state != null && results_ga_state.Count != 0)
-			{
-				for (int i = 0; i < results_ga_state.Count; ++i)
-				{
-					JSONNode result = results_ga_state[i];
-					state_dict.Add(result["key"], result["value"]);
-				}
-			}
+            }
+            else
+            {
+                // get and extract stored states
+                JSONClass state_dict = new JSONClass();
+                JSONArray results_ga_state = GAStore.ExecuteQuerySync("SELECT * FROM ga_state;");
 
-			// insert into GAState instance
-			GAState instance = GAState.Instance;
+                if (results_ga_state != null && results_ga_state.Count != 0)
+                {
+                    for (int i = 0; i < results_ga_state.Count; ++i)
+                    {
+                        JSONNode result = results_ga_state[i];
+                        state_dict.Add(result["key"], result["value"]);
+                    }
+                }
 
-			instance.DefaultUserId = state_dict["default_user_id"] != null ? state_dict["default_user_id"].AsString : Guid.NewGuid().ToString();
+                // insert into GAState instance
+                GAState instance = GAState.Instance;
 
-			SessionNum = state_dict["session_num"] != null ? state_dict["session_num"].AsDouble : 0.0;
+                instance.DefaultUserId = state_dict["default_user_id"] != null ? state_dict["default_user_id"].AsString : Guid.NewGuid().ToString();
 
-			TransactionNum = state_dict["transaction_num"] != null ? state_dict["transaction_num"].AsDouble : 0.0;
+                SessionNum = state_dict["session_num"] != null ? state_dict["session_num"].AsDouble : 0.0;
 
-			// restore cross session user values
-			instance.FacebookId = state_dict["facebook_id"] != null ? state_dict["facebook_id"].AsString : "";
-			if (!string.IsNullOrEmpty(instance.FacebookId))
-			{
-				GALogger.D("facebookid found in DB: " + instance.FacebookId);
-			}
+                TransactionNum = state_dict["transaction_num"] != null ? state_dict["transaction_num"].AsDouble : 0.0;
 
-			instance.Gender = state_dict["gender"] != null ? state_dict["gender"].AsString : "";
-			if (!string.IsNullOrEmpty(instance.Gender))
-			{
-				GALogger.D("gender found in DB: " + instance.Gender);
-			}
+                // restore cross session user values
+                instance.FacebookId = state_dict["facebook_id"] != null ? state_dict["facebook_id"].AsString : "";
+                if (!string.IsNullOrEmpty(instance.FacebookId))
+                {
+                    GALogger.D("facebookid found in DB: " + instance.FacebookId);
+                }
 
-			instance.BirthYear = state_dict["birthYear"] != null ? state_dict["birthYear"].AsInt : 0;
-			if (instance.BirthYear != 0)
-			{
-				GALogger.D("birthYear found in DB: " + instance.BirthYear);
-			}
+                instance.Gender = state_dict["gender"] != null ? state_dict["gender"].AsString : "";
+                if (!string.IsNullOrEmpty(instance.Gender))
+                {
+                    GALogger.D("gender found in DB: " + instance.Gender);
+                }
 
-			// restore dimension settings
-			CurrentCustomDimension01 = state_dict["dimension01"] != null ? state_dict["dimension01"].AsString : "";
-			if (!string.IsNullOrEmpty(CurrentCustomDimension01))
-			{
-				GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
-			}
+                instance.BirthYear = state_dict["birthYear"] != null ? state_dict["birthYear"].AsInt : 0;
+                if (instance.BirthYear != 0)
+                {
+                    GALogger.D("birthYear found in DB: " + instance.BirthYear);
+                }
 
-			CurrentCustomDimension02 = state_dict["dimension02"] != null ? state_dict["dimension02"].AsString : "";
-			if (!string.IsNullOrEmpty(CurrentCustomDimension02))
-			{
-				GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
-			}
+                // restore dimension settings
+                CurrentCustomDimension01 = state_dict["dimension01"] != null ? state_dict["dimension01"].AsString : "";
+                if (!string.IsNullOrEmpty(CurrentCustomDimension01))
+                {
+                    GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
+                }
 
-			CurrentCustomDimension03 = state_dict["dimension03"] != null ? state_dict["dimension03"].AsString : "";
-			if (!string.IsNullOrEmpty(CurrentCustomDimension03))
-			{
-				GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
-			}
+                CurrentCustomDimension02 = state_dict["dimension02"] != null ? state_dict["dimension02"].AsString : "";
+                if (!string.IsNullOrEmpty(CurrentCustomDimension02))
+                {
+                    GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
+                }
 
-			// get cached init call values
-			string sdkConfigCachedString = state_dict["sdk_config_cached"] != null ? state_dict["sdk_config_cached"].AsString : "";
-			if (!string.IsNullOrEmpty(sdkConfigCachedString))
-			{
-				// decode JSON
-				JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
-				if (sdkConfigCached != null && sdkConfigCached.Count != 0)
-				{
-					instance.SdkConfigCached = sdkConfigCached;
-				}
-			}
+                CurrentCustomDimension03 = state_dict["dimension03"] != null ? state_dict["dimension03"].AsString : "";
+                if (!string.IsNullOrEmpty(CurrentCustomDimension03))
+                {
+                    GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
+                }
 
-			JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
+                // get cached init call values
+                string sdkConfigCachedString = state_dict["sdk_config_cached"] != null ? state_dict["sdk_config_cached"].AsString : "";
+                if (!string.IsNullOrEmpty(sdkConfigCachedString))
+                {
+                    // decode JSON
+                    JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+                    if (sdkConfigCached != null && sdkConfigCached.Count != 0)
+                    {
+                        instance.SdkConfigCached = sdkConfigCached;
+                    }
+                }
 
-			if (results_ga_progression != null && results_ga_progression.Count != 0)
-			{
-				for (int i = 0; i < results_ga_progression.Count; ++i)
-				{
-					JSONNode result = results_ga_progression[i];
-					if(result != null && result.Count != 0)
-					{
-						instance.progressionTries[result["progression"].AsString] = result["tries"].AsInt;
-					}
-				}
-			}
+                JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
+
+                if (results_ga_progression != null && results_ga_progression.Count != 0)
+                {
+                    for (int i = 0; i < results_ga_progression.Count; ++i)
+                    {
+                        JSONNode result = results_ga_progression[i];
+                        if (result != null && result.Count != 0)
+                        {
+                            instance.progressionTries[result["progression"].AsString] = result["tries"].AsInt;
+                        }
+                    }
+                }
+            }
 		}
 
 #if WINDOWS_UWP || WINDOWS_WSA
