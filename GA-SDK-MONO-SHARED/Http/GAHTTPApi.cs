@@ -13,7 +13,7 @@ using GameAnalyticsSDK.Net.State;
 using GameAnalyticsSDK.Net.Validators;
 using System.Collections.Generic;
 using GameAnalyticsSDK.Net.Tasks;
-#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA && !UNITY_TIZEN
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 #endif
@@ -66,7 +66,7 @@ namespace GameAnalyticsSDK.Net.Http
 #endif
         }
 
-#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA && !UNITY_TIZEN
         private bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             bool isOk = true;
@@ -95,7 +95,7 @@ namespace GameAnalyticsSDK.Net.Http
 
         #region Public methods
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 
 		public void RequestInit()
 		{
@@ -506,7 +506,7 @@ namespace GameAnalyticsSDK.Net.Http
 			}
 		}
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 
 		private static IEnumerator RequestCoroutine(UnityEngine.WWW www, string [] args, Action<UnityEngine.WWW, string[]> callback)
 		{

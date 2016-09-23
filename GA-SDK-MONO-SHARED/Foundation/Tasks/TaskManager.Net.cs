@@ -1,4 +1,4 @@
-# if !WINDOWS_WSA && !UNITY_WEBGL && !WINDOWS_UWP
+# if !WINDOWS_WSA && !UNITY_WEBGL && !WINDOWS_UWP && !UNITY_TIZEN
 using System.Threading;
 
 namespace Foundation.Tasks

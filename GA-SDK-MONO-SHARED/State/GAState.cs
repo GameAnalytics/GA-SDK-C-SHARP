@@ -884,7 +884,7 @@ namespace GameAnalyticsSDK.Net.State
 			// make sure the current custom dimensions are valid
 			ValidateAndFixCurrentDimensions();
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 			GAHTTPApi.Instance.RequestInit();
 #else
             // call the init call
