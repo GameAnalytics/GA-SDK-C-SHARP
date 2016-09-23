@@ -436,7 +436,7 @@ namespace GameAnalyticsSDK.Net.Events
 					}
 				}
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 				GAHTTPApi.Instance.SendEventsInArray(payloadArray, putbackSql, deleteSql);
 #else
                 // send events

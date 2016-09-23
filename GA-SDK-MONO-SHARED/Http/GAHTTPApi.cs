@@ -1,5 +1,5 @@
 ﻿using System;
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
 using System.Net;
 using System.IO;
 #else
@@ -61,7 +61,7 @@ namespace GameAnalyticsSDK.Net.Http
 			this.eventsUrlPath = "events";
 
 			this.useGzip = true;
-#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA
+#if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA && !UNITY_TIZEN
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
 #endif
         }

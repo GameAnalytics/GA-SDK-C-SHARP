@@ -57,7 +57,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
+    <AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SamsungTVDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -67,7 +67,26 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
+    <AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TizenRelease|AnyCPU'">
+    <OutputPath>bin\Release\Unity5\</OutputPath>
+    <DefineConstants>UNITY_TIZEN; UNITY_5; UNITY;</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<AssemblyName>GameAnalytics.Tizen</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TizenDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\Unity5\</OutputPath>
+    <DefineConstants>DEBUG;UNITY_TIZEN; UNITY_5; UNITY;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<AssemblyName>GameAnalytics.Tizen</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
