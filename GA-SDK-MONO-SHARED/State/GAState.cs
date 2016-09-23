@@ -118,8 +118,8 @@ namespace GameAnalyticsSDK.Net.State
 		public static string[] AvailableCustomDimensions01
 		{
 			get { return Instance._availableCustomDimensions01; }
-			set 
-			{ 
+			set
+			{
 				// Validate
 				if (!GAValidator.ValidateCustomDimensions(value))
 				{
@@ -138,8 +138,8 @@ namespace GameAnalyticsSDK.Net.State
 		public static string[] AvailableCustomDimensions02
 		{
 			get { return Instance._availableCustomDimensions02; }
-			set 
-			{ 
+			set
+			{
 				// Validate
 				if (!GAValidator.ValidateCustomDimensions(value))
 				{
@@ -158,8 +158,8 @@ namespace GameAnalyticsSDK.Net.State
 		public static string[] AvailableCustomDimensions03
 		{
 			get { return Instance._availableCustomDimensions03; }
-			set 
-			{ 
+			set
+			{
 				// Validate
 				if (!GAValidator.ValidateCustomDimensions(value))
 				{
@@ -178,8 +178,8 @@ namespace GameAnalyticsSDK.Net.State
 		public static string[] AvailableResourceCurrencies
 		{
 			get { return Instance._availableResourceCurrencies; }
-			set 
-			{ 
+			set
+			{
 				// Validate
 				if (!GAValidator.ValidateResourceCurrencies(value))
 				{
@@ -195,8 +195,8 @@ namespace GameAnalyticsSDK.Net.State
 		public static string[] AvailableResourceItemTypes
 		{
 			get { return Instance._availableResourceItemTypes; }
-			set 
-			{ 
+			set
+			{
 				// Validate
 				if (!GAValidator.ValidateResourceItemTypes(value))
 				{
@@ -221,7 +221,7 @@ namespace GameAnalyticsSDK.Net.State
 			get { return Instance._useManualSessionHandling; }
 			private set { Instance._useManualSessionHandling = value; }
 		}
-			
+
 		private string FacebookId
 		{
 			get;
@@ -262,13 +262,13 @@ namespace GameAnalyticsSDK.Net.State
 		private string DefaultUserId
 		{
 			get { return Instance._defaultUserId; }
-			set 
-			{ 
+			set
+			{
 				Instance._defaultUserId = value == null ? "" : value;
 				CacheIdentifier();
 			}
 		}
-			
+
 		private static JSONNode SdkConfig
 		{
 			get
@@ -308,6 +308,18 @@ namespace GameAnalyticsSDK.Net.State
 		private JSONNode sdkConfig = new JSONClass();
 		private JSONNode sdkConfigCached = new JSONClass();
 
+		public const string InMemoryPrefix = "in_memory_";
+		private const string DefaultUserIdKey = "default_user_id";
+		public const string SessionNumKey = "session_num";
+		public const string TransactionNumKey = "transaction_num";
+		private const string FacebookIdKey = "facebook_id";
+		private const string GenderKey = "gender";
+		private const string BirthYearKey = "birth_year";
+		private const string Dimension01Key = "dimension01";
+		private const string Dimension02Key = "dimension02";
+		private const string Dimension03Key = "dimension03";
+		private const string SdkConfigCachedKey = "sdk_config_cached";
+
 		#endregion // Fields and properties
 
 		private GAState()
@@ -345,42 +357,42 @@ namespace GameAnalyticsSDK.Net.State
 		public static void SetCustomDimension01(string dimension)
 		{
 			CurrentCustomDimension01 = dimension;
-			GAStore.SetState("dimension01", dimension);
+			GAStore.SetState(Dimension01Key, dimension);
 			GALogger.I("Set custom01 dimension value: " + dimension);
 		}
 
 		public static void SetCustomDimension02(string dimension)
 		{
 			CurrentCustomDimension02 = dimension;
-			GAStore.SetState("dimension02", dimension);
+			GAStore.SetState(Dimension02Key, dimension);
 			GALogger.I("Set custom02 dimension value: " + dimension);
 		}
 
 		public static void SetCustomDimension03(string dimension)
 		{
 			CurrentCustomDimension03 = dimension;
-			GAStore.SetState("dimension03", dimension);
+			GAStore.SetState(Dimension03Key, dimension);
 			GALogger.I("Set custom03 dimension value: " + dimension);
 		}
 
 		public static void SetFacebookId(string facebookId)
 		{
 			Instance.FacebookId = facebookId;
-			GAStore.SetState("facebook_id", facebookId);
+			GAStore.SetState(FacebookIdKey, facebookId);
 			GALogger.I("Set facebook id: " + facebookId);
 		}
 
 		public static void SetGender(EGAGender gender)
 		{
 			Instance.Gender = gender.ToString().ToLowerInvariant();
-			GAStore.SetState("gender", Instance.Gender);
+			GAStore.SetState(GenderKey, Instance.Gender);
 			GALogger.I("Set gender: " + gender);
 		}
 
 		public static void SetBirthYear(int birthYear)
 		{
 			Instance.BirthYear = birthYear;
-			GAStore.SetState("birth_year", birthYear.ToString());
+			GAStore.SetState(BirthYearKey, birthYear.ToString());
 			GALogger.I("Set birth year: " + birthYear);
 		}
 
@@ -396,17 +408,26 @@ namespace GameAnalyticsSDK.Net.State
 			TransactionNum = transactionNumInt;
 		}
 
+#pragma warning disable 0162
 		public static void IncrementProgressionTries(string progression)
 		{
 			int tries = GetProgressionTries(progression) + 1;
 			Instance.progressionTries[progression] = tries;
 
-			// Persist
-			Dictionary<string, object> parms = new Dictionary<string, object>();
-			parms.Add("$progression", progression);
-			parms.Add("$tries", tries);
-			GAStore.ExecuteQuerySync("INSERT OR REPLACE INTO ga_progression (progression, tries) VALUES($progression, $tries);", parms);
+			if(GAStore.InMemory)
+			{
+				GALogger.D("Trying to IncrementProgressionTries with InMemory=true - cannot. Skipping.");
+			}
+			else
+			{
+				// Persist
+				Dictionary<string, object> parms = new Dictionary<string, object>();
+				parms.Add("$progression", progression);
+				parms.Add("$tries", tries);
+				GAStore.ExecuteQuerySync("INSERT OR REPLACE INTO ga_progression (progression, tries) VALUES($progression, $tries);", parms);
+			}
 		}
+#pragma warning restore 0162
 
 		public static int GetProgressionTries(string progression)
 		{
@@ -420,19 +441,28 @@ namespace GameAnalyticsSDK.Net.State
 			}
 		}
 
+#pragma warning disable 0162
 		public static void ClearProgressionTries(string progression)
 		{
 			Dictionary<string, int> progressionTries = Instance.progressionTries;
-			if (progressionTries.ContainsKey(progression))
+			if(progressionTries.ContainsKey(progression))
 			{
 				progressionTries.Remove(progression);
 			}
 
-			// Delete
-			Dictionary<string, object> parms = new Dictionary<string, object>();
-			parms.Add("$progression", progression);
-			GAStore.ExecuteQuerySync("DELETE FROM ga_progression WHERE progression = $progression;", parms);
+			if(GAStore.InMemory)
+			{
+				GALogger.D("Trying to ClearProgressionTries with InMemory=true - cannot. Skipping.");
+			}
+			else
+			{
+				// Delete
+				Dictionary<string, object> parms = new Dictionary<string, object>();
+				parms.Add("$progression", progression);
+				GAStore.ExecuteQuerySync("DELETE FROM ga_progression WHERE progression = $progression;", parms);
+			}
 		}
+#pragma warning restore 0162
 
 		public static bool HasAvailableCustomDimensions01(string dimension1)
 		{
@@ -482,9 +512,9 @@ namespace GameAnalyticsSDK.Net.State
 			{
 				return;
 			}
-				
+
 			EnsurePersistedStates();
-			GAStore.SetState("default_user_id", Instance.DefaultUserId);
+			GAStore.SetState(DefaultUserIdKey, Instance.DefaultUserId);
 
 			Initialized = true;
 
@@ -563,7 +593,7 @@ namespace GameAnalyticsSDK.Net.State
 			// Session identifier
 			annotations["session_id"] = SessionId;
 			// Session number
-			annotations.Add("session_num", new JSONData(SessionNum));
+			annotations.Add(SessionNumKey, new JSONData(SessionNum));
 
 			// type of connection the user is currently on (add if valid)
 			string connection_type = GADevice.ConnectionType;
@@ -590,17 +620,17 @@ namespace GameAnalyticsSDK.Net.State
 			// facebook id (optional)
 			if (!string.IsNullOrEmpty(Instance.FacebookId))
 			{
-				annotations["facebook_id"] = Instance.FacebookId;
+				annotations[FacebookIdKey] = Instance.FacebookId;
 			}
 			// gender (optional)
 			if (!string.IsNullOrEmpty(Instance.Gender))
 			{
-				annotations["gender"] = Instance.Gender;
+				annotations[GenderKey] = Instance.Gender;
 			}
 			// birth_year (optional)
 			if (Instance.BirthYear != 0)
 			{
-				annotations.Add("birth_year", new JSONData(Instance.BirthYear));
+				annotations.Add(BirthYearKey, new JSONData(Instance.BirthYear));
 			}
 
 			return annotations;
@@ -706,11 +736,51 @@ namespace GameAnalyticsSDK.Net.State
 			GALogger.D("identifier, {clean:" + GAState.Identifier + "}");
 		}
 
+#pragma warning disable 0162
 		private static void EnsurePersistedStates()
 		{
-            if(GAStore.InMemory)
-            {
+			if(GAStore.InMemory)
+			{
+#if UNITY
+				GALogger.D("retrieving persisted states from local PlayerPrefs");
 
+				GAState instance = GAState.Instance;
+
+				instance.DefaultUserId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SessionNumKey, Guid.NewGuid().ToString());
+				{
+					double tmp;
+					double.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SessionNumKey, "0"), out tmp);
+					SessionNum = tmp;
+				}
+				{
+					double tmp;
+					double.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + TransactionNumKey, "0"), out tmp);
+					TransactionNum = tmp;
+				}
+				instance.FacebookId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + FacebookIdKey, "");
+				instance.Gender = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + GenderKey, "");
+				{
+					int tmp;
+					int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + BirthYearKey, "0"), out tmp);
+					instance.BirthYear = tmp;
+				}
+				CurrentCustomDimension01 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension01Key, "");
+				CurrentCustomDimension02 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension02Key, "");
+				CurrentCustomDimension03 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension03Key, "");
+
+				string sdkConfigCachedString = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SdkConfigCachedKey, "");
+				if(!string.IsNullOrEmpty(sdkConfigCachedString))
+				{
+					// decode JSON
+					JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+					if(sdkConfigCached != null && sdkConfigCached.Count != 0)
+					{
+						instance.SdkConfigCached = sdkConfigCached;
+					}
+				}
+#else
+				GALogger.W("EnsurePersistedStates: No implementation yet for InMemory=true");
+#endif
             }
             else
             {
@@ -730,52 +800,52 @@ namespace GameAnalyticsSDK.Net.State
                 // insert into GAState instance
                 GAState instance = GAState.Instance;
 
-                instance.DefaultUserId = state_dict["default_user_id"] != null ? state_dict["default_user_id"].AsString : Guid.NewGuid().ToString();
+                instance.DefaultUserId = state_dict[DefaultUserIdKey] != null ? state_dict[DefaultUserIdKey].AsString : Guid.NewGuid().ToString();
 
-                SessionNum = state_dict["session_num"] != null ? state_dict["session_num"].AsDouble : 0.0;
+                SessionNum = state_dict[SessionNumKey] != null ? state_dict[SessionNumKey].AsDouble : 0.0;
 
-                TransactionNum = state_dict["transaction_num"] != null ? state_dict["transaction_num"].AsDouble : 0.0;
+				TransactionNum = state_dict[TransactionNumKey] != null ? state_dict[TransactionNumKey].AsDouble : 0.0;
 
                 // restore cross session user values
-                instance.FacebookId = state_dict["facebook_id"] != null ? state_dict["facebook_id"].AsString : "";
+                instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].AsString : "";
                 if (!string.IsNullOrEmpty(instance.FacebookId))
                 {
                     GALogger.D("facebookid found in DB: " + instance.FacebookId);
                 }
 
-                instance.Gender = state_dict["gender"] != null ? state_dict["gender"].AsString : "";
+                instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].AsString : "";
                 if (!string.IsNullOrEmpty(instance.Gender))
                 {
                     GALogger.D("gender found in DB: " + instance.Gender);
                 }
 
-                instance.BirthYear = state_dict["birthYear"] != null ? state_dict["birthYear"].AsInt : 0;
+                instance.BirthYear = state_dict[BirthYearKey] != null ? state_dict[BirthYearKey].AsInt : 0;
                 if (instance.BirthYear != 0)
                 {
                     GALogger.D("birthYear found in DB: " + instance.BirthYear);
                 }
 
                 // restore dimension settings
-                CurrentCustomDimension01 = state_dict["dimension01"] != null ? state_dict["dimension01"].AsString : "";
+                CurrentCustomDimension01 = state_dict[Dimension01Key] != null ? state_dict[Dimension01Key].AsString : "";
                 if (!string.IsNullOrEmpty(CurrentCustomDimension01))
                 {
                     GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
                 }
 
-                CurrentCustomDimension02 = state_dict["dimension02"] != null ? state_dict["dimension02"].AsString : "";
+                CurrentCustomDimension02 = state_dict[Dimension02Key] != null ? state_dict[Dimension02Key].AsString : "";
                 if (!string.IsNullOrEmpty(CurrentCustomDimension02))
                 {
                     GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
                 }
 
-                CurrentCustomDimension03 = state_dict["dimension03"] != null ? state_dict["dimension03"].AsString : "";
+                CurrentCustomDimension03 = state_dict[Dimension03Key] != null ? state_dict[Dimension03Key].AsString : "";
                 if (!string.IsNullOrEmpty(CurrentCustomDimension03))
                 {
                     GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
                 }
 
                 // get cached init call values
-                string sdkConfigCachedString = state_dict["sdk_config_cached"] != null ? state_dict["sdk_config_cached"].AsString : "";
+                string sdkConfigCachedString = state_dict[SdkConfigCachedKey] != null ? state_dict[SdkConfigCachedKey].AsString : "";
                 if (!string.IsNullOrEmpty(sdkConfigCachedString))
                 {
                     // decode JSON
@@ -801,6 +871,7 @@ namespace GameAnalyticsSDK.Net.State
                 }
             }
 		}
+#pragma warning restore 0162
 
 #if WINDOWS_UWP || WINDOWS_WSA
         private async static System.Threading.Tasks.Task StartNewSession()
@@ -842,7 +913,7 @@ namespace GameAnalyticsSDK.Net.State
 				initResponseDict.Add("time_offset", new JSONData(timeOffsetSeconds));
 
 				// insert new config in sql lite cross session storage
-				GAStore.SetState("sdk_config_cached", initResponseDict.SaveToBase64());
+				GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBase64());
 
 				// set new config and cache in memory
 				Instance.sdkConfigCached = initResponseDict;
@@ -956,4 +1027,3 @@ namespace GameAnalyticsSDK.Net.State
 		#endregion // Private methods
 	}
 }
-

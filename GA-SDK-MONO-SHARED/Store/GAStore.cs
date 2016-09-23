@@ -36,14 +36,12 @@ namespace GameAnalyticsSDK.Net.Store
 		[DllImport("__Internal")]
 		private static extern void SyncFiles();
 
-        [DllImport("__Internal")]
-		private static extern long sqlite3_memory_used();
 #elif UNITY_SAMSUNGTV
         [DllImport("__Internal")]
         private static extern long sqlite3_memory_used();
 #endif
 
-#if UNITY_SAMSUNGTV || UNITY_WEBGL
+#if UNITY_SAMSUNGTV
         public const bool InMemory = true;
         private const long MaxDbSizeBytes = 2097152;
         private const long MaxDbSizeBytesBeforeTrim = 2621440;
@@ -232,7 +230,9 @@ namespace GameAnalyticsSDK.Net.Store
 			if(string.IsNullOrEmpty(Instance.dbPath))
 			{
 				// initialize db path
+#pragma warning disable 0429
 				Instance.dbPath = InMemory ? ":memory:" : Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#pragma warning restore 0429
 				GALogger.D("Database path set to: " + Instance.dbPath);
 			}
 
@@ -372,10 +372,12 @@ namespace GameAnalyticsSDK.Net.Store
                 if (InMemory)
                 {
 #if UNITY
-                    if(UnityEngine.PlayerPrefs.HasKey(key))
+					if(UnityEngine.PlayerPrefs.HasKey(State.GAState.InMemoryPrefix + key))
                     {
-                        UnityEngine.PlayerPrefs.DeleteKey(key);
+                        UnityEngine.PlayerPrefs.DeleteKey(State.GAState.InMemoryPrefix + key);
                     }
+#else
+					GALogger.W("SetState: No implementation yet for InMemory=true");
 #endif
                 }
                 else
@@ -390,7 +392,9 @@ namespace GameAnalyticsSDK.Net.Store
                 if (InMemory)
                 {
 #if UNITY
-                    UnityEngine.PlayerPrefs.SetString(key, value);
+                    UnityEngine.PlayerPrefs.SetString(State.GAState.InMemoryPrefix + key, value);
+#else
+					GALogger.W("SetState: No implementation yet for InMemory=true");
 #endif
                 }
                 else
@@ -415,7 +419,7 @@ namespace GameAnalyticsSDK.Net.Store
                 BasicProperties properties = propertiesTask.GetAwaiter().GetResult();
 
                 return (long)properties.Size;
-#elif UNITY_SAMSUNGTV || UNITY_WEBGL
+#elif UNITY_SAMSUNGTV
                 long result = 0;
                 try
                 {
@@ -423,6 +427,7 @@ namespace GameAnalyticsSDK.Net.Store
                 }
                 catch(Exception)
                 {
+					GALogger.W("DbSizeBytes: sqlite3_memory_used failed using DbSizeBytes=0");
                 }
 
                 return result;

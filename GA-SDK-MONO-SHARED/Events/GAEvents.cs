@@ -7,6 +7,7 @@ using GameAnalyticsSDK.Net.Utilities;
 using GameAnalyticsSDK.Net.Http;
 using GameAnalyticsSDK.Net.State;
 using GameAnalyticsSDK.Net.Validators;
+using System.Globalization;
 
 namespace GameAnalyticsSDK.Net.Events
 {
@@ -69,10 +70,7 @@ namespace GameAnalyticsSDK.Net.Events
 
 			// Increment session number  and persist
 			GAState.IncrementSessionNum();
-			Dictionary<string, object> parameters = new Dictionary<string, object>();
-			parameters.Add("$key", "session_num");
-			parameters.Add("$value", GAState.SessionNum);
-			GAStore.ExecuteQuerySync("INSERT OR REPLACE INTO ga_state (key, value) VALUES($key, $value);", parameters);
+			GAStore.SetState(GAState.SessionNumKey, GAState.SessionNum.ToString(CultureInfo.InvariantCulture));
 
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
@@ -144,17 +142,14 @@ namespace GameAnalyticsSDK.Net.Events
 
 			// Increment transaction number and persist
 			GAState.IncrementTransactionNum();
-			Dictionary<string, object> args = new Dictionary<string, object>();
-			args.Add("$key", "transaction_num");
-			args.Add("$value", GAState.TransactionNum);
-			GAStore.ExecuteQuerySync("INSERT OR REPLACE INTO ga_state (key, value) VALUES($key, $value);", args);
+			GAStore.SetState(GAState.TransactionNumKey, GAState.TransactionNum.ToString(CultureInfo.InvariantCulture));
 
 			// Required
 			eventDict["event_id"] = itemType + ":" + itemId;
 			eventDict["category"] = CategoryBusiness;
 			eventDict["currency"] = currency;
 			eventDict.Add("amount", new JSONData(amount));
-			eventDict.Add("transaction_num", new JSONData(GAState.TransactionNum));
+			eventDict.Add(GAState.TransactionNumKey, new JSONData(GAState.TransactionNum));
 
 			// Optional
 			if (!string.IsNullOrEmpty(cartType))
