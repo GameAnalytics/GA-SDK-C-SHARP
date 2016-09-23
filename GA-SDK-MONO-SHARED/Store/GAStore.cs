@@ -371,10 +371,12 @@ namespace GameAnalyticsSDK.Net.Store
 
                 if (InMemory)
                 {
+#if UNITY
                     if(UnityEngine.PlayerPrefs.HasKey(key))
                     {
                         UnityEngine.PlayerPrefs.DeleteKey(key);
                     }
+#endif
                 }
                 else
                 {
@@ -387,7 +389,9 @@ namespace GameAnalyticsSDK.Net.Store
 			{
                 if (InMemory)
                 {
+#if UNITY
                     UnityEngine.PlayerPrefs.SetString(key, value);
+#endif
                 }
                 else
                 {
