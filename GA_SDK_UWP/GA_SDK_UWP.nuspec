@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.2">
         <id>GameAnalytics.UWP.SDK</id>
-        <version>1.0.13</version>
+        <version>1.0.15</version>
         <title>GameAnalytics UWP SDK</title>
         <authors>GameAnalytics</authors>
         <owners>GameAnalytics</owners>
@@ -14,7 +14,6 @@
         <tags>gameanalytics</tags>
         <dependencies>
             <group targetFramework="uap10.0">
-                <dependency id="Microsoft.Data.Sqlite" version="1.0.0" />
 				<dependency id="MetroLog" version="1.0.1" />
 				<dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.2.2" />
             </group>

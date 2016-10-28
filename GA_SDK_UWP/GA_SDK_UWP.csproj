@@ -111,6 +111,9 @@
     <EmbeddedResource Include="Properties\GA_SDK_UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <SDKReference Include="SQLite.UWP.2015, Version=3.14.2">
+      <Name>SQLite for Universal Windows Platform</Name>
+    </SDKReference>
     <SDKReference Include="WindowsDesktop, Version=10.0.10586.0">
       <Name>Windows Desktop Extensions for the UWP</Name>
     </SDKReference>

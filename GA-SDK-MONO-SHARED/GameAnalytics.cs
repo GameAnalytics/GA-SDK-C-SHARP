@@ -6,7 +6,7 @@ using GameAnalyticsSDK.Net.Validators;
 using GameAnalyticsSDK.Net.Device;
 using GameAnalyticsSDK.Net.Events;
 using GameAnalyticsSDK.Net.Store;
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 using System.Collections.Generic;
 using System.Collections;
 #elif WINDOWS_UWP
@@ -35,7 +35,7 @@ namespace GameAnalyticsSDK.Net
         }
 #endif
 
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
 
 		private static Queue<IEnumerator> _requestCoroutineQueue = new Queue<IEnumerator>();
 
@@ -541,7 +541,7 @@ namespace GameAnalyticsSDK.Net
 		public static void OnStop()
 		{
 			GALogger.D("OnStop() called");
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
 			GAThreading.PerformTaskOnGAThread("onStop", () =>
 			{
 				GAState.EndSessionAndStopQueue();
@@ -554,7 +554,7 @@ namespace GameAnalyticsSDK.Net
 		public static void OnResume()
 		{
 			GALogger.D("OnResume() called");
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
 			GAThreading.PerformTaskOnGAThread("onResume", () =>
 			{
 				GAState.ResumeSessionAndStartQueue();

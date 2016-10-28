@@ -7,7 +7,7 @@ using UnityEngine;
 #endif
 #if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
-#elif !UNITY_WEBGL
+#elif !UNITY_WEBGL && !UNITY_TIZEN
 using System.Threading;
 #endif
 
@@ -39,7 +39,7 @@ namespace Foundation.Tasks
     /// </summary>
     public enum TaskStrategy
     {
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
         /// <summary>
         /// Dispatches the task to a background thread
         /// </summary>
@@ -205,7 +205,7 @@ namespace Foundation.Tasks
         public AsyncTask(Action action)
         {
             _action = action;
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
             Strategy = TaskStrategy.MainThread;
 #else
             Strategy = TaskStrategy.BackgroundThread;
@@ -270,7 +270,7 @@ namespace Foundation.Tasks
 
 
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
 #if WINDOWS_WSA || WINDOWS_UWP
         protected async void RunOnBackgroundThread()
         {
@@ -295,7 +295,7 @@ namespace Foundation.Tasks
         protected void RunOnMainThread()
         {
             Status = TaskStatus.Pending;
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_TIZEN
             Execute();
 #else
             TaskManager.RunOnMainThread(Execute);
@@ -377,8 +377,8 @@ namespace Foundation.Tasks
                     RunAsCoroutine();
                     break;
 #endif
-#if UNITY_WEBGL
-                default:
+#if UNITY_WEBGL || UNITY_TIZEN
+				default:
                     RunOnCurrentThread();
                     break;
 #else

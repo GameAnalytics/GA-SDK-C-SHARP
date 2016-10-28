@@ -45,13 +45,11 @@
       <HintPath>..\packages\MetroLog.1.0.1\lib\portable-net45+wp8+win8+wpa81\MetroLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.Sqlite, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Sqlite.WinRT.1.0.0\lib\portable-win81+wpa81\Microsoft.Data.Sqlite.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Data.Sqlite">
+      <HintPath>.\Microsoft.Data.Sqlite.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.Common, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Sqlite.WinRT.1.0.0\lib\portable-win81+wpa81\System.Data.Common.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Data.Common">
+      <HintPath>.\System.Data.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -17,7 +17,7 @@ using GameAnalyticsSDK.Net.Utilities;
 using GameAnalyticsSDK.Net.Logging;
 using GameAnalyticsSDK.Net.Device;
 using System.IO;
-#if UNITY_WEBGL
+#if UNITY_WEBGL || UNITY_SAMSUNGTV
 using System.Runtime.InteropServices;
 #endif
 #if WINDOWS_WSA
@@ -35,9 +35,21 @@ namespace GameAnalyticsSDK.Net.Store
 #if UNITY_WEBGL
 		[DllImport("__Internal")]
 		private static extern void SyncFiles();
+
+#elif UNITY_SAMSUNGTV
+        [DllImport("__Internal")]
+        private static extern long sqlite3_memory_used();
 #endif
+
+#if UNITY_SAMSUNGTV
+        public const bool InMemory = true;
+        private const long MaxDbSizeBytes = 2097152;
+        private const long MaxDbSizeBytesBeforeTrim = 2621440;
+#else
+        public const bool InMemory = false;
         private const long MaxDbSizeBytes = 6291456;
         private const long MaxDbSizeBytesBeforeTrim = 5242880;
+#endif
 
         private static readonly GAStore _instance = new GAStore();
 		private static GAStore Instance
@@ -218,7 +230,9 @@ namespace GameAnalyticsSDK.Net.Store
 			if(string.IsNullOrEmpty(Instance.dbPath))
 			{
 				// initialize db path
-				Instance.dbPath = Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#pragma warning disable 0429
+				Instance.dbPath = InMemory ? ":memory:" : Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#pragma warning restore 0429
 				GALogger.D("Database path set to: " + Instance.dbPath);
 			}
 
@@ -349,22 +363,50 @@ namespace GameAnalyticsSDK.Net.Store
 			return true;
 		}
 
-		public static void SetState(string key, string value)
+#pragma warning disable 0162
+        public static void SetState(string key, string value)
 		{
 			if (value == null)
 			{
-				Dictionary<string, object> parameterArray = new Dictionary<string, object>();
-				parameterArray.Add("$key", key);
-				ExecuteQuerySync("DELETE FROM ga_state WHERE key = $key;", parameterArray);
-			}
+
+                if (InMemory)
+                {
+#if UNITY
+					if(UnityEngine.PlayerPrefs.HasKey(State.GAState.InMemoryPrefix + key))
+                    {
+                        UnityEngine.PlayerPrefs.DeleteKey(State.GAState.InMemoryPrefix + key);
+                    }
+#else
+					GALogger.W("SetState: No implementation yet for InMemory=true");
+#endif
+                }
+                else
+                {
+                    Dictionary<string, object> parameterArray = new Dictionary<string, object>();
+                    parameterArray.Add("$key", key);
+                    ExecuteQuerySync("DELETE FROM ga_state WHERE key = $key;", parameterArray);
+                }
+            }
 			else
 			{
-                Dictionary<string, object> parameterArray = new Dictionary<string, object>();
-				parameterArray.Add("$key", key);
-				parameterArray.Add("$value", value);
-				ExecuteQuerySync("INSERT OR REPLACE INTO ga_state (key, value) VALUES($key, $value);", parameterArray, true);
+                if (InMemory)
+                {
+#if UNITY
+                    UnityEngine.PlayerPrefs.SetString(State.GAState.InMemoryPrefix + key, value);
+#else
+					GALogger.W("SetState: No implementation yet for InMemory=true");
+#endif
+                }
+                else
+                {
+                    Dictionary<string, object> parameterArray = new Dictionary<string, object>();
+                    parameterArray.Add("$key", key);
+                    parameterArray.Add("$value", value);
+                    ExecuteQuerySync("INSERT OR REPLACE INTO ga_state (key, value) VALUES($key, $value);", parameterArray, true);
+                }
 			}
 		}
+#pragma warning restore 0162
 
         public static long DbSizeBytes
         {
@@ -377,15 +419,27 @@ namespace GameAnalyticsSDK.Net.Store
                 BasicProperties properties = propertiesTask.GetAwaiter().GetResult();
 
                 return (long)properties.Size;
+#elif UNITY_SAMSUNGTV
+                long result = 0;
+                try
+                {
+                    result = sqlite3_memory_used();
+                }
+                catch(Exception)
+                {
+					GALogger.W("DbSizeBytes: sqlite3_memory_used failed using DbSizeBytes=0");
+                }
+
+                return result;
 #else
-                return new FileInfo(Instance.dbPath).Length;
+                return InMemory ? 0 : new FileInfo(Instance.dbPath).Length;
 #endif
             }
 		}
 
-        #endregion // Public methods
+#endregion // Public methods
 
-        #region Private methods
+#region Private methods
 
         private static void TrimEventTable()
         {

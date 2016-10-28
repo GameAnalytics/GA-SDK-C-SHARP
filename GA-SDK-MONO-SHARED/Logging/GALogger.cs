@@ -20,7 +20,9 @@ namespace GameAnalyticsSDK.Net.Logging
 		private static readonly GALogger _instance = new GALogger();
 		private bool infoLogEnabled;
 		private bool infoLogVerboseEnabled;
+#pragma warning disable 0649
 		private static bool debugEnabled;
+#pragma warning restore 0649
 		private const string Tag = "GameAnalytics";
 
 #if WINDOWS_UWP || WINDOWS_WSA

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 #if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
 using System.Threading.Tasks;
-#elif !UNITY_WEBGL
+#elif !UNITY_WEBGL && !UNITY_TIZEN
 using System.Threading;
 #else
 using System.Collections;
@@ -16,7 +16,7 @@ namespace GameAnalyticsSDK.Net.Threading
 	public class GAThreading
 	{
 		private static readonly GAThreading _instance = new GAThreading ();
-		#if !UNITY_WEBGL
+		#if !UNITY_WEBGL && !UNITY_TIZEN
 		private const int ThreadWaitTimeInMs = 1000;
 		#else
 		private const int ThreadWaitTimeInSec = 1;
@@ -40,7 +40,7 @@ namespace GameAnalyticsSDK.Net.Threading
 			}
 		}
 
-#if !UNITY_WEBGL
+#if !UNITY_WEBGL && !UNITY_TIZEN
 		public static void Run()
 		{
 			GALogger.D("Starting GA thread");
@@ -181,7 +181,7 @@ namespace GameAnalyticsSDK.Net.Threading
         {
 #if WINDOWS_WSA || WINDOWS_UWP
             await ThreadPool.RunAsync(o => Run());
-#elif !UNITY_WEBGL
+#elif !UNITY_WEBGL && !UNITY_TIZEN
             Thread thread = new Thread(new ThreadStart(Run));
 			thread.Priority = ThreadPriority.Lowest;
 			thread.Start ();
