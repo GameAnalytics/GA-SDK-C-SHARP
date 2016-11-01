@@ -338,7 +338,7 @@ namespace GameAnalyticsSDK.Net.Http
 				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
 				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
-#if WINDOWS_UWPP || WINDOWS_WSA
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
 #else
                 using(Stream dataStream = request.GetRequestStream())
@@ -347,7 +347,7 @@ namespace GameAnalyticsSDK.Net.Http
                     dataStream.Write(payloadData, 0, payloadData.Length);
                 }
 
-#if WINDOWS_UWPP || WINDOWS_WSA
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
 #else
                 using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)
