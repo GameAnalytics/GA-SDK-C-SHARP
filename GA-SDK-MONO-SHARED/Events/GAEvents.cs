@@ -239,7 +239,7 @@ namespace GameAnalyticsSDK.Net.Events
 			double attempt_num = 0;
 
 			// Add score if specified and status is not start
-			if (score > 0 && progressionStatus != EGAProgressionStatus.Start)
+			if (progressionStatus != EGAProgressionStatus.Start)
 			{
 				eventDict.Add("score", new JSONData(score));
 			}
@@ -290,11 +290,7 @@ namespace GameAnalyticsSDK.Net.Events
 			// Append event specifics
 			eventData["category"] = CategoryDesign;
 			eventData["event_id"] = eventId;
-
-			if (value > 0)
-			{
-				eventData.Add("value", new JSONData(value));
-			}
+			eventData.Add("value", new JSONData(value));
 
 			// Log
 			GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
