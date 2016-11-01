@@ -287,7 +287,7 @@ namespace GameAnalyticsSDK.Net
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01)
 		{
-			AddProgressionEvent(progressionStatus, progression01, "", "", 0.0);
+			AddProgressionEvent(progressionStatus, progression01, "", "");
 		}
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score)
@@ -297,7 +297,7 @@ namespace GameAnalyticsSDK.Net
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02)
 		{
-			AddProgressionEvent(progressionStatus, progression01, progression02, "", 0.0);
+			AddProgressionEvent(progressionStatus, progression01, progression02, "");
 		}
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score)
@@ -307,7 +307,19 @@ namespace GameAnalyticsSDK.Net
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03)
 		{
-			AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0.0);
+			GADevice.UpdateConnectionType();
+
+			GAThreading.PerformTaskOnGAThread("addProgressionEvent", () =>
+			{
+				if(!IsSdkReady(true, true, "Could not add progression event"))
+				{
+					return;
+				}
+
+				// Send to events
+				// TODO(nikolaj): check if this cast from int to double is OK
+				GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0, false);
+			});
 		}
 
 		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score)
@@ -323,13 +335,22 @@ namespace GameAnalyticsSDK.Net
 
 				// Send to events
 				// TODO(nikolaj): check if this cast from int to double is OK
-				GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score);
+				GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score, true);
 			});
 		}
 
 		public static void AddDesignEvent(string eventId)
 		{
-			AddDesignEvent(eventId, 0.0);
+			GADevice.UpdateConnectionType();
+
+			GAThreading.PerformTaskOnGAThread("addDesignEvent", () =>
+			{
+				if(!IsSdkReady(true, true, "Could not add design event"))
+				{
+					return;
+				}
+				GAEvents.AddDesignEvent(eventId, 0, false);
+			});
 		}
 
 		public static void AddDesignEvent(string eventId, double value)
@@ -342,7 +363,7 @@ namespace GameAnalyticsSDK.Net
 				{
 					return;
 				}
-				GAEvents.AddDesignEvent(eventId, value);
+				GAEvents.AddDesignEvent(eventId, value, true);
 			});
 		}
 

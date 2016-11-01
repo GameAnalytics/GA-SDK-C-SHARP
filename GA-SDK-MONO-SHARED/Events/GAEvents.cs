@@ -201,7 +201,7 @@ namespace GameAnalyticsSDK.Net.Events
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score)
+		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore)
 		{
 			string progressionStatusString = ProgressionStatusToString(progressionStatus);
 
@@ -239,7 +239,7 @@ namespace GameAnalyticsSDK.Net.Events
 			double attempt_num = 0;
 
 			// Add score if specified and status is not start
-			if (progressionStatus != EGAProgressionStatus.Start)
+			if (sendScore && progressionStatus != EGAProgressionStatus.Start)
 			{
 				eventDict.Add("score", new JSONData(score));
 			}
@@ -275,7 +275,7 @@ namespace GameAnalyticsSDK.Net.Events
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddDesignEvent(string eventId, double value)
+		public static void AddDesignEvent(string eventId, double value, bool sendValue)
 		{
 			// Validate
 			if (!GAValidator.ValidateDesignEvent(eventId, value))
@@ -290,7 +290,11 @@ namespace GameAnalyticsSDK.Net.Events
 			// Append event specifics
 			eventData["category"] = CategoryDesign;
 			eventData["event_id"] = eventId;
-			eventData.Add("value", new JSONData(value));
+
+			if(sendValue)
+			{
+				eventData.Add("value", new JSONData(value));
+			}
 
 			// Log
 			GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
