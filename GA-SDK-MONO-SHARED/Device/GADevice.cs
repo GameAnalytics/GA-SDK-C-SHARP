@@ -67,7 +67,7 @@ namespace GameAnalyticsSDK.Net.Device
 		public static string ConnectionType
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public static string RelevantSdkVersion

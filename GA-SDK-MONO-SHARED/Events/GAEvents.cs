@@ -87,11 +87,6 @@ namespace GameAnalyticsSDK.Net.Events
 
 		public static void AddSessionEndEvent()
 		{
-			AddSessionEndEvent(0);
-		}
-
-		public static void AddSessionEndEvent(long timeAdjustment)
-		{
 			long session_start_ts = GAState.SessionStart;
 			long client_ts_adjusted = GAState.GetClientTsAdjusted();
 			long sessionLength = client_ts_adjusted - session_start_ts;
