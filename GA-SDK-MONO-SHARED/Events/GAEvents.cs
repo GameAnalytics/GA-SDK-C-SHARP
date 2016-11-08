@@ -87,11 +87,6 @@ namespace GameAnalyticsSDK.Net.Events
 
 		public static void AddSessionEndEvent()
 		{
-			AddSessionEndEvent(0);
-		}
-
-		public static void AddSessionEndEvent(long timeAdjustment)
-		{
 			long session_start_ts = GAState.SessionStart;
 			long client_ts_adjusted = GAState.GetClientTsAdjusted();
 			long sessionLength = client_ts_adjusted - session_start_ts;
@@ -201,7 +196,7 @@ namespace GameAnalyticsSDK.Net.Events
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score)
+		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore)
 		{
 			string progressionStatusString = ProgressionStatusToString(progressionStatus);
 
@@ -239,7 +234,7 @@ namespace GameAnalyticsSDK.Net.Events
 			double attempt_num = 0;
 
 			// Add score if specified and status is not start
-			if (score > 0 && progressionStatus != EGAProgressionStatus.Start)
+			if (sendScore && progressionStatus != EGAProgressionStatus.Start)
 			{
 				eventDict.Add("score", new JSONData(score));
 			}
@@ -275,7 +270,7 @@ namespace GameAnalyticsSDK.Net.Events
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddDesignEvent(string eventId, double value)
+		public static void AddDesignEvent(string eventId, double value, bool sendValue)
 		{
 			// Validate
 			if (!GAValidator.ValidateDesignEvent(eventId, value))
@@ -291,7 +286,7 @@ namespace GameAnalyticsSDK.Net.Events
 			eventData["category"] = CategoryDesign;
 			eventData["event_id"] = eventId;
 
-			if (value > 0)
+			if(sendValue)
 			{
 				eventData.Add("value", new JSONData(value));
 			}

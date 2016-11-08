@@ -19,6 +19,8 @@ using System.Net.Security;
 #endif
 #if WINDOWS_UWP || WINDOWS_WSA
 using System.Threading.Tasks;
+using Windows.Networking.Connectivity;
+using GameAnalyticsSDK.Net.Device;
 #endif
 
 namespace GameAnalyticsSDK.Net.Http
@@ -64,7 +66,44 @@ namespace GameAnalyticsSDK.Net.Http
 #if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA && !UNITY_TIZEN
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
 #endif
+#if WINDOWS_UWP || WINDOWS_WSA
+            NetworkInformation.NetworkStatusChanged += NetworkInformationOnNetworkStatusChanged;
+            CheckInternetAccess();
+#endif
         }
+
+#if WINDOWS_UWP || WINDOWS_WSA
+        private static void NetworkInformationOnNetworkStatusChanged(object sender)
+        {
+            CheckInternetAccess();
+        }
+
+        private static void CheckInternetAccess()
+        {
+            var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
+            bool hasInternetAccess = (connectionProfile != null && connectionProfile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess);
+
+            if (hasInternetAccess)
+            {
+                if (connectionProfile.IsWlanConnectionProfile)
+                {
+                    GADevice.ConnectionType = "wifi";
+                }
+                else if (connectionProfile.IsWwanConnectionProfile)
+                {
+                    GADevice.ConnectionType = "wwan";
+                }
+                else
+                {
+                    GADevice.ConnectionType = "lan";
+                }
+            }
+            else
+            {
+                GADevice.ConnectionType = "offline";
+            }
+        }
+#endif
 
 #if !UNITY_WEBGL && !WINDOWS_UWP && !WINDOWS_WSA && !UNITY_TIZEN
         private bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -338,7 +377,7 @@ namespace GameAnalyticsSDK.Net.Http
 				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
 				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
-#if WINDOWS_UWPP || WINDOWS_WSA
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
 #else
                 using(Stream dataStream = request.GetRequestStream())
@@ -347,7 +386,7 @@ namespace GameAnalyticsSDK.Net.Http
                     dataStream.Write(payloadData, 0, payloadData.Length);
                 }
 
-#if WINDOWS_UWPP || WINDOWS_WSA
+#if WINDOWS_UWP || WINDOWS_WSA
                 using (HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse)
 #else
                 using(HttpWebResponse response = request.GetResponse() as HttpWebResponse)

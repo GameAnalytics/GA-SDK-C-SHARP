@@ -3,6 +3,13 @@ GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
 
 Changelog
 ---------
+**1.1.2**
+* Bug fix to design and progression events when not sending score/value
+* Session length bug fix
+
+**1.1.1**
+* Fixes to validation error for Windows Universal 8.1 (Windows Phone 8 and Windows 8)
+
 **1.1.0**
 * Added support for Universal Windows 8 (Windows Phone 8 and Windows 8)
 
@@ -59,8 +66,8 @@ Add **GameAnalytics.UWP.SDK** package from Nuget package manager. Nothing furthe
 
 Open **GA-SDK-UWP.sln** and compile the **GA_SDK_UWP** project. Add the **GameAnalytics.UWP.dll** as references to your UWP project. Add the following Nuget packages: **Microsoft.Data.Sqlite**, **MetroLog** and **Microsoft.NetCore.UniversalWindowsPlatform**.
 
-Universal Windows 8 (UWP)
--------------------------
+Universal Windows 8
+-------------------
 
 ###Requirements:
 
