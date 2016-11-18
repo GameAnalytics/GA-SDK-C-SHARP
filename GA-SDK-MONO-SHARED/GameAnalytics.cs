@@ -552,13 +552,26 @@ namespace GameAnalyticsSDK.Net
 		public static void OnStop()
 		{
 			GALogger.D("OnStop() called");
-            try
+#if !UNITY_WEBGL && !UNITY_TIZEN
+			GAThreading.PerformTaskOnGAThread("onStop", () =>
+			{
+				try
+				{
+					GAState.EndSessionAndStopQueue();
+				}
+				catch(Exception)
+				{
+				}
+			});
+#else
+			try
             {
                 GAState.EndSessionAndStopQueue();
             }
             catch (Exception)
             {
             }
+#endif
         }
 
 		public static void OnResume()
