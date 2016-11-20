@@ -3,6 +3,10 @@ GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
 
 Changelog
 ---------
+<!--(CHANGELOG_TOP)-->
+**1.1.3**
+* possible to set custom dimensions and demographics before initialize
+
 **1.1.2**
 * Bug fix to design and progression events when not sending score/value
 * Session length bug fix

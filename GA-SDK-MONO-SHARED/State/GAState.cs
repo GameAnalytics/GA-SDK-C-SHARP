@@ -357,42 +357,60 @@ namespace GameAnalyticsSDK.Net.State
 		public static void SetCustomDimension01(string dimension)
 		{
 			CurrentCustomDimension01 = dimension;
-			GAStore.SetState(Dimension01Key, dimension);
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(Dimension01Key, dimension);
+			}
 			GALogger.I("Set custom01 dimension value: " + dimension);
 		}
 
 		public static void SetCustomDimension02(string dimension)
 		{
 			CurrentCustomDimension02 = dimension;
-			GAStore.SetState(Dimension02Key, dimension);
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(Dimension02Key, dimension);
+			}
 			GALogger.I("Set custom02 dimension value: " + dimension);
 		}
 
 		public static void SetCustomDimension03(string dimension)
 		{
 			CurrentCustomDimension03 = dimension;
-			GAStore.SetState(Dimension03Key, dimension);
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(Dimension03Key, dimension);
+			}
 			GALogger.I("Set custom03 dimension value: " + dimension);
 		}
 
 		public static void SetFacebookId(string facebookId)
 		{
 			Instance.FacebookId = facebookId;
-			GAStore.SetState(FacebookIdKey, facebookId);
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(FacebookIdKey, facebookId);
+			}
 			GALogger.I("Set facebook id: " + facebookId);
 		}
 
 		public static void SetGender(EGAGender gender)
 		{
 			Instance.Gender = gender.ToString().ToLowerInvariant();
-			GAStore.SetState(GenderKey, Instance.Gender);
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(GenderKey, Instance.Gender);
+			}
 			GALogger.I("Set gender: " + gender);
 		}
 
 		public static void SetBirthYear(int birthYear)
 		{
 			Instance.BirthYear = birthYear;
-			GAStore.SetState(BirthYearKey, birthYear.ToString());
+			if(GAStore.IsTableReady)
+			{
+				GAStore.SetState(BirthYearKey, birthYear.ToString());
+			}
 			GALogger.I("Set birth year: " + birthYear);
 		}
 
@@ -757,16 +775,56 @@ namespace GameAnalyticsSDK.Net.State
 					double.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + TransactionNumKey, "0"), out tmp);
 					TransactionNum = tmp;
 				}
-				instance.FacebookId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + FacebookIdKey, "");
-				instance.Gender = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + GenderKey, "");
+				if(!string.IsNullOrEmpty(instance.FacebookId))
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + FacebookIdKey, instance.FacebookId);
+				}
+				else
+				{
+					instance.FacebookId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + FacebookIdKey, "");
+				}
+				if(!string.IsNullOrEmpty(instance.Gender))
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + GenderKey, instance.Gender);
+				}
+				else
+				{
+					instance.Gender = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + GenderKey, "");
+				}
+				if(instance.BirthYear != 0)
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + BirthYearKey, instance.BirthYear.ToString());
+				}
+				else
 				{
 					int tmp;
 					int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + BirthYearKey, "0"), out tmp);
 					instance.BirthYear = tmp;
 				}
-				CurrentCustomDimension01 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension01Key, "");
-				CurrentCustomDimension02 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension02Key, "");
-				CurrentCustomDimension03 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension03Key, "");
+				if(!string.IsNullOrEmpty(CurrentCustomDimension01))
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + Dimension01Key, CurrentCustomDimension01);
+				}
+				else
+				{
+					CurrentCustomDimension01 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension01Key, "");
+				}
+				if(!string.IsNullOrEmpty(CurrentCustomDimension02))
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + Dimension02Key, CurrentCustomDimension02);
+				}
+				else
+				{
+					CurrentCustomDimension02 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension02Key, "");
+				}
+				if(!string.IsNullOrEmpty(CurrentCustomDimension03))
+				{
+					UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + Dimension03Key, CurrentCustomDimension03);
+				}
+				else
+				{
+					CurrentCustomDimension03 = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + Dimension03Key, "");
+				}
 
 				string sdkConfigCachedString = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SdkConfigCachedKey, "");
 				if(!string.IsNullOrEmpty(sdkConfigCachedString))
@@ -806,43 +864,85 @@ namespace GameAnalyticsSDK.Net.State
 
 				TransactionNum = state_dict[TransactionNumKey] != null ? state_dict[TransactionNumKey].AsDouble : 0.0;
 
-                // restore cross session user values
-                instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].AsString : "";
-                if (!string.IsNullOrEmpty(instance.FacebookId))
-                {
-                    GALogger.D("facebookid found in DB: " + instance.FacebookId);
-                }
+				// restore cross session user values
+				if(!string.IsNullOrEmpty(instance.FacebookId))
+				{
+					GAStore.SetState(FacebookIdKey, instance.FacebookId);
+				}
+				else
+				{
+					instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].AsString : "";
+					if(!string.IsNullOrEmpty(instance.FacebookId))
+					{
+						GALogger.D("facebookid found in DB: " + instance.FacebookId);
+					}
+				}
 
-                instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].AsString : "";
-                if (!string.IsNullOrEmpty(instance.Gender))
-                {
-                    GALogger.D("gender found in DB: " + instance.Gender);
-                }
+				if(!string.IsNullOrEmpty(instance.FacebookId))
+				{
+					GAStore.SetState(FacebookIdKey, instance.FacebookId);
+				}
+				else
+				{
+					instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].AsString : "";
+					if(!string.IsNullOrEmpty(instance.Gender))
+					{
+						GALogger.D("gender found in DB: " + instance.Gender);
+					}
+				}
 
-                instance.BirthYear = state_dict[BirthYearKey] != null ? state_dict[BirthYearKey].AsInt : 0;
-                if (instance.BirthYear != 0)
-                {
-                    GALogger.D("birthYear found in DB: " + instance.BirthYear);
-                }
+				if(instance.BirthYear != 0)
+				{
+					GAStore.SetState(BirthYearKey, instance.BirthYear.ToString());
+				}
+				else
+				{
+					instance.BirthYear = state_dict[BirthYearKey] != null ? state_dict[BirthYearKey].AsInt : 0;
+					if(instance.BirthYear != 0)
+					{
+						GALogger.D("birthYear found in DB: " + instance.BirthYear);
+					}
+				}
 
-                // restore dimension settings
-                CurrentCustomDimension01 = state_dict[Dimension01Key] != null ? state_dict[Dimension01Key].AsString : "";
-                if (!string.IsNullOrEmpty(CurrentCustomDimension01))
-                {
-                    GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
-                }
+				// restore dimension settings
+				if(!string.IsNullOrEmpty(CurrentCustomDimension01))
+				{
+					GAStore.SetState(Dimension01Key, CurrentCustomDimension01);
+				}
+				else
+				{
+					CurrentCustomDimension01 = state_dict[Dimension01Key] != null ? state_dict[Dimension01Key].AsString : "";
+					if(!string.IsNullOrEmpty(CurrentCustomDimension01))
+					{
+						GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
+					}
+				}
 
-                CurrentCustomDimension02 = state_dict[Dimension02Key] != null ? state_dict[Dimension02Key].AsString : "";
-                if (!string.IsNullOrEmpty(CurrentCustomDimension02))
-                {
-                    GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
-                }
+				if(!string.IsNullOrEmpty(CurrentCustomDimension02))
+				{
+					GAStore.SetState(Dimension02Key, CurrentCustomDimension02);
+				}
+				else
+				{
+					CurrentCustomDimension02 = state_dict[Dimension02Key] != null ? state_dict[Dimension02Key].AsString : "";
+					if(!string.IsNullOrEmpty(CurrentCustomDimension02))
+					{
+						GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
+					}
+				}
 
-                CurrentCustomDimension03 = state_dict[Dimension03Key] != null ? state_dict[Dimension03Key].AsString : "";
-                if (!string.IsNullOrEmpty(CurrentCustomDimension03))
-                {
-                    GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
-                }
+				if(!string.IsNullOrEmpty(CurrentCustomDimension03))
+				{
+					GAStore.SetState(Dimension03Key, CurrentCustomDimension03);
+				}
+				else
+				{
+					CurrentCustomDimension03 = state_dict[Dimension03Key] != null ? state_dict[Dimension03Key].AsString : "";
+					if(!string.IsNullOrEmpty(CurrentCustomDimension03))
+					{
+						GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
+					}
+				}
 
                 // get cached init call values
                 string sdkConfigCachedString = state_dict[SdkConfigCachedKey] != null ? state_dict[SdkConfigCachedKey].AsString : "";

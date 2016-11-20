@@ -431,11 +431,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setCustomDimension01", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
-
 				if (!GAValidator.ValidateDimension01(dimension))
 				{
 					GALogger.W("Could not set custom01 dimension value to '" + dimension + "'. Value not found in available custom01 dimension values");
@@ -449,11 +444,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setCustomDimension02", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
-
 				if (!GAValidator.ValidateDimension02(dimension))
 				{
 					GALogger.W("Could not set custom02 dimension value to '" + dimension + "'. Value not found in available custom02 dimension values");
@@ -562,13 +552,26 @@ namespace GameAnalyticsSDK.Net
 		public static void OnStop()
 		{
 			GALogger.D("OnStop() called");
-            try
+#if !UNITY_WEBGL && !UNITY_TIZEN
+			GAThreading.PerformTaskOnGAThread("onStop", () =>
+			{
+				try
+				{
+					GAState.EndSessionAndStopQueue();
+				}
+				catch(Exception)
+				{
+				}
+			});
+#else
+			try
             {
                 GAState.EndSessionAndStopQueue();
             }
             catch (Exception)
             {
             }
+#endif
         }
 
 		public static void OnResume()
