@@ -1,6 +1,24 @@
 # GA-SDK-C-SHARP
 GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
 
+Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/wiki).
+
+> :information_source:<br>
+>
+> This repository is open-source and can be built to Mono / .Net 4.5, Universal Windows Platform (UWP) and Universal Windows 8.1 (Windows 8.1 and Windows Phone 8.1).<br>
+>
+> How to build: Click [here](How to build)<br>
+>
+> **Mono / .Net 4.5**:<br>
+> Supported platforms: Windows, Mac OS X and Linux<br>
+> Requirements:  Mono / .Net 4.5 or higher<br>
+>
+> **UWP**:<br>
+> Requirements: Windows 10 Universal SDK<br>
+>
+> **Universal Windows 8.1**:<br>
+> Requirements: Windows 8 or higher
+
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
@@ -19,80 +37,6 @@ Changelog
 
 **1.0.13**
 * Initial version
-
-Mono / .Net 4.5
----------------
-
-###Supported platforms:
-
-* Windows
-* Mac OS X
-* Linux
-
-###Requirements:
-
-* Mono / .Net 4.5 or higher
-
-###Dependencies:
-
-* NLog
-
-###How to install
-
-####Using Nuget
-
-Add **GameAnalytics.Mono.SDK** package from Nuget package manager. Nothing further needs to be done. Copying of files to the output directory happens automatically.
-
-####Manual installation
-
-Open **GA-SDK-MONO.sln** and compile the **GA_SDK_MONO** project. Add the **GameAnalytics.Mono.dll**, **System.Data.SQLite.dll** and **NLog.dll** as references to your project. Remember to copy **native/win32/sqlite3.dll** and **native/win64/sqlite3.dll** for when using on Windows platform to output directory, they should be copied to **x86/sqlite3.dll** and **x64/sqlite3.dll** under the output directory.
-
-Universal Windows Platform (UWP)
---------------------------------
-
-###Requirements:
-
-* Windows 10 Universal SDK
-
-###Dependencies:
-
-* Microsoft.Data.Sqlite
-* Microsoft.NetCore.UniversalWindowsPlatform
-* MetroLog
-
-###How to install
-
-####Using Nuget
-
-Add **GameAnalytics.UWP.SDK** package from Nuget package manager. Nothing further needs to be done. Copying of files to the output directory happens automatically.
-
-####Manual installation
-
-Open **GA-SDK-UWP.sln** and compile the **GA_SDK_UWP** project. Add the **GameAnalytics.UWP.dll** as references to your UWP project. Add the following Nuget packages: **Microsoft.Data.Sqlite**, **MetroLog** and **Microsoft.NetCore.UniversalWindowsPlatform**.
-
-Universal Windows 8
--------------------
-
-###Requirements:
-
-* Windows 8 or higher
-
-###Dependencies:
-
-* Microsoft.Data.Sqlite.WinRT
-* MetroLog
-* System.Data.Common
-
-###How to install
-
-####Using Nuget
-
-Add **GameAnalytics.UWP.SDK** package from Nuget package manager. Nothing further needs to be done. Copying of files to the output directory happens automatically.
-
-####Manual installation
-
-Open **GA-SDK-WSA.sln** and compile the **GA-SDK-WSA** project. Add the **GameAnalytics.WSA.dll** and **System.Data.Common** as references to your UWP project. Add the following Nuget packages: **Microsoft.Data.Sqlite.WinRT** and **MetroLog**.
-
 
 Folderstructure
 ---------------
