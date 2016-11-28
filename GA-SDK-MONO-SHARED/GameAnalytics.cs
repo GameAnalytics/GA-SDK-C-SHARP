@@ -190,7 +190,7 @@ namespace GameAnalyticsSDK.Net
 
 		public static void Initialize(string gameKey, string gameSecret)
 		{
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
 #endif
@@ -220,7 +220,7 @@ namespace GameAnalyticsSDK.Net
             });
 		}
 
-#if WINDOWS_UWP
+#if WINDOWS_UWP || WINDOWS_WSA
         private static void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
@@ -639,4 +639,3 @@ namespace GameAnalyticsSDK.Net
 		#endregion // PRIVATE HELPERS
 	}
 }
-
