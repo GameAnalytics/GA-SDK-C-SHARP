@@ -22,6 +22,9 @@ Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/w
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.5**
+* changed persistent path (uwp, wsa)
+
 **1.1.3**
 * possible to set custom dimensions and demographics before initialize
 
