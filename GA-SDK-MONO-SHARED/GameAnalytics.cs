@@ -9,9 +9,10 @@ using GameAnalyticsSDK.Net.Store;
 #if UNITY_WEBGL || UNITY_TIZEN
 using System.Collections.Generic;
 using System.Collections;
-#elif WINDOWS_UWP
+#elif WINDOWS_UWP || WINDOWS_WSA
 using Windows.UI.Xaml;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 #endif
 
 namespace GameAnalyticsSDK.Net
@@ -191,8 +192,8 @@ namespace GameAnalyticsSDK.Net
 		public static void Initialize(string gameKey, string gameSecret)
 		{
 #if WINDOWS_UWP || WINDOWS_WSA
-            Application.Current.Suspending += OnSuspending;
-            Application.Current.Resuming += OnResuming;
+            CoreApplication.Suspending += OnSuspending;
+            CoreApplication.Resuming += OnResuming;
 #endif
             GADevice.UpdateConnectionType();
 
