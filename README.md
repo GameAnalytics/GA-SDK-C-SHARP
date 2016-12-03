@@ -25,9 +25,6 @@ Changelog
 **1.1.5**
 * changed persistent path (uwp, wsa)
 
-**1.1.4**
-* changed persistent path (uwp, wsa)
-
 **1.1.3**
 * possible to set custom dimensions and demographics before initialize
 
