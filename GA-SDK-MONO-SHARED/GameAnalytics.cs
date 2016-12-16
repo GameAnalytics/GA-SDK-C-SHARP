@@ -458,11 +458,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setCustomDimension03", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
-
 				if (!GAValidator.ValidateDimension03(dimension))
 				{
 					GALogger.W("Could not set custom03 dimension value to '" + dimension + "'. Value not found in available custom03 dimension values");
@@ -476,11 +471,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setFacebookId", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
-
 				if (GAValidator.ValidateFacebookId(facebookId))
 				{
 					GAState.SetFacebookId(facebookId);
@@ -492,11 +482,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setGender", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
-
 				if (GAValidator.ValidateGender(gender))
 				{
 					GAState.SetGender(gender);
@@ -508,10 +493,6 @@ namespace GameAnalyticsSDK.Net
 		{
 			GAThreading.PerformTaskOnGAThread("setBirthYear", () =>
 			{
-				if (!IsSdkReady(false))
-				{
-					return;
-				}
 				if (GAValidator.ValidateBirthyear(birthYear))
 				{
 					GAState.SetBirthYear(birthYear);

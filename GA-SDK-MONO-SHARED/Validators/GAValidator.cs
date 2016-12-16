@@ -363,7 +363,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
 		public static bool ValidateSdkWrapperVersion(string wrapperVersion)
 		{
-			if (!GAUtilities.StringMatch(wrapperVersion, "^(unity|unreal|corona|marmalade|xamarin) [0-9]{0,5}(\\.[0-9]{0,5}){0,2}$"))
+			if (!GAUtilities.StringMatch(wrapperVersion, "^(unity) [0-9]{0,5}(\\.[0-9]{0,5}){0,2}$"))
 			{
 				return false;
 			}
@@ -372,7 +372,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
 		public static bool ValidateEngineVersion(string engineVersion)
 		{
-			if (engineVersion == null || !GAUtilities.StringMatch(engineVersion, "^(unity|unreal|corona|marmalade|cocos2d|xamarin) [0-9]{0,5}(\\.[0-9]{0,5}){0,2}$"))
+			if (engineVersion == null || !GAUtilities.StringMatch(engineVersion, "^(unity) [0-9]{0,5}(\\.[0-9]{0,5}){0,2}$"))
 			{
 				return false;
 			}

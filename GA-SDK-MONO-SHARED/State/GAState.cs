@@ -332,14 +332,6 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONNode currentSdkConfig = SdkConfig;
 
-			IEnumerator<JSONNode> enumerator = currentSdkConfig.Childs.GetEnumerator();
-
-			JSONNode json = null;
-			if(enumerator.MoveNext())
-			{
-				json = enumerator.Current;
-			}
-
 			if (currentSdkConfig["enabled"] != null && !currentSdkConfig["enabled"].AsBool)
 			{
 				return false;
@@ -698,7 +690,7 @@ namespace GameAnalyticsSDK.Net.State
 			// SDK version
 			initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
 			// Operation system version
-			initAnnotations["os_version"] = "abc " + GADevice.OSVersion;
+			initAnnotations["os_version"] = GADevice.OSVersion;
 
 			// Platform (operating system)
 			initAnnotations["platform"] = GADevice.BuildPlatform;
@@ -878,9 +870,9 @@ namespace GameAnalyticsSDK.Net.State
 					}
 				}
 
-				if(!string.IsNullOrEmpty(instance.FacebookId))
+				if(!string.IsNullOrEmpty(instance.Gender))
 				{
-					GAStore.SetState(FacebookIdKey, instance.FacebookId);
+					GAStore.SetState(GenderKey, instance.Gender);
 				}
 				else
 				{
