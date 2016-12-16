@@ -303,8 +303,8 @@ namespace GameAnalyticsSDK.Net
 			Assert.False(GAValidator.ValidateSdkWrapperVersion("unity 1.2.x"));
 
 			Assert.True(GAValidator.ValidateSdkWrapperVersion("unity 1.2.3"));
-			Assert.True(GAValidator.ValidateSdkWrapperVersion("marmalade 1.2.3"));
-			Assert.True(GAValidator.ValidateSdkWrapperVersion("corona 1.2.3"));
+			Assert.False(GAValidator.ValidateSdkWrapperVersion("marmalade 1.2.3"));
+			Assert.False(GAValidator.ValidateSdkWrapperVersion("corona 1.2.3"));
 			Assert.True(GAValidator.ValidateSdkWrapperVersion("unity 1233.101.0"));
 		}
 
@@ -336,10 +336,10 @@ namespace GameAnalyticsSDK.Net
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1.2.3"));
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1.2"));
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1"));
-			Assert.True(GAValidator.ValidateEngineVersion("marmalade 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("xamarin 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("cocos2d 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("unreal 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("marmalade 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("xamarin 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("cocos2d 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("unreal 1.2.3"));
 		}
 
 		[Test]
