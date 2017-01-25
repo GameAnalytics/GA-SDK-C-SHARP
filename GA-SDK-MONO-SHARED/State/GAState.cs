@@ -552,6 +552,7 @@ namespace GameAnalyticsSDK.Net.State
 					GAEvents.AddSessionEndEvent();
 					SessionStart = 0;
 				}
+				GAThreading.StopThread();
 			}
 		}
 
@@ -575,6 +576,7 @@ namespace GameAnalyticsSDK.Net.State
                 StartNewSession();
 #endif
             }
+			GAThreading.StartThread();
 		}
 
 		public static JSONClass GetEventAnnotations()

@@ -24,6 +24,7 @@ namespace GameAnalyticsSDK.Net.Threading
 		private readonly PriorityQueue<long, TimedBlock> blocks = new PriorityQueue<long, TimedBlock>();
 		private readonly Dictionary<long, TimedBlock> id2TimedBlockMap = new Dictionary<long, TimedBlock>();
 		private readonly object threadLock = new object();
+		private bool shouldThreadrun = false;
 
 		private GAThreading()
 		{
@@ -47,7 +48,7 @@ namespace GameAnalyticsSDK.Net.Threading
 
 			try
 			{
-				while(true)
+				while(_instance.shouldThreadrun)
 				{
 					TimedBlock timedBlock;
 
@@ -174,19 +175,28 @@ namespace GameAnalyticsSDK.Net.Threading
 		}
 
 #if WINDOWS_WSA || WINDOWS_UWP
-        private async static void StartThread()
+        public async static void StartThread()
 #else
-        private static void StartThread()
+        public static void StartThread()
 #endif
         {
+			if(!_instance.shouldThreadrun)
+			{
+				_instance.shouldThreadrun = true;
 #if WINDOWS_WSA || WINDOWS_UWP
-            await ThreadPool.RunAsync(o => Run());
+            	await ThreadPool.RunAsync(o => Run());
 #elif !UNITY_WEBGL && !UNITY_TIZEN
-            Thread thread = new Thread(new ThreadStart(Run));
-			thread.Priority = ThreadPriority.Lowest;
-			thread.Start ();
+				Thread thread = new Thread(new ThreadStart(Run));
+				thread.Priority = ThreadPriority.Lowest;
+				thread.Start();
 #endif
+			}
         }
+
+		public static void StopThread()
+		{
+			_instance.shouldThreadrun = false;
+		}
     }
 }
 
