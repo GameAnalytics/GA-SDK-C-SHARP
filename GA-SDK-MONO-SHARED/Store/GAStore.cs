@@ -17,7 +17,7 @@ using GameAnalyticsSDK.Net.Utilities;
 using GameAnalyticsSDK.Net.Logging;
 using GameAnalyticsSDK.Net.Device;
 using System.IO;
-#if UNITY_WEBGL || UNITY_SAMSUNGTV
+#if UNITY_SAMSUNGTV
 using System.Runtime.InteropServices;
 #endif
 #if WINDOWS_WSA
@@ -32,11 +32,7 @@ namespace GameAnalyticsSDK.Net.Store
 	{
         #region Fields and properties
 
-#if UNITY_WEBGL
-		[DllImport("__Internal")]
-		private static extern void SyncFiles();
-
-#elif UNITY_SAMSUNGTV
+#if UNITY_SAMSUNGTV
         [DllImport("__Internal")]
         private static extern long sqlite3_memory_used();
 #endif
@@ -214,10 +210,6 @@ namespace GameAnalyticsSDK.Net.Store
 				{
 					transaction.Dispose();
 				}
-
-#if UNITY_WEBGL
-				SyncFiles();
-#endif
 			}
 
 			// Return results
@@ -250,10 +242,6 @@ namespace GameAnalyticsSDK.Net.Store
                 Instance.SqlDatabase.Open();
 				Instance.DbReady = true;
 				GALogger.I("Database opened: " + Instance.dbPath);
-#if UNITY_WEBGL
-				SyncFiles();
-#endif
-
 			}
 			catch (Exception e)
 			{

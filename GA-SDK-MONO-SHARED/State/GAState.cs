@@ -989,9 +989,6 @@ namespace GameAnalyticsSDK.Net.State
 			// make sure the current custom dimensions are valid
 			ValidateAndFixCurrentDimensions();
 
-#if UNITY_WEBGL || UNITY_TIZEN
-			GAHTTPApi.Instance.RequestInit();
-#else
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
             KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
@@ -1000,7 +997,6 @@ namespace GameAnalyticsSDK.Net.State
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
-#endif
         }
 
         public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONClass initResponseDict)

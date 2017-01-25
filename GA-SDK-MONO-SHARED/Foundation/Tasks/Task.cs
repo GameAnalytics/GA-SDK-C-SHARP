@@ -7,7 +7,7 @@ using UnityEngine;
 #endif
 #if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
-#elif !UNITY_WEBGL && !UNITY_TIZEN
+#else
 using System.Threading;
 #endif
 
@@ -39,12 +39,10 @@ namespace Foundation.Tasks
     /// </summary>
     public enum TaskStrategy
     {
-#if !UNITY_WEBGL && !UNITY_TIZEN
         /// <summary>
         /// Dispatches the task to a background thread
         /// </summary>
         BackgroundThread,
-#endif
         /// <summary>
         /// Dispatches the task to the main thread
         /// </summary>
@@ -205,11 +203,7 @@ namespace Foundation.Tasks
         public AsyncTask(Action action)
         {
             _action = action;
-#if UNITY_WEBGL || UNITY_TIZEN
-            Strategy = TaskStrategy.MainThread;
-#else
             Strategy = TaskStrategy.BackgroundThread;
-#endif
         }
 
         /// <summary>
@@ -270,7 +264,6 @@ namespace Foundation.Tasks
 
 
 
-#if !UNITY_WEBGL && !UNITY_TIZEN
 #if WINDOWS_WSA || WINDOWS_UWP
         protected async void RunOnBackgroundThread()
         {
@@ -283,7 +276,6 @@ namespace Foundation.Tasks
             ThreadPool.QueueUserWorkItem(state => Execute());
 #endif
         }
-#endif
 
         protected void RunOnCurrentThread()
         {
@@ -295,11 +287,7 @@ namespace Foundation.Tasks
         protected void RunOnMainThread()
         {
             Status = TaskStatus.Pending;
-#if UNITY_WEBGL || UNITY_TIZEN
-            Execute();
-#else
             TaskManager.RunOnMainThread(Execute);
-#endif
         }
 
         protected void RunAsCoroutine()
@@ -377,11 +365,6 @@ namespace Foundation.Tasks
                     RunAsCoroutine();
                     break;
 #endif
-#if UNITY_WEBGL || UNITY_TIZEN
-				default:
-                    RunOnCurrentThread();
-                    break;
-#else
                 case TaskStrategy.BackgroundThread:
                     if (DisableMultiThread)
                         RunOnCurrentThread();
@@ -395,7 +378,6 @@ namespace Foundation.Tasks
                 case TaskStrategy.MainThread:
                     RunOnMainThread();
                     break;
-#endif
 #endif
             }
         }
