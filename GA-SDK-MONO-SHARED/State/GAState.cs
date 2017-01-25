@@ -617,10 +617,21 @@ namespace GameAnalyticsSDK.Net.State
 				annotations["engine_version"] = GADevice.GameEngineVersion;
 			}
 
-			// ---- CONDITIONAL ---- //
+#if WINDOWS_UWP
+            if (!string.IsNullOrEmpty(GADevice.AdvertisingId))
+            {
+                annotations["uwp_aid"] = GADevice.AdvertisingId;
+            }
+            else if (!string.IsNullOrEmpty(GADevice.DeviceId))
+            {
+                annotations["uwp_id"] = GADevice.DeviceId;
+            }
+#endif
 
-			// App build version (use if not nil)
-			if (!string.IsNullOrEmpty(Build))
+            // ---- CONDITIONAL ---- //
+
+            // App build version (use if not nil)
+            if (!string.IsNullOrEmpty(Build))
 			{
 				annotations["build"] = Build;
 			}

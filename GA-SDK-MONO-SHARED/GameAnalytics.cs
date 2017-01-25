@@ -24,18 +24,6 @@ namespace GameAnalyticsSDK.Net
 			GADevice.Touch();
 		}
 
-#if !UNITY
-        public static event Action<string, EGALoggerMessageType> OnMessageLogged;
-
-        internal static void MessageLogged(string message, EGALoggerMessageType type)
-        {
-            if(OnMessageLogged != null)
-            {
-                OnMessageLogged(message, type);
-            }
-        }
-#endif
-
 #if UNITY_WEBGL || UNITY_TIZEN
 
 		private static Queue<IEnumerator> _requestCoroutineQueue = new Queue<IEnumerator>();
