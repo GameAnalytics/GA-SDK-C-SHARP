@@ -196,7 +196,6 @@ namespace GameAnalyticsSDK.Net.Http
 			}
 			catch (WebException e)
 			{
-                GALogger.E(e.ToString());
 				if(e.Response != null)
 				{
                     using (HttpWebResponse response = (HttpWebResponse)e.Response)

@@ -12,12 +12,12 @@ namespace GameAnalyticsSDK.Net.Threading
 {
 	public class GAThreading
 	{
-		private static readonly GAThreading _instance = new GAThreading ();
+        private static bool shouldThreadrun = false;
+        private static readonly GAThreading _instance = new GAThreading ();
 		private const int ThreadWaitTimeInMs = 1000;
 		private readonly PriorityQueue<long, TimedBlock> blocks = new PriorityQueue<long, TimedBlock>();
 		private readonly Dictionary<long, TimedBlock> id2TimedBlockMap = new Dictionary<long, TimedBlock>();
 		private readonly object threadLock = new object();
-		private bool shouldThreadrun = false;
 
 		private GAThreading()
 		{
@@ -40,7 +40,7 @@ namespace GameAnalyticsSDK.Net.Threading
 
 			try
 			{
-				while(_instance.shouldThreadrun)
+				while(shouldThreadrun)
 				{
 					TimedBlock timedBlock;
 
@@ -140,9 +140,10 @@ namespace GameAnalyticsSDK.Net.Threading
         public static void StartThread()
 #endif
         {
-			if(!_instance.shouldThreadrun)
+            GALogger.D("StartThread called");
+            if (!shouldThreadrun)
 			{
-				_instance.shouldThreadrun = true;
+				shouldThreadrun = true;
 #if WINDOWS_WSA || WINDOWS_UWP
             	await ThreadPool.RunAsync(o => Run());
 #else
@@ -155,7 +156,8 @@ namespace GameAnalyticsSDK.Net.Threading
 
 		public static void StopThread()
 		{
-			_instance.shouldThreadrun = false;
+            GALogger.D("StopThread called");
+            shouldThreadrun = false;
 		}
     }
 }

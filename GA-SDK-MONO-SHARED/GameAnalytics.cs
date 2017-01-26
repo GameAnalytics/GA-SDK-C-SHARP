@@ -21,6 +21,16 @@ namespace GameAnalyticsSDK.Net
 			GADevice.Touch();
 		}
 
+#if !UNITY && !MONO
+        public static event Action<string, EGALoggerMessageType> OnMessageLogged;
+
+        internal static void MessageLogged(string message, EGALoggerMessageType type)
+        {
+            OnMessageLogged?.Invoke(message, type);
+        }
+#endif
+
+
         #region CONFIGURE
 
         public static void ConfigureAvailableCustomDimensions01(params string[] customDimensions)
