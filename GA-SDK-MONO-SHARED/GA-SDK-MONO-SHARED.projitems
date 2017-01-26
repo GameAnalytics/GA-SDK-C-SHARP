@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskManager.Net.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskManager.WebGL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskManager.WSA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Foundation\Tasks\TaskTResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameAnalytics.cs" />

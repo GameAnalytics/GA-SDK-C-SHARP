@@ -619,10 +619,21 @@ namespace GameAnalyticsSDK.Net.State
 				annotations["engine_version"] = GADevice.GameEngineVersion;
 			}
 
-			// ---- CONDITIONAL ---- //
+#if WINDOWS_UWP
+            if (!string.IsNullOrEmpty(GADevice.AdvertisingId))
+            {
+                annotations["uwp_aid"] = GADevice.AdvertisingId;
+            }
+            else if (!string.IsNullOrEmpty(GADevice.DeviceId))
+            {
+                annotations["uwp_id"] = GADevice.DeviceId;
+            }
+#endif
 
-			// App build version (use if not nil)
-			if (!string.IsNullOrEmpty(Build))
+            // ---- CONDITIONAL ---- //
+
+            // App build version (use if not nil)
+            if (!string.IsNullOrEmpty(Build))
 			{
 				annotations["build"] = Build;
 			}
@@ -978,9 +989,6 @@ namespace GameAnalyticsSDK.Net.State
 			// make sure the current custom dimensions are valid
 			ValidateAndFixCurrentDimensions();
 
-#if UNITY_WEBGL || UNITY_TIZEN
-			GAHTTPApi.Instance.RequestInit();
-#else
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
             KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
@@ -989,7 +997,6 @@ namespace GameAnalyticsSDK.Net.State
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
-#endif
         }
 
         public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONClass initResponseDict)

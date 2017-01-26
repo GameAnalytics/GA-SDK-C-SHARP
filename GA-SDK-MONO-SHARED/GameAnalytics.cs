@@ -6,10 +6,7 @@ using GameAnalyticsSDK.Net.Validators;
 using GameAnalyticsSDK.Net.Device;
 using GameAnalyticsSDK.Net.Events;
 using GameAnalyticsSDK.Net.Store;
-#if UNITY_WEBGL || UNITY_TIZEN
-using System.Collections.Generic;
-using System.Collections;
-#elif WINDOWS_UWP || WINDOWS_WSA
+#if WINDOWS_UWP || WINDOWS_WSA
 using Windows.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
@@ -24,28 +21,15 @@ namespace GameAnalyticsSDK.Net
 			GADevice.Touch();
 		}
 
-#if !UNITY
+#if !UNITY && !MONO
         public static event Action<string, EGALoggerMessageType> OnMessageLogged;
 
         internal static void MessageLogged(string message, EGALoggerMessageType type)
         {
-            if(OnMessageLogged != null)
-            {
-                OnMessageLogged(message, type);
-            }
+            OnMessageLogged?.Invoke(message, type);
         }
 #endif
 
-#if UNITY_WEBGL || UNITY_TIZEN
-
-		private static Queue<IEnumerator> _requestCoroutineQueue = new Queue<IEnumerator>();
-
-		public static Queue<IEnumerator> RequestCoroutineQueue
-		{
-			get { return _requestCoroutineQueue; }
-		}
-
-#endif
 
         #region CONFIGURE
 
@@ -534,7 +518,6 @@ namespace GameAnalyticsSDK.Net
 		public static void OnStop()
 		{
 			GALogger.D("OnStop() called");
-#if !UNITY_WEBGL && !UNITY_TIZEN
 			GAThreading.PerformTaskOnGAThread("onStop", () =>
 			{
 				try
@@ -545,28 +528,15 @@ namespace GameAnalyticsSDK.Net
 				{
 				}
 			});
-#else
-			try
-            {
-                GAState.EndSessionAndStopQueue();
-            }
-            catch (Exception)
-            {
-            }
-#endif
         }
 
 		public static void OnResume()
 		{
 			GALogger.D("OnResume() called");
-#if !UNITY_WEBGL && !UNITY_TIZEN
 			GAThreading.PerformTaskOnGAThread("onResume", () =>
 			{
 				GAState.ResumeSessionAndStartQueue();
 			});
-#else
-			GAState.ResumeSessionAndStartQueue();
-#endif
 		}
 
 		#region PRIVATE HELPERS
