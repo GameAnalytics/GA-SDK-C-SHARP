@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.2">
         <id>GameAnalytics.UWP.SDK</id>
-        <version>1.1.5</version>
+        <version>1.1.6</version>
         <title>GameAnalytics UWP SDK</title>
         <authors>GameAnalytics</authors>
         <owners>GameAnalytics</owners>
@@ -31,6 +31,5 @@
     <files>
         <file src="bin/Release/GameAnalytics.UWP.dll" target="lib/uap10.0" />
 		<file src="Microsoft.Data.Sqlite.dll" target="lib/uap10.0" />
-        <file src="GameAnalytics.UWP.SDK.targets" target="build/uap10.0/GameAnalytics.UWP.SDK.targets" />
     </files>
 </package>

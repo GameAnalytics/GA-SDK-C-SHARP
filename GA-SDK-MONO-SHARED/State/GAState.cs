@@ -332,14 +332,6 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONNode currentSdkConfig = SdkConfig;
 
-			IEnumerator<JSONNode> enumerator = currentSdkConfig.Childs.GetEnumerator();
-
-			JSONNode json = null;
-			if(enumerator.MoveNext())
-			{
-				json = enumerator.Current;
-			}
-
 			if (currentSdkConfig["enabled"] != null && !currentSdkConfig["enabled"].AsBool)
 			{
 				return false;
@@ -560,6 +552,7 @@ namespace GameAnalyticsSDK.Net.State
 					GAEvents.AddSessionEndEvent();
 					SessionStart = 0;
 				}
+				GAThreading.StopThread();
 			}
 		}
 
@@ -583,6 +576,7 @@ namespace GameAnalyticsSDK.Net.State
                 StartNewSession();
 #endif
             }
+			GAThreading.StartThread();
 		}
 
 		public static JSONClass GetEventAnnotations()
@@ -625,10 +619,21 @@ namespace GameAnalyticsSDK.Net.State
 				annotations["engine_version"] = GADevice.GameEngineVersion;
 			}
 
-			// ---- CONDITIONAL ---- //
+#if WINDOWS_UWP
+            if (!string.IsNullOrEmpty(GADevice.AdvertisingId))
+            {
+                annotations["uwp_aid"] = GADevice.AdvertisingId;
+            }
+            else if (!string.IsNullOrEmpty(GADevice.DeviceId))
+            {
+                annotations["uwp_id"] = GADevice.DeviceId;
+            }
+#endif
 
-			// App build version (use if not nil)
-			if (!string.IsNullOrEmpty(Build))
+            // ---- CONDITIONAL ---- //
+
+            // App build version (use if not nil)
+            if (!string.IsNullOrEmpty(Build))
 			{
 				annotations["build"] = Build;
 			}
@@ -698,7 +703,7 @@ namespace GameAnalyticsSDK.Net.State
 			// SDK version
 			initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
 			// Operation system version
-			initAnnotations["os_version"] = "abc " + GADevice.OSVersion;
+			initAnnotations["os_version"] = GADevice.OSVersion;
 
 			// Platform (operating system)
 			initAnnotations["platform"] = GADevice.BuildPlatform;
@@ -878,9 +883,9 @@ namespace GameAnalyticsSDK.Net.State
 					}
 				}
 
-				if(!string.IsNullOrEmpty(instance.FacebookId))
+				if(!string.IsNullOrEmpty(instance.Gender))
 				{
-					GAStore.SetState(FacebookIdKey, instance.FacebookId);
+					GAStore.SetState(GenderKey, instance.Gender);
 				}
 				else
 				{
@@ -984,9 +989,6 @@ namespace GameAnalyticsSDK.Net.State
 			// make sure the current custom dimensions are valid
 			ValidateAndFixCurrentDimensions();
 
-#if UNITY_WEBGL || UNITY_TIZEN
-			GAHTTPApi.Instance.RequestInit();
-#else
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
             KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
@@ -995,7 +997,6 @@ namespace GameAnalyticsSDK.Net.State
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
-#endif
         }
 
         public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONClass initResponseDict)

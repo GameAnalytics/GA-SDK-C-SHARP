@@ -303,8 +303,8 @@ namespace GameAnalyticsSDK.Net
 			Assert.False(GAValidator.ValidateSdkWrapperVersion("unity 1.2.x"));
 
 			Assert.True(GAValidator.ValidateSdkWrapperVersion("unity 1.2.3"));
-			Assert.True(GAValidator.ValidateSdkWrapperVersion("marmalade 1.2.3"));
-			Assert.True(GAValidator.ValidateSdkWrapperVersion("corona 1.2.3"));
+			Assert.False(GAValidator.ValidateSdkWrapperVersion("marmalade 1.2.3"));
+			Assert.False(GAValidator.ValidateSdkWrapperVersion("corona 1.2.3"));
 			Assert.True(GAValidator.ValidateSdkWrapperVersion("unity 1233.101.0"));
 		}
 
@@ -336,10 +336,10 @@ namespace GameAnalyticsSDK.Net
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1.2.3"));
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1.2"));
 			Assert.True(GAValidator.ValidateEngineVersion("unity 1"));
-			Assert.True(GAValidator.ValidateEngineVersion("marmalade 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("xamarin 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("cocos2d 1.2.3"));
-			Assert.True(GAValidator.ValidateEngineVersion("unreal 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("marmalade 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("xamarin 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("cocos2d 1.2.3"));
+			Assert.False(GAValidator.ValidateEngineVersion("unreal 1.2.3"));
 		}
 
 		[Test]
@@ -448,17 +448,17 @@ namespace GameAnalyticsSDK.Net
 		[Test]
 		public void TestValidateLongString()
 		{
-			Assert.True(GAValidator.ValidateString(GATestUtilities.GetRandomString(64), false));
-			Assert.True(GAValidator.ValidateString(GATestUtilities.GetRandomString(64), true));
-			Assert.True(GAValidator.ValidateString(GATestUtilities.GetRandomString(10), false));
-			Assert.True(GAValidator.ValidateString(GATestUtilities.GetRandomString(10), true));
-			Assert.True(GAValidator.ValidateString(null, true));
-			Assert.True(GAValidator.ValidateString("", true));
+			Assert.True(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(8192), false));
+			Assert.True(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(8192), true));
+			Assert.True(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(10), false));
+			Assert.True(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(10), true));
+			Assert.True(GAValidator.ValidateLongString(null, true));
+			Assert.True(GAValidator.ValidateLongString("", true));
 
-			Assert.False(GAValidator.ValidateString(GATestUtilities.GetRandomString(80), false));
-			Assert.False(GAValidator.ValidateString(GATestUtilities.GetRandomString(80), true));
-			Assert.False(GAValidator.ValidateString(null, false));
-			Assert.False(GAValidator.ValidateString("", false));
+			Assert.False(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(8193), false));
+			Assert.False(GAValidator.ValidateLongString(GATestUtilities.GetRandomString(8193), true));
+			Assert.False(GAValidator.ValidateLongString(null, false));
+			Assert.False(GAValidator.ValidateLongString("", false));
 		}
 
 		[Test]

@@ -431,9 +431,6 @@ namespace GameAnalyticsSDK.Net.Events
 					}
 				}
 
-#if UNITY_WEBGL || UNITY_TIZEN
-				GAHTTPApi.Instance.SendEventsInArray(payloadArray, putbackSql, deleteSql);
-#else
                 // send events
 #if WINDOWS_UWP || WINDOWS_WSA
                 KeyValuePair<EGAHTTPApiResponse, JSONNode> result = await GAHTTPApi.Instance.SendEventsInArray(payloadArray);
@@ -442,7 +439,6 @@ namespace GameAnalyticsSDK.Net.Events
 #endif
 
                 ProcessEvents(result.Key, result.Value, putbackSql, deleteSql, payloadArray.Count);
-#endif
             }
             catch (Exception e)
 			{

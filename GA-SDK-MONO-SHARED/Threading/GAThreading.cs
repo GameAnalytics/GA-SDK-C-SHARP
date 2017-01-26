@@ -3,11 +3,8 @@ using System.Collections.Generic;
 #if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
 using System.Threading.Tasks;
-#elif !UNITY_WEBGL && !UNITY_TIZEN
-using System.Threading;
 #else
-using System.Collections;
-using UnityEngine;
+using System.Threading;
 #endif
 using GameAnalyticsSDK.Net.Logging;
 
@@ -15,12 +12,9 @@ namespace GameAnalyticsSDK.Net.Threading
 {
 	public class GAThreading
 	{
-		private static readonly GAThreading _instance = new GAThreading ();
-		#if !UNITY_WEBGL && !UNITY_TIZEN
+        private static bool shouldThreadrun = false;
+        private static readonly GAThreading _instance = new GAThreading ();
 		private const int ThreadWaitTimeInMs = 1000;
-		#else
-		private const int ThreadWaitTimeInSec = 1;
-		#endif
 		private readonly PriorityQueue<long, TimedBlock> blocks = new PriorityQueue<long, TimedBlock>();
 		private readonly Dictionary<long, TimedBlock> id2TimedBlockMap = new Dictionary<long, TimedBlock>();
 		private readonly object threadLock = new object();
@@ -40,14 +34,13 @@ namespace GameAnalyticsSDK.Net.Threading
 			}
 		}
 
-#if !UNITY_WEBGL && !UNITY_TIZEN
 		public static void Run()
 		{
 			GALogger.D("Starting GA thread");
 
 			try
 			{
-				while(true)
+				while(shouldThreadrun)
 				{
 					TimedBlock timedBlock;
 
@@ -75,38 +68,6 @@ namespace GameAnalyticsSDK.Net.Threading
 
 			GALogger.D("Ending GA thread");
 		}
-#else
-		public static IEnumerator Run()
-		{
-			GALogger.D("Starting GA thread");
-
-			while(true)
-			{
-				try
-				{
-					TimedBlock timedBlock;
-
-					while((timedBlock = GetNextBlock()) != null)
-					{
-						if(!timedBlock.ignore)
-						{
-							timedBlock.block();
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					GALogger.E("Error on GA thread");
-					GALogger.E(e.ToString());
-					break;
-				}
-
-				yield return new WaitForSeconds(ThreadWaitTimeInSec);
-			}
-
-			GALogger.D("Ending GA thread");
-		}
-#endif
 
         public static void PerformTaskOnGAThread(string blockName, Action taskBlock)
 		{
@@ -174,19 +135,30 @@ namespace GameAnalyticsSDK.Net.Threading
 		}
 
 #if WINDOWS_WSA || WINDOWS_UWP
-        private async static void StartThread()
+        public async static void StartThread()
 #else
-        private static void StartThread()
+        public static void StartThread()
 #endif
         {
+            GALogger.D("StartThread called");
+            if (!shouldThreadrun)
+			{
+				shouldThreadrun = true;
 #if WINDOWS_WSA || WINDOWS_UWP
-            await ThreadPool.RunAsync(o => Run());
-#elif !UNITY_WEBGL && !UNITY_TIZEN
-            Thread thread = new Thread(new ThreadStart(Run));
-			thread.Priority = ThreadPriority.Lowest;
-			thread.Start ();
+            	await ThreadPool.RunAsync(o => Run());
+#else
+				Thread thread = new Thread(new ThreadStart(Run));
+				thread.Priority = ThreadPriority.Lowest;
+				thread.Start();
 #endif
+			}
         }
+
+		public static void StopThread()
+		{
+            GALogger.D("StopThread called");
+            shouldThreadrun = false;
+		}
     }
 }
 
