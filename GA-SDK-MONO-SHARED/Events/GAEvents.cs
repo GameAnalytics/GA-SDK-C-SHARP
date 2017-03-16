@@ -491,7 +491,9 @@ namespace GameAnalyticsSDK.Net.Events
 					GAStore.ExecuteQuerySync(deleteSql);
 				}
 			}
-		}
+
+            UpdateSessionTime();
+        }
 
 		private static void CleanupEvents()
 		{
@@ -688,6 +690,18 @@ namespace GameAnalyticsSDK.Net.Events
 					}
 			}
 		}
+
+        private static void UpdateSessionTime()
+        {
+            JSONClass ev = GAState.GetEventAnnotations();
+            string jsonDefaults = ev.SaveToBase64();
+            string sql = "INSERT OR REPLACE INTO ga_session(session_id, timestamp, event) VALUES($session_id, $timestamp, $event);";
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+            parameters.Add("$session_id", ev["session_id"].Value);
+            parameters.Add("$timestamp", GAState.SessionStart);
+            parameters.Add("$event", jsonDefaults);
+            GAStore.ExecuteQuerySync(sql, parameters);
+        }
 
 		private static string ErrorSeverityToString(EGAErrorSeverity value)
 		{
