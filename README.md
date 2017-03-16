@@ -22,6 +22,9 @@ Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/w
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.7**
+* session length precision improvement
+
 **1.1.6**
 * minor improvements on background thread
 
@@ -69,7 +72,7 @@ Add this to the top of each class you use the GameAnalytics SDK in:
  using GameAnalyticsSDK.Net;
 ```
 
-####Configuration
+#### Configuration
 
 Example:
 
@@ -87,7 +90,7 @@ GameAnalytics.ConfigureAvailableCustomDimensions02("whale", "dolpin");
 GameAnalytics.ConfigureAvailableCustomDimensions03("horde", "alliance");
 ```
 
-####Initialization
+#### Initialization
 
 Example:
 
@@ -95,7 +98,7 @@ Example:
 GameAnalytics.Initialize("<your_game_key>", "<your_secret_key>");
 ```
 
-####Send events
+#### Send events
 
 Example:
 

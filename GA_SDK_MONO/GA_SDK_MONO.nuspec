@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>GameAnalytics.Mono.SDK</id>
-        <version>1.1.6</version>
+        <version>1.1.7</version>
         <title>GameAnalytics Mono SDK</title>
         <authors>GameAnalytics</authors>
         <owners>GameAnalytics</owners>
