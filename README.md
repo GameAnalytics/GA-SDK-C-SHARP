@@ -22,6 +22,9 @@ Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/w
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.7**
+* session length precision improvement
+
 **1.1.6**
 * minor improvements on background thread
 
