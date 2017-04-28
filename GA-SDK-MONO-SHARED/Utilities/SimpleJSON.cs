@@ -74,6 +74,8 @@ namespace GameAnalyticsSDK.Net.Utilities
 		public virtual JSONNode Remove(int aIndex) { return null; }
 		public virtual JSONNode Remove(JSONNode aNode) { return aNode; }
 
+        public virtual bool HasKey(string key) { return false; }
+
 		public virtual IEnumerable<JSONNode> Childs { get { yield break;} }
 		public IEnumerable<JSONNode> DeepChilds
 		{
@@ -624,8 +626,12 @@ namespace GameAnalyticsSDK.Net.Utilities
 			get { return m_Dict.Count; }
 		}
 
+        public override bool HasKey(string key)
+        {
+            return m_Dict.ContainsKey(key);
+        }
 
-		public override void Add(string aKey, JSONNode aItem)
+        public override void Add(string aKey, JSONNode aItem)
 		{
 			if (!string.IsNullOrEmpty(aKey))
 			{

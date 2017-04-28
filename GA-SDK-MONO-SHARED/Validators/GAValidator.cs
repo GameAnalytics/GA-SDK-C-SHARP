@@ -321,7 +321,7 @@ namespace GameAnalyticsSDK.Net.Validators
 			// validate enabled field
 			try
 			{
-				validatedDict.Add("enabled", new JSONData(initResponse["enabled"].AsBool));
+				validatedDict.Add("enabled", new JSONData(initResponse.HasKey("enabled") ? initResponse["enabled"].AsBool : true));
 			}
 			catch (Exception)
 			{
@@ -332,15 +332,10 @@ namespace GameAnalyticsSDK.Net.Validators
 			// validate server_ts
 			try
 			{
-				long serverTsNumber = initResponse["server_ts"].AsLong;
+				long serverTsNumber = initResponse.HasKey("server_ts") ? initResponse["server_ts"].AsLong : -1;
 				if (serverTsNumber > 0)
 				{
 					validatedDict.Add("server_ts", new JSONData(serverTsNumber));
-				}
-				else
-				{
-					GALogger.W("validateInitRequestResponse failed - invalid value in 'server_ts' field.");
-					return null;
 				}
 			}
 			catch (Exception e)

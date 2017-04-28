@@ -332,7 +332,7 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONNode currentSdkConfig = SdkConfig;
 
-			if (currentSdkConfig["enabled"] != null && !currentSdkConfig["enabled"].AsBool)
+			if (currentSdkConfig.HasKey("enabled") && !currentSdkConfig["enabled"].AsBool)
 			{
 				return false;
 			}
