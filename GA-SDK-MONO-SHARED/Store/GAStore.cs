@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using GameAnalyticsSDK.Net.Utilities;
 using GameAnalyticsSDK.Net.Logging;
 using GameAnalyticsSDK.Net.Device;
-using Newtonsoft.Json;
 using System.IO;
 #if UNITY_SAMSUNGTV
 using System.Runtime.InteropServices;
