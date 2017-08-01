@@ -1,7 +1,6 @@
-#### Mono
+##### Mono
 [![NuGet](https://img.shields.io/nuget/v/GameAnalytics.Mono.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)
 [![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.Mono.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)
-
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 # GA-SDK-C-SHARP
