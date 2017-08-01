@@ -1,16 +1,10 @@
-##### Mono
-[![NuGet](https://img.shields.io/nuget/v/GameAnalytics.Mono.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)
-[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.Mono.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+| Mono        | UWP           | WSA  |
+| ------------- |:-------------:| -----:|
+| [![NuGet](https://img.shields.io/nuget/v/GameAnalytics.Mono.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)
+[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.Mono.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.Mono.SDK)      | [![NuGet](https://img.shields.io/nuget/v/GameAnalytics.UWP.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.UWP.SDK)
+[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.UWP.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.UWP.SDK) | [![NuGet](https://img.shields.io/nuget/v/GameAnalytics.WSA.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.WSA.SDK)
+[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.WSA.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.WSA.SDK) |
 
-##### UWP
-[![NuGet](https://img.shields.io/nuget/v/GameAnalytics.UWP.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.UWP.SDK)
-[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.UWP.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.UWP.SDK)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-
-##### WSA
-[![NuGet](https://img.shields.io/nuget/v/GameAnalytics.WSA.SDK.svg)](https://www.nuget.org/packages/GameAnalytics.WSA.SDK)
-[![NuGet](https://img.shields.io/nuget/dt/GameAnalytics.WSA.SDK.svg?label=nuget%20downloads)](https://www.nuget.org/packages/GameAnalytics.WSA.SDK)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 # GA-SDK-C-SHARP
