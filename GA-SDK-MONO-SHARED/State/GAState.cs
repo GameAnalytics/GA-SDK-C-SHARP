@@ -16,8 +16,11 @@ namespace GameAnalyticsSDK.Net.State
 		#region Fields and properties
 
 		private const String CategorySdkError = "sdk_error";
+        private const int MaxCustomFieldsCount = 50;
+        private const int MaxCustomFieldsKeyLength = 64;
+        private const int MaxCustomFieldsValueStringLength = 256;
 
-		private static readonly GAState _instance = new GAState();
+        private static readonly GAState _instance = new GAState();
 		private static GAState Instance
 		{
 			get
@@ -730,6 +733,84 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			return SessionStart != 0;
 		}
+
+        public static JSONClass ValidateAndCleanCustomFields(IDictionary<string, object> fields)
+        {
+            JSONClass result = new JSONClass();
+
+            if(fields != null)
+            {
+                int count = 0;
+
+                foreach(KeyValuePair<string, object> entry in fields)
+                {
+                    if(entry.Key == null || entry.Value == null)
+                    {
+                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key or value is null");
+                    }
+                    else if(count < MaxCustomFieldsCount)
+                    {
+                        if(GAUtilities.StringMatch(entry.Key, "^[a-zA-Z0-9_]{1," + MaxCustomFieldsKeyLength + "}$"))
+                        {
+                            if(entry.Value is string || entry.Value is char)
+                            {
+                                string value = Convert.ToString(entry.Value);
+
+                                if(value.Length <= MaxCustomFieldsValueStringLength && value.Length > 0)
+                                {
+                                    result[entry.Key] = value;
+                                    ++count;
+                                }
+                                else
+                                {
+                                    GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is an empty string or exceeds the max number of characters (" + MaxCustomFieldsValueStringLength + ")");
+                                }
+                            }
+                            else if (entry.Value is double)
+                            {
+                                result[entry.Key] = new JSONData((double)entry.Value);
+                                ++count;
+                            }
+                            else if (entry.Value is float)
+                            {
+                                result[entry.Key] = new JSONData((float)entry.Value);
+                                ++count;
+                            }
+                            else if (entry.Value is long || entry.Value is ulong)
+                            {
+                                result[entry.Key] = new JSONData(Convert.ToInt64(entry.Value));
+                                ++count;
+                            }
+                            else if (entry.Value is int || 
+                                entry.Value is byte ||
+                                entry.Value is sbyte ||
+                                entry.Value is byte ||
+                                entry.Value is uint ||
+                                entry.Value is short ||
+                                entry.Value is ushort)
+                            {
+                                result[entry.Key] = new JSONData(Convert.ToInt32(entry.Value));
+                                ++count;
+                            }
+                            else
+                            {
+                                GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is not a string or number");
+                            }
+                        }
+                        else
+                        {
+                            GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key illegal characters, an empty or exceeds the max number of characters (" + MaxCustomFieldsKeyLength + ")");
+                        }
+                    }
+                    else
+                    {
+                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because it exceeds the max number of custom fields (" + MaxCustomFieldsCount + ")");
+                    }
+                }
+            }
+
+            return result;
+        }
 
 #endregion // Public methods
 

@@ -122,8 +122,9 @@ namespace GameAnalyticsSDK.Net.Events
 			int amount,
 			string itemType,
 			string itemId,
-			string cartType
-		)
+			string cartType,
+            IDictionary<string, object> fields
+        )
 		{
 			// Validate event params
 			if (!GAValidator.ValidateBusinessEvent(currency, amount, cartType, itemType, itemId))
@@ -155,6 +156,9 @@ namespace GameAnalyticsSDK.Net.Events
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
 
+            // Add custom fields
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+
 			// Log
 			GALogger.I("Add BUSINESS event: {currency:" + currency + ", amount:" + amount + ", itemType:" + itemType + ", itemId:" + itemId + ", cartType:" + cartType + "}");
 
@@ -162,7 +166,7 @@ namespace GameAnalyticsSDK.Net.Events
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId)
+		public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId, IDictionary<string, object> fields)
 		{
 			// Validate event params
 			if (!GAValidator.ValidateResourceEvent(flowType, currency, (long)amount, itemType, itemId))
@@ -189,14 +193,17 @@ namespace GameAnalyticsSDK.Net.Events
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
 
-			// Log
-			GALogger.I("Add RESOURCE event: {currency:" + currency + ", amount:" + amount + ", itemType:" + itemType + ", itemId:" + itemId + "}");
+            // Add custom fields
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+
+            // Log
+            GALogger.I("Add RESOURCE event: {currency:" + currency + ", amount:" + amount + ", itemType:" + itemType + ", itemId:" + itemId + "}");
 
 			// Send to store
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore)
+		public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore, IDictionary<string, object> fields)
 		{
 			string progressionStatusString = ProgressionStatusToString(progressionStatus);
 
@@ -263,14 +270,17 @@ namespace GameAnalyticsSDK.Net.Events
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
 
-			// Log
-			GALogger.I("Add PROGRESSION event: {status:" + progressionStatusString + ", progression01:" + progression01 + ", progression02:" + progression02 + ", progression03:" + progression03 + ", score:" + score + ", attempt:" + attempt_num + "}");
+            // Add custom fields
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+
+            // Log
+            GALogger.I("Add PROGRESSION event: {status:" + progressionStatusString + ", progression01:" + progression01 + ", progression02:" + progression02 + ", progression03:" + progression03 + ", score:" + score + ", attempt:" + attempt_num + "}");
 
 			// Send to store
 			AddEventToStore(eventDict);
 		}
 
-		public static void AddDesignEvent(string eventId, double value, bool sendValue)
+		public static void AddDesignEvent(string eventId, double value, bool sendValue, IDictionary<string, object> fields)
 		{
 			// Validate
 			if (!GAValidator.ValidateDesignEvent(eventId, value))
@@ -291,14 +301,17 @@ namespace GameAnalyticsSDK.Net.Events
 				eventData.Add("value", new JSONData(value));
 			}
 
-			// Log
-			GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
+            // Add custom fields
+            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
+
+            // Log
+            GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
 
 			// Send to store
 			AddEventToStore(eventData);
 		}
 
-		public static void AddErrorEvent(EGAErrorSeverity severity, string message)
+		public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields)
 		{
 			string severityString = ErrorSeverityToString(severity);
 
@@ -317,8 +330,11 @@ namespace GameAnalyticsSDK.Net.Events
 			eventData["severity"] = severityString;
 			eventData["message"] = message;
 
-			// Log
-			GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
+            // Add custom fields
+            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
+
+            // Log
+            GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
 
 			// Send to store
 			AddEventToStore(eventData);
@@ -644,7 +660,20 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 		}
 
-		private static string ResourceFlowTypeToString(EGAResourceFlowType value)
+        private static void AddFieldsToEvent(JSONClass eventData, JSONClass fields)
+        {
+            if (eventData == null)
+            {
+                return;
+            }
+            
+            if(fields != null && fields.Count > 0)
+            {
+                eventData["custom_fields"] = fields;
+            }
+        }
+
+        private static string ResourceFlowTypeToString(EGAResourceFlowType value)
 		{
 			switch(value)
 			{
