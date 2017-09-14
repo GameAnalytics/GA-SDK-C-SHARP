@@ -301,6 +301,9 @@ namespace GameAnalyticsSDK.Net.Events
 				eventData.Add("value", new JSONData(value));
 			}
 
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
+
             // Add custom fields
             AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
 
@@ -329,6 +332,9 @@ namespace GameAnalyticsSDK.Net.Events
 			eventData["category"] = CategoryError;
 			eventData["severity"] = severityString;
 			eventData["message"] = message;
+
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
 
             // Add custom fields
             AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
