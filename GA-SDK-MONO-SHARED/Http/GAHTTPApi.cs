@@ -141,7 +141,10 @@ namespace GameAnalyticsSDK.Net.Http
 
 			// Generate URL
 			string url = baseUrl + "/" + gameKey + "/" + initializeUrlPath;
-			GALogger.D("Sending 'init' URL: " + url);
+            url = "https://rubick.gameanalytics.com/v2/command_center?game_key=" + gameKey + "&interval_seconds=1000000";
+            //url = "https://requestb.in/1fvbe2g1";
+
+            GALogger.D("Sending 'init' URL: " + url);
 
 			JSONClass initAnnotations = GAState.GetInitAnnotations();
 
@@ -161,8 +164,8 @@ namespace GameAnalyticsSDK.Net.Http
 			string authorization = "";
 			try
 			{
-				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
-				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
+				byte[] payloadData = CreatePayloadData(JSONstring, false);
+				HttpWebRequest request = CreateRequest(url, payloadData, false);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
 #if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())

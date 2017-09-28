@@ -310,8 +310,12 @@ namespace GameAnalyticsSDK.Net.State
 		private JSONNode sdkConfigDefault = new JSONClass();
 		private JSONNode sdkConfig = new JSONClass();
 		private JSONNode sdkConfigCached = new JSONClass();
+        private JSONNode configurations = new JSONClass();
+        private bool commandCenterIsReady;
+        private readonly List<ICommandCenterListener> commandCenterListeners = new List<ICommandCenterListener>();
+        private readonly object configurationsLock = new object();
 
-		public const string InMemoryPrefix = "in_memory_";
+        public const string InMemoryPrefix = "in_memory_";
 		private const string DefaultUserIdKey = "default_user_id";
 		public const string SessionNumKey = "session_num";
 		public const string TransactionNumKey = "transaction_num";
@@ -703,8 +707,10 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONClass initAnnotations = new JSONClass();
 
-			// SDK version
-			initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
+            initAnnotations["user_id"] = GAState.Identifier;
+
+            // SDK version
+            initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
 			// Operation system version
 			initAnnotations["os_version"] = GADevice.OSVersion;
 
@@ -810,6 +816,40 @@ namespace GameAnalyticsSDK.Net.State
             }
 
             return result;
+        }
+
+        public static string GetConfigurationStringValue(string key, string defaultValue)
+        {
+            //lock(Instance.configurationsLock)
+            {
+                return Instance.configurations.HasKey(key) ? Instance.configurations[key].AsString : defaultValue;
+            }
+        }
+
+        public static bool IsCommandCenterReady()
+        {
+            return Instance.commandCenterIsReady;
+        }
+
+        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        {
+            if(!Instance.commandCenterListeners.Contains(listener))
+            {
+                Instance.commandCenterListeners.Add(listener);
+            }
+        }
+
+        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        {
+            if(Instance.commandCenterListeners.Contains(listener))
+            {
+                Instance.commandCenterListeners.Remove(listener);
+            }
+        }
+
+        public static string GetConfigurationsAsString()
+        {
+            return Instance.configurations.ToString();
         }
 
 #endregion // Public methods
@@ -1150,6 +1190,9 @@ namespace GameAnalyticsSDK.Net.State
 			// set offset in state (memory) from current config (config could be from cache etc.)
 			Instance.ClientServerTimeOffset = SdkConfig["time_offset"] != null ? SdkConfig["time_offset"].AsLong : 0;
 
+            // populate configurations
+            PopulateConfigurations(SdkConfig);
+
 			// if SDK is disabled in config
 			if(!IsEnabled())
 			{
@@ -1205,6 +1248,45 @@ namespace GameAnalyticsSDK.Net.State
 			long clientTs = GAUtilities.TimeIntervalSince1970();
 			return serverTs - clientTs;
 		}
+
+        private static void PopulateConfigurations(JSONNode sdkConfig)
+        {
+           //lock(Instance.configurationsLock)
+            {
+                JSONArray configurations = sdkConfig["configurations"].AsArray;
+
+                if(configurations != null)
+                {
+                    for(int i = 0; i < configurations.Count; ++i)
+                    {
+                        JSONClass configuration = configurations[i].AsObject;
+
+                        if(configuration != null)
+                        {
+                            string key = configuration["key"].AsString;
+                            object value = configuration["value"].Value;
+                            long start_ts = configuration.HasKey("start") ? configuration["start"].AsLong : long.MinValue;
+                            long end_ts = configuration.HasKey("end") ? configuration["end"].AsLong : long.MaxValue;
+
+                            long client_ts_adjusted = GetClientTsAdjusted();
+
+                            if(key != null && value != null && client_ts_adjusted > start_ts && client_ts_adjusted < end_ts)
+                            {
+                                JSONClass json = new JSONClass();
+                                json.Value = value;
+                                Instance.configurations.Add(key, json);
+                                GALogger.D("configuration added: " + configuration.ToString());
+                            }
+                        }
+                    }
+                }
+                Instance.commandCenterIsReady = true;
+                foreach(ICommandCenterListener listener in Instance.commandCenterListeners)
+                {
+                    listener.OnCommandCenterUpdated();
+                }
+            }
+        }
 
 		#endregion // Private methods
 	}

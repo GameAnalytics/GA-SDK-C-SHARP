@@ -63,6 +63,7 @@ namespace GameAnalyticsSDK.Net.Logging
 
 		private GALogger()
 		{
+            debugEnabled = true;
 #if DEBUG
 			debugEnabled = true;
 #endif

@@ -540,9 +540,38 @@ namespace GameAnalyticsSDK.Net
 			});
 		}
 
-		#region PRIVATE HELPERS
+        #region COMMAND CENTER
 
-		private static bool IsSdkReady(bool needsInitialized)
+        public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
+        {
+            return GAState.GetConfigurationStringValue(key, defaultValue);
+        }
+
+        public static bool IsCommandCenterReady()
+        {
+            return GAState.IsCommandCenterReady();
+        }
+
+        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        {
+            GAState.AddCommandCenterListener(listener);
+        }
+
+        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        {
+            GAState.RemoveCommandCenterListener(listener);
+        }
+
+        public static string GetConfigurationsAsString()
+        {
+            return GAState.GetConfigurationsAsString();
+        }
+
+        #endregion // COMMAND CENTER
+
+        #region PRIVATE HELPERS
+
+        private static bool IsSdkReady(bool needsInitialized)
 		{
 			return IsSdkReady(needsInitialized, true);
 		}
