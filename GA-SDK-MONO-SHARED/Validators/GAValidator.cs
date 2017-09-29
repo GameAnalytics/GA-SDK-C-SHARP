@@ -307,7 +307,7 @@ namespace GameAnalyticsSDK.Net.Validators
 			return true;
 		}
 
-		public static JSONClass ValidateAndCleanInitRequestResponse(JSONNode initResponse)
+		public static JSONObject ValidateAndCleanInitRequestResponse(JSONNode initResponse)
 		{
 			// make sure we have a valid dict
 			if (initResponse == null)
@@ -316,12 +316,12 @@ namespace GameAnalyticsSDK.Net.Validators
 				return null;
 			}
 
-			JSONClass validatedDict = new JSONClass();
+			JSONObject validatedDict = new JSONObject();
 
 			// validate enabled field
 			try
 			{
-				validatedDict.Add("enabled", new JSONData(initResponse.HasKey("enabled") ? initResponse["enabled"].AsBool : true));
+				validatedDict.Add("enabled", new JSONBool(initResponse.HasKey("enabled") ? initResponse["enabled"].AsBool : true));
 			}
 			catch (Exception)
 			{
@@ -335,12 +335,23 @@ namespace GameAnalyticsSDK.Net.Validators
 				long serverTsNumber = initResponse.HasKey("server_ts") ? initResponse["server_ts"].AsLong : -1;
 				if (serverTsNumber > 0)
 				{
-					validatedDict.Add("server_ts", new JSONData(serverTsNumber));
+					validatedDict.Add("server_ts", new JSONNumber(serverTsNumber));
 				}
 			}
 			catch (Exception e)
 			{
 				GALogger.W("validateInitRequestResponse failed - invalid type in 'server_ts' field. type=" + initResponse["server_ts"].GetType() + ", value=" + initResponse["server_ts"] + ", " + e);
+				return null;
+			}
+
+			// validate configurations field
+			try
+			{
+				validatedDict.Add("configurations", initResponse.HasKey("configurations") ? initResponse["configurations"].AsArray : new JSONArray());
+			}
+			catch (Exception e)
+			{
+				GALogger.W("validateInitRequestResponse failed - invalid type in 'configurations' field. type=" + initResponse["configurations"].GetType() + ", value=" + initResponse["configurations"] + ", " + e);
 				return null;
 			}
 

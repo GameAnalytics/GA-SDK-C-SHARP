@@ -65,7 +65,7 @@ namespace GameAnalyticsSDK.Net.Events
 			string categorySessionStart = CategorySessionStart;
 
 			// Event specific data
-			JSONClass eventDict = new JSONClass();
+			JSONObject eventDict = new JSONObject();
 			eventDict["category"] = categorySessionStart;
 
 			// Increment session number  and persist
@@ -100,9 +100,9 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Event specific data
-			JSONClass eventDict = new JSONClass();
+			JSONObject eventDict = new JSONObject();
 			eventDict["category"] = CategorySessionEnd;
-			eventDict.Add("length", new JSONData(sessionLength));
+			eventDict.Add("length", new JSONNumber(sessionLength));
 
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
@@ -134,7 +134,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Create empty eventData
-			JSONClass eventDict = new JSONClass();
+			JSONObject eventDict = new JSONObject();
 
 			// Increment transaction number and persist
 			GAState.IncrementTransactionNum();
@@ -144,8 +144,8 @@ namespace GameAnalyticsSDK.Net.Events
 			eventDict["event_id"] = itemType + ":" + itemId;
 			eventDict["category"] = CategoryBusiness;
 			eventDict["currency"] = currency;
-			eventDict.Add("amount", new JSONData(amount));
-			eventDict.Add(GAState.TransactionNumKey, new JSONData(GAState.TransactionNum));
+			eventDict.Add("amount", new JSONNumber(amount));
+			eventDict.Add(GAState.TransactionNumKey, new JSONNumber(GAState.TransactionNum));
 
 			// Optional
 			if (!string.IsNullOrEmpty(cartType))
@@ -182,13 +182,13 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Create empty eventData
-			JSONClass eventDict = new JSONClass();
+			JSONObject eventDict = new JSONObject();
 
 			// insert event specific values
 			string flowTypeString = ResourceFlowTypeToString(flowType);
 			eventDict["event_id"] = flowTypeString + ":" + currency + ":" + itemType + ":" + itemId;
 			eventDict["category"] = CategoryResource;
-			eventDict.Add("amount", new JSONData(amount));
+			eventDict.Add("amount", new JSONNumber(amount));
 
 			// Add custom dimensions
 			AddDimensionsToEvent(eventDict);
@@ -215,7 +215,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Create empty eventData
-			JSONClass eventDict = new JSONClass();
+			JSONObject eventDict = new JSONObject();
 
 			// Progression identifier
 			string progressionIdentifier;
@@ -243,7 +243,7 @@ namespace GameAnalyticsSDK.Net.Events
 			// Add score if specified and status is not start
 			if (sendScore && progressionStatus != EGAProgressionStatus.Start)
 			{
-				eventDict.Add("score", new JSONData(score));
+				eventDict.Add("score", new JSONNumber(score));
 			}
 
 			// Count attempts on each progression fail and persist
@@ -261,7 +261,7 @@ namespace GameAnalyticsSDK.Net.Events
 
 				// Add to event
 				attempt_num = GAState.GetProgressionTries(progressionIdentifier);
-				eventDict.Add("attempt_num", new JSONData(attempt_num));
+				eventDict.Add("attempt_num", new JSONNumber(attempt_num));
 
 				// Clear
 				GAState.ClearProgressionTries(progressionIdentifier);
@@ -290,7 +290,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Create empty eventData
-			JSONClass eventData = new JSONClass();
+			JSONObject eventData = new JSONObject();
 
 			// Append event specifics
 			eventData["category"] = CategoryDesign;
@@ -298,7 +298,7 @@ namespace GameAnalyticsSDK.Net.Events
 
 			if(sendValue)
 			{
-				eventData.Add("value", new JSONData(value));
+				eventData.Add("value", new JSONNumber(value));
 			}
 
             // Add custom dimensions
@@ -326,7 +326,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 
 			// Create empty eventData
-			JSONClass eventData = new JSONClass();
+			JSONObject eventData = new JSONObject();
 
 			// Append event specifics
 			eventData["category"] = CategoryError;
@@ -417,7 +417,7 @@ namespace GameAnalyticsSDK.Net.Events
 				
 					// Get last timestamp
 					JSONNode lastItem = events[events.Count - 1];
-					string lastTimestamp = lastItem["client_ts"].AsString;
+					string lastTimestamp = lastItem["client_ts"].Value;
 
 					// Select again
 					selectSql = "SELECT event FROM ga_events WHERE status = 'new' " + andCategory + " AND client_ts<='" + lastTimestamp + "';";
@@ -446,10 +446,17 @@ namespace GameAnalyticsSDK.Net.Events
 				for (int i = 0; i < events.Count; ++i)
 				{
 					JSONNode ev = events[i];
-					JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].AsString);
-					if (eventDict.Count != 0)
+					try
 					{
-						payloadArray.Add(eventDict);
+						JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].Value);
+						if (eventDict.Count != 0)
+						{
+							payloadArray.Add(eventDict);
+						}
+					}
+					catch(Exception e)
+					{
+						GALogger.E("ProcessEvents: Error decoding json, " + e);
 					}
 				}
 
@@ -490,7 +497,7 @@ namespace GameAnalyticsSDK.Net.Events
 					if(dataDict != null)
 					{
 						JSONNode json = null;
-						IEnumerator<JSONNode> enumerator = dataDict.Childs.GetEnumerator();
+						IEnumerator<JSONNode> enumerator = dataDict.Children.GetEnumerator();
 						if(enumerator.MoveNext())
 						{
 							json = enumerator.Current;
@@ -543,27 +550,34 @@ namespace GameAnalyticsSDK.Net.Events
 			for (int i = 0; i < sessions.Count; ++i)
 			{
 				JSONNode session = sessions[i];
-				JSONNode sessionEndEvent = JSONNode.LoadFromBase64(session["event"].AsString);
-				long event_ts = sessionEndEvent["client_ts"].AsLong;
-				long start_ts = session["timestamp"].AsLong;
+				try
+				{
+					JSONNode sessionEndEvent = JSONNode.LoadFromBase64(session["event"].Value);
+					long event_ts = sessionEndEvent["client_ts"].AsLong;
+					long start_ts = session["timestamp"].AsLong;
 
-				long length = event_ts - start_ts;
-				length = Math.Max(0, length);
+					long length = event_ts - start_ts;
+					length = Math.Max(0, length);
 
-				GALogger.D("fixMissingSessionEndEvents length calculated: " + length);
+					GALogger.D("fixMissingSessionEndEvents length calculated: " + length);
 
-				sessionEndEvent["category"] = CategorySessionEnd;
-				sessionEndEvent.Add("length", new JSONData(length));
+					sessionEndEvent["category"] = CategorySessionEnd;
+					sessionEndEvent.Add("length", new JSONNumber(length));
 
-				// Add to store
-				AddEventToStore(sessionEndEvent.AsObject);
+					// Add to store
+					AddEventToStore(sessionEndEvent.AsObject);
+				}
+				catch(Exception e)
+				{
+					GALogger.E("FixMissingSessionEndEvents: Error decoding json, " + e);
+				}
 			}
         }
 
 #if WINDOWS_WSA
-        private async static void AddEventToStore(JSONClass eventData)
+        private async static void AddEventToStore(JSONObject eventData)
 #else
-        private static void AddEventToStore(JSONClass eventData)
+		private static void AddEventToStore(JSONObject eventData)
 #endif
         {
 			// Check if datastore is available
@@ -584,14 +598,14 @@ namespace GameAnalyticsSDK.Net.Events
 			{
                 // Check db size limits (10mb)
                 // If database is too large block all except user, session and business
-                if (GAStore.IsDbTooLargeForEvents && !GAUtilities.StringMatch(eventData["category"].AsString, "^(user|session_end|business)$"))
+                if (GAStore.IsDbTooLargeForEvents && !GAUtilities.StringMatch(eventData["category"].Value, "^(user|session_end|business)$"))
 				{
 					GALogger.W("Database too large. Event has been blocked.");
 					return;
 				}
 
 				// Get default annotations
-				JSONClass ev = GAState.GetEventAnnotations();
+				JSONObject ev = GAState.GetEventAnnotations();
 
 				// Create json with only default annotations
 				string jsonDefaults = ev.SaveToBase64();
@@ -621,7 +635,7 @@ namespace GameAnalyticsSDK.Net.Events
 				GAStore.ExecuteQuerySync(sql, parameters);
 
 				// Add to session store if not last
-				if (eventData["category"].AsString.Equals(CategorySessionEnd))
+				if (eventData["category"].Value.Equals(CategorySessionEnd))
 				{
 					parameters.Clear();
 					parameters.Add("$session_id", ev["session_id"].Value);
@@ -645,7 +659,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 		}
 
-		private static void AddDimensionsToEvent(JSONClass eventData)
+		private static void AddDimensionsToEvent(JSONObject eventData)
 		{
 			if (eventData == null)
 			{
@@ -666,7 +680,7 @@ namespace GameAnalyticsSDK.Net.Events
 			}
 		}
 
-        private static void AddFieldsToEvent(JSONClass eventData, JSONClass fields)
+        private static void AddFieldsToEvent(JSONObject eventData, JSONObject fields)
         {
             if (eventData == null)
             {
@@ -730,7 +744,7 @@ namespace GameAnalyticsSDK.Net.Events
         {
             if(GAState.SessionIsStarted())
             {
-                JSONClass ev = GAState.GetEventAnnotations();
+				JSONObject ev = GAState.GetEventAnnotations();
                 string jsonDefaults = ev.SaveToBase64();
                 string sql = "INSERT OR REPLACE INTO ga_session(session_id, timestamp, event) VALUES($session_id, $timestamp, $event);";
                 Dictionary<string, object> parameters = new Dictionary<string, object>();

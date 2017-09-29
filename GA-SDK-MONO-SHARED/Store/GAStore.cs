@@ -153,7 +153,7 @@ namespace GameAnalyticsSDK.Net.Store
                         // get columns count
                         int columnCount = reader.FieldCount;
 
-                        JSONClass row = new JSONClass();
+                        JSONObject row = new JSONObject();
 						for (int i = 0; i < columnCount; i++)
 						{
 							string column = reader.GetName(i);
@@ -441,7 +441,7 @@ namespace GameAnalyticsSDK.Net.Store
 
                     for(int i = 0; i < resultSessionArray.Count; ++i)
                     {
-                        sessionDeleteString += resultSessionArray[i].AsString;
+                        sessionDeleteString += resultSessionArray[i].Value;
 
                         if(i < resultSessionArray.Count - 1)
                         {
