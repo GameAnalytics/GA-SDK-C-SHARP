@@ -58,15 +58,15 @@ namespace GameAnalyticsSDK.Net.State
 			private set { Instance._sessionStart = value; }
 		}
 
-		private double _sessionNum;
-		public static double SessionNum
+		private int _sessionNum;
+		public static int SessionNum
 		{
 			get { return Instance._sessionNum; }
 			private set { Instance._sessionNum = value; }
 		}
 
-		private double _transactionNum;
-		public static double TransactionNum
+		private int _transactionNum;
+		public static int TransactionNum
 		{
 			get { return Instance._transactionNum; }
 			private set { Instance._transactionNum = value; }
@@ -332,7 +332,7 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONNode currentSdkConfig = SdkConfig;
 
-			if (currentSdkConfig["enabled"] != null && !currentSdkConfig["enabled"].AsBool)
+			if (currentSdkConfig.HasKey("enabled") && !currentSdkConfig["enabled"].AsBool)
 			{
 				return false;
 			}
@@ -408,13 +408,13 @@ namespace GameAnalyticsSDK.Net.State
 
 		public static void IncrementSessionNum()
 		{
-			double sessionNumInt = SessionNum + 1;
+			int sessionNumInt = SessionNum + 1;
 			SessionNum = sessionNumInt;
 		}
 
 		public static void IncrementTransactionNum()
 		{
-			double transactionNumInt = TransactionNum + 1;
+			int transactionNumInt = TransactionNum + 1;
 			TransactionNum = transactionNumInt;
 		}
 
@@ -771,13 +771,13 @@ namespace GameAnalyticsSDK.Net.State
 
 				instance.DefaultUserId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SessionNumKey, Guid.NewGuid().ToString());
 				{
-					double tmp;
-					double.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SessionNumKey, "0"), out tmp);
+					int tmp;
+					int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + SessionNumKey, "0"), out tmp);
 					SessionNum = tmp;
 				}
 				{
-					double tmp;
-					double.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + TransactionNumKey, "0"), out tmp);
+					int tmp;
+					int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + TransactionNumKey, "0"), out tmp);
 					TransactionNum = tmp;
 				}
 				if(!string.IsNullOrEmpty(instance.FacebookId))
@@ -865,9 +865,9 @@ namespace GameAnalyticsSDK.Net.State
 
                 instance.DefaultUserId = state_dict[DefaultUserIdKey] != null ? state_dict[DefaultUserIdKey].AsString : Guid.NewGuid().ToString();
 
-                SessionNum = state_dict[SessionNumKey] != null ? state_dict[SessionNumKey].AsDouble : 0.0;
+                SessionNum = state_dict[SessionNumKey] != null ? state_dict[SessionNumKey].AsInt : 0;
 
-				TransactionNum = state_dict[TransactionNumKey] != null ? state_dict[TransactionNumKey].AsDouble : 0.0;
+				TransactionNum = state_dict[TransactionNumKey] != null ? state_dict[TransactionNumKey].AsInt : 0;
 
 				// restore cross session user values
 				if(!string.IsNullOrEmpty(instance.FacebookId))
