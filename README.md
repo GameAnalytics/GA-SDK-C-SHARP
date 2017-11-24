@@ -28,6 +28,9 @@ Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/w
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.9**
+* small correction to use int instead of double for session num
+
 **1.1.8**
 * bug fix for end session when using manual session handling
 
