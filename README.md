@@ -7,7 +7,7 @@
 # GA-SDK-C-SHARP
 GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
 
-Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/wiki).
+Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 
 > :information_source:<br>
 >
