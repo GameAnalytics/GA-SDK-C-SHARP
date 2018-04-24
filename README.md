@@ -28,6 +28,10 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.10**
+* fixed not allowing to add events when session has not started
+* fixed session length bug
+
 **1.1.9**
 * small correction to use int instead of double for session num
 
