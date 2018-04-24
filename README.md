@@ -7,7 +7,7 @@
 # GA-SDK-C-SHARP
 GameAnalytics Mono / .Net 4.5, Universal Windows 8 and UWP SDK.
 
-Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/wiki).
+Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 
 > :information_source:<br>
 >
@@ -28,6 +28,10 @@ Documentation is in the [wiki](https://github.com/GameAnalytics/GA-SDK-C-SHARP/w
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.10**
+* fixed not allowing to add events when session has not started
+* fixed session length bug
+
 **1.1.9**
 * small correction to use int instead of double for session num
 
