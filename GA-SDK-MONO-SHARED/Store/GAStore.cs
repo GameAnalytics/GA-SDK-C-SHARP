@@ -227,11 +227,13 @@ namespace GameAnalyticsSDK.Net.Store
 
                 if (!InMemory)
                 {
+#if !WINDOWS_UWP && !WINDOWS_WSA
                     string d = Path.Combine(GADevice.WritablePath, key);
                     if (!Directory.Exists(d))
                     {
                         Directory.CreateDirectory(d);
                     }
+#endif
                 }
 #pragma warning restore 0429
                 GALogger.D("Database path set to: " + Instance.dbPath);

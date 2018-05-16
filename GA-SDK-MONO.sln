@@ -12,6 +12,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{61bc7c80-e3b4-4319-ac06-b590d0612179}*SharedItemsImports = 4
 		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{aac097aa-8041-4efb-a8a0-7b68308e75fb}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

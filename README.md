@@ -28,6 +28,11 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.11**
+* added custom dimensions to design and error events
+* fixed db path issue for unity version
+* updated nlog for mono version
+
 **1.1.10**
 * fixed not allowing to add events when session has not started
 * fixed session length bug
