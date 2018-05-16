@@ -382,7 +382,7 @@ namespace GameAnalyticsSDK.Net.Events
                 JSONArray events = GAStore.ExecuteQuerySync(selectSql);
 
                 // Check for errors or empty
-                if(events == null)
+                if(events == null || events.Count == 0)
                 {
                     GALogger.I("Event queue: No events to send");
                     UpdateSessionTime();

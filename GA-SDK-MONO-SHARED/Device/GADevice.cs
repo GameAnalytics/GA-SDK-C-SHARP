@@ -1,9 +1,9 @@
 ﻿using System;
 #if UNITY
 using UnityEngine;
-#else
-using System.IO;
+using GameAnalyticsSDK.Net.Store;
 #endif
+using System.IO;
 using System.Text.RegularExpressions;
 using GameAnalyticsSDK.Net.Logging;
 #if WINDOWS_UWP || WINDOWS_WSA
@@ -29,7 +29,7 @@ namespace GameAnalyticsSDK.Net.Device
 #if UNITY
 		private static readonly string _buildPlatform = UnityRuntimePlatformToString(Application.platform);
 		private static readonly string _deviceModel = SystemInfo.deviceType.ToString().ToLowerInvariant();
-		private static string _writablepath = Application.persistentDataPath;
+		private static string _writablepath = GAStore.InMemory ? "" : GetPersistentPath();
 #else
         private static readonly string _buildPlatform = RuntimePlatformToString();
 #if WINDOWS_UWP || WINDOWS_WSA
@@ -202,7 +202,19 @@ namespace GameAnalyticsSDK.Net.Device
 			return UnityRuntimePlatformToString(Application.platform) + " 0.0.0";
 		}
 
-		private static string UnityRuntimePlatformToString(RuntimePlatform platform)
+        private static string GetPersistentPath()
+        {
+            string result = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + Path.DirectorySeparatorChar + "GameAnalytics" + Path.DirectorySeparatorChar + System.AppDomain.CurrentDomain.FriendlyName;
+
+            if (!Directory.Exists(result))
+            {
+                Directory.CreateDirectory(result);
+            }
+
+            return result;
+        }
+
+        private static string UnityRuntimePlatformToString(RuntimePlatform platform)
 		{
 			switch(platform)
 			{
