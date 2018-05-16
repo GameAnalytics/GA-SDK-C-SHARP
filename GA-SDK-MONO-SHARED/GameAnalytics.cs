@@ -197,7 +197,7 @@ namespace GameAnalyticsSDK.Net
 
                 GAState.SetKeys(gameKey, gameSecret);
 
-                if (!GAStore.EnsureDatabase(false))
+                if (!GAStore.EnsureDatabase(false, gameKey))
                 {
                     GALogger.W("Could not ensure/validate local event database: " + GADevice.WritablePath);
                 }

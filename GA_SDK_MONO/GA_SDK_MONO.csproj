@@ -35,18 +35,22 @@
     <Reference Include="System.Core" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data.SQLite">
       <HintPath>..\3rd\System.Data.SQLite\System.Data.SQLite.dll</HintPath>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.5.4\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="native\" />
@@ -60,6 +64,9 @@
     <Content Include="native\win64\sqlite3.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
