@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**1.1.12**
+* small fix for uwp and wsa for db path
+
 **1.1.11**
 * added custom dimensions to design and error events
 * fixed db path issue for unity version

@@ -221,20 +221,23 @@ namespace GameAnalyticsSDK.Net.Store
 			// lazy creation of db path
 			if(string.IsNullOrEmpty(Instance.dbPath))
 			{
-				// initialize db path
+                // initialize db path
 #pragma warning disable 0429
-				Instance.dbPath = InMemory ? ":memory:" : Path.Combine(Path.Combine(GADevice.WritablePath, key), "ga.sqlite3");
+#if WINDOWS_UWP || WINDOWS_WSA
+                Instance.dbPath = InMemory ? ":memory:" : Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#else
+                Instance.dbPath = InMemory ? ":memory:" : Path.Combine(Path.Combine(GADevice.WritablePath, key), "ga.sqlite3");
 
                 if (!InMemory)
                 {
-#if !WINDOWS_UWP && !WINDOWS_WSA
+
                     string d = Path.Combine(GADevice.WritablePath, key);
                     if (!Directory.Exists(d))
                     {
                         Directory.CreateDirectory(d);
                     }
-#endif
                 }
+#endif
 #pragma warning restore 0429
                 GALogger.D("Database path set to: " + Instance.dbPath);
 			}
