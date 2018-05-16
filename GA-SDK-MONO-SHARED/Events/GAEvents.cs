@@ -291,6 +291,9 @@ namespace GameAnalyticsSDK.Net.Events
                 eventData.Add("value", new JSONData(value));
             }
 
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
+
             // Log
             GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
 
@@ -316,6 +319,9 @@ namespace GameAnalyticsSDK.Net.Events
             eventData["category"] = CategoryError;
             eventData["severity"] = severityString;
             eventData["message"] = message;
+
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
 
             // Log
             GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
@@ -376,7 +382,7 @@ namespace GameAnalyticsSDK.Net.Events
                 JSONArray events = GAStore.ExecuteQuerySync(selectSql);
 
                 // Check for errors or empty
-                if(events == null)
+                if(events == null || events.Count == 0)
                 {
                     GALogger.I("Event queue: No events to send");
                     UpdateSessionTime();

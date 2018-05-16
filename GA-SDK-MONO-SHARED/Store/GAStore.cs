@@ -216,16 +216,30 @@ namespace GameAnalyticsSDK.Net.Store
 			return results;
 		}
 
-		public static bool EnsureDatabase(bool dropDatabase)
+		public static bool EnsureDatabase(bool dropDatabase, string key)
 		{
 			// lazy creation of db path
 			if(string.IsNullOrEmpty(Instance.dbPath))
 			{
-				// initialize db path
+                // initialize db path
 #pragma warning disable 0429
-				Instance.dbPath = InMemory ? ":memory:" : Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#if WINDOWS_UWP || WINDOWS_WSA
+                Instance.dbPath = InMemory ? ":memory:" : Path.Combine(GADevice.WritablePath, "ga.sqlite3");
+#else
+                Instance.dbPath = InMemory ? ":memory:" : Path.Combine(Path.Combine(GADevice.WritablePath, key), "ga.sqlite3");
+
+                if (!InMemory)
+                {
+
+                    string d = Path.Combine(GADevice.WritablePath, key);
+                    if (!Directory.Exists(d))
+                    {
+                        Directory.CreateDirectory(d);
+                    }
+                }
+#endif
 #pragma warning restore 0429
-				GALogger.D("Database path set to: " + Instance.dbPath);
+                GALogger.D("Database path set to: " + Instance.dbPath);
 			}
 
 			// Open database
@@ -237,8 +251,9 @@ namespace GameAnalyticsSDK.Net.Store
                 Instance.SqlDatabase = new SqliteConnection(new SqliteConnectionStringBuilder
                 {
                     DataSource = Instance.dbPath
-                } + "");
+                }.ConnectionString);
 #endif
+
                 Instance.SqlDatabase.Open();
 				Instance.DbReady = true;
 				GALogger.I("Database opened: " + Instance.dbPath);
