@@ -231,14 +231,11 @@ namespace GameAnalyticsSDK.Net.Store
 			// Open database
 			try
 			{
-#if UNITY
-                Instance.SqlDatabase = new SqliteConnection("URI=file:" + Instance.dbPath + ";Version=3");
-#else
                 Instance.SqlDatabase = new SqliteConnection(new SqliteConnectionStringBuilder
                 {
                     DataSource = Instance.dbPath
                 } + "");
-#endif
+
                 Instance.SqlDatabase.Open();
 				Instance.DbReady = true;
 				GALogger.I("Database opened: " + Instance.dbPath);

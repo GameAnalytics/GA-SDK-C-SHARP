@@ -291,6 +291,9 @@ namespace GameAnalyticsSDK.Net.Events
                 eventData.Add("value", new JSONData(value));
             }
 
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
+
             // Log
             GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
 
@@ -316,6 +319,9 @@ namespace GameAnalyticsSDK.Net.Events
             eventData["category"] = CategoryError;
             eventData["severity"] = severityString;
             eventData["message"] = message;
+
+            // Add custom dimensions
+            AddDimensionsToEvent(eventData);
 
             // Log
             GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
