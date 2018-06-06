@@ -419,59 +419,6 @@ namespace GameAnalyticsSDK.Net.Events
                     JSONNode lastItem = events[events.Count - 1];
                     string lastTimestamp = lastItem["client_ts"].Value;
 
-                string selectSql;
-                string updateSql;
-                string deleteSql = "DELETE FROM ga_events WHERE status = '" + requestIdentifier + "'";
-                string putbackSql = "UPDATE ga_events SET status = 'new' WHERE status = '" + requestIdentifier + "';";
-
-                // Cleanup
-                if(performCleanUp)
-                {
-                    CleanupEvents();
-                    FixMissingSessionEndEvents();
-                }
-
-                // Prepare SQL
-                string andCategory = "";
-                if(!string.IsNullOrEmpty(category))
-                {
-                    andCategory = " AND category='" + category + "' ";
-                }
-                selectSql = "SELECT event FROM ga_events WHERE status = 'new' " + andCategory + ";";
-                updateSql = "UPDATE ga_events SET status = '" + requestIdentifier + "' WHERE status = 'new' " + andCategory + ";";
-
-                // Get events to process
-                JSONArray events = GAStore.ExecuteQuerySync(selectSql);
-
-                // Check for errors or empty
-                if(events == null)
-                {
-                    GALogger.I("Event queue: No events to send");
-                    UpdateSessionTime();
-                    return;
-                }
-
-                for (int i = 0; i < events.Count; ++i)
-                {
-                    JSONNode ev = events[i];
-                    try
-                    {
-                        JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].Value);
-                        if (eventDict.Count != 0)
-                        {
-                            payloadArray.Add(eventDict);
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        GALogger.E("ProcessEvents: Error decoding json, " + e);
-                    }
-                }
-
-                    // Get last timestamp
-                    JSONNode lastItem = events[events.Count - 1];
-                    string lastTimestamp = lastItem["client_ts"].AsString;
-
                     // Select again
                     selectSql = "SELECT event FROM ga_events WHERE status = 'new' " + andCategory + " AND client_ts<='" + lastTimestamp + "';";
                     events = GAStore.ExecuteQuerySync(selectSql);
@@ -496,13 +443,20 @@ namespace GameAnalyticsSDK.Net.Events
                 // Create payload data from events
                 List<JSONNode> payloadArray = new List<JSONNode>();
 
-                for (int i = 0; i < events.Count; ++i)
+                for(int i = 0; i < events.Count; ++i)
                 {
                     JSONNode ev = events[i];
-                    JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].AsString);
-                    if (eventDict.Count != 0)
+                    try
                     {
-                        payloadArray.Add(eventDict);
+                        JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].Value);
+                        if(eventDict.Count != 0)
+                        {
+                            payloadArray.Add(eventDict);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        GALogger.E("ProcessEvents: Error decoding json, " + e);
                     }
                 }
 
