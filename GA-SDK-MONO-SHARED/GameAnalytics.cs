@@ -241,7 +241,7 @@ namespace GameAnalyticsSDK.Net
 
         #region ADD EVENTS
 
-        public static void AddBusinessEvent(string currency, int amount, string itemType, string itemId, string cartType, IDictionary<string, object> fields = null)
+        public static void AddBusinessEvent(string currency, int amount, string itemType, string itemId, string cartType/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -252,11 +252,11 @@ namespace GameAnalyticsSDK.Net
                     return;
                 }
                 // Send to events
-                GAEvents.AddBusinessEvent(currency, amount, itemType, itemId, cartType, fields);
+                GAEvents.AddBusinessEvent(currency, amount, itemType, itemId, cartType, null);
             });
         }
 
-        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, float amount, string itemType, string itemId, IDictionary<string, object> fields = null)
+        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, float amount, string itemType, string itemId/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -267,31 +267,31 @@ namespace GameAnalyticsSDK.Net
                     return;
                 }
 
-                GAEvents.AddResourceEvent(flowType, currency, amount, itemType, itemId, fields);
+                GAEvents.AddResourceEvent(flowType, currency, amount, itemType, itemId, null);
             });
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", "", fields);
+            AddProgressionEvent(progressionStatus, progression01, "", "", null);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", "", score, fields);
+            AddProgressionEvent(progressionStatus, progression01, "", "", score, null);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, "", fields);
+            AddProgressionEvent(progressionStatus, progression01, progression02, "", null);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, "", score, fields);
+            AddProgressionEvent(progressionStatus, progression01, progression02, "", score, null);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -308,7 +308,7 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, IDictionary<string, object> fields = null)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -321,7 +321,7 @@ namespace GameAnalyticsSDK.Net
 
                 // Send to events
                 // TODO(nikolaj): check if this cast from int to double is OK
-                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score, true, fields);
+                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score, true, null);
             });
         }
 
@@ -339,7 +339,7 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        public static void AddDesignEvent(string eventId, double value, IDictionary<string, object> fields = null)
+        public static void AddDesignEvent(string eventId, double value/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -349,11 +349,11 @@ namespace GameAnalyticsSDK.Net
                 {
                     return;
                 }
-                GAEvents.AddDesignEvent(eventId, value, true, fields);
+                GAEvents.AddDesignEvent(eventId, value, true, null);
             });
         }
 
-        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields = null)
+        public static void AddErrorEvent(EGAErrorSeverity severity, string message/*, IDictionary<string, object> fields = null*/)
         {
             GADevice.UpdateConnectionType();
 
@@ -363,7 +363,7 @@ namespace GameAnalyticsSDK.Net
                 {
                     return;
                 }
-                GAEvents.AddErrorEvent(severity, message, fields);
+                GAEvents.AddErrorEvent(severity, message, null);
             });
         }
 
