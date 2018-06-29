@@ -273,22 +273,22 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", "", null);
+            AddProgressionEvent(progressionStatus, progression01, "", ""/*, fields*/);
         }
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", "", score, null);
+            AddProgressionEvent(progressionStatus, progression01, "", "", score/*, fields*/);
         }
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, "", null);
+            AddProgressionEvent(progressionStatus, progression01, progression02, ""/*, fields*/);
         }
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score/*, IDictionary<string, object> fields = null*/)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, "", score, null);
+            AddProgressionEvent(progressionStatus, progression01, progression02, "", score/*, fields*/);
         }
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03/*, IDictionary<string, object> fields = null*/)
@@ -304,7 +304,7 @@ namespace GameAnalyticsSDK.Net
 
                 // Send to events
                 // TODO(nikolaj): check if this cast from int to double is OK
-                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0, false, fields);
+                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0, false, null);
             });
         }
 
