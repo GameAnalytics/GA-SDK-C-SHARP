@@ -215,39 +215,39 @@ namespace GameAnalyticsSDK.Net.Device
         }
 
         private static string UnityRuntimePlatformToString(RuntimePlatform platform)
-		{
-			switch(platform)
-			{
-				case RuntimePlatform.LinuxPlayer:
-					{
-						return "linux";
-					}
+        {
+            switch(platform)
+            {
+                case RuntimePlatform.LinuxPlayer:
+                    {
+                        return "linux";
+                    }
 
-				case RuntimePlatform.OSXPlayer:
-				case RuntimePlatform.OSXDashboardPlayer:
-					{
-						return "mac_osx";
-					}
+                case RuntimePlatform.OSXPlayer:
+                case RuntimePlatform.OSXDashboardPlayer:
+                    {
+                        return "mac_osx";
+                    }
 
-				case RuntimePlatform.PS3:
-					{
-						return "ps3";
-					}
+                case RuntimePlatform.PS3:
+                    {
+                        return "ps3";
+                    }
 
-				case RuntimePlatform.PS4:
-					{
-						return "ps4";
-					}
+                case RuntimePlatform.PS4:
+                    {
+                        return "ps4";
+                    }
 
-				case RuntimePlatform.PSP2:
-					{
-						return "vita";
-					}
+                case RuntimePlatform.PSP2:
+                    {
+                        return "vita";
+                    }
 
-				case RuntimePlatform.WindowsPlayer:
-					{
-						return "windows";
-					}
+                case RuntimePlatform.WindowsPlayer:
+                    {
+                        return "windows";
+                    }
 
 #if UNITY_5
 				case RuntimePlatform.PSM:
@@ -294,37 +294,37 @@ namespace GameAnalyticsSDK.Net.Device
 					}
 #endif
 
-			case RuntimePlatform.WP8Player:
-					{
-						return "windows_phone";
-					}
+                case RuntimePlatform.WP8Player:
+                    {
+                        return "windows_phone";
+                    }
 
-				case RuntimePlatform.XBOX360:
-					{
-						return "xbox360";
-					}
+                case RuntimePlatform.XBOX360:
+                    {
+                        return "xbox360";
+                    }
 
-				case RuntimePlatform.XboxOne:
-					{
-						return "xboxone";
-					}
+                case RuntimePlatform.XboxOne:
+                    {
+                        return "xboxone";
+                    }
 
-				case RuntimePlatform.TizenPlayer:
-					{
-						return "tizen";
-					}
+                case RuntimePlatform.TizenPlayer:
+                    {
+                        return "tizen";
+                    }
 
-				case RuntimePlatform.SamsungTVPlayer:
-					{
-						return "samsung_tv";
-					}
+                case RuntimePlatform.SamsungTVPlayer:
+                    {
+                        return "samsung_tv";
+                    }
 
-				default:
-					{
-						return "unknown";
-					}
-			}
-		}
+                default:
+                    {
+                        return "unknown";
+                    }
+            }
+        }
 #else
         public static void UpdateConnectionType()
         {
@@ -411,6 +411,11 @@ namespace GameAnalyticsSDK.Net.Device
                 case "Windows.Team":
                     {
                         return "uwp_surfacehub";
+                    }
+
+                case "Windows.Holographic":
+                    {
+                        return "uwp_holographic";
                     }
 
                 default:

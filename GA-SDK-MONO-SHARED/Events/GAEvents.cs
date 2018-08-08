@@ -128,7 +128,7 @@ namespace GameAnalyticsSDK.Net.Events
             // Validate event params
             if (!GAValidator.ValidateBusinessEvent(currency, amount, cartType, itemType, itemId))
             {
-                GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
+                //GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
                 return;
             }
 
@@ -167,7 +167,7 @@ namespace GameAnalyticsSDK.Net.Events
             // Validate event params
             if (!GAValidator.ValidateResourceEvent(flowType, currency, (long)amount, itemType, itemId))
             {
-                GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
+                //GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
                 return;
             }
 
@@ -203,7 +203,7 @@ namespace GameAnalyticsSDK.Net.Events
             // Validate event params
             if (!GAValidator.ValidateProgressionEvent(progressionStatus, progression01, progression02, progression03))
             {
-                GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
+                //GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
                 return;
             }
 
@@ -275,7 +275,7 @@ namespace GameAnalyticsSDK.Net.Events
             // Validate
             if (!GAValidator.ValidateDesignEvent(eventId, value))
             {
-                GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
+                //GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
                 return;
             }
 
@@ -308,7 +308,7 @@ namespace GameAnalyticsSDK.Net.Events
             // Validate
             if (!GAValidator.ValidateErrorEvent(severity, message))
             {
-                GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
+                //GAHTTPApi.Instance.SendSdkErrorEvent(EGASdkErrorType.Rejected);
                 return;
             }
 
