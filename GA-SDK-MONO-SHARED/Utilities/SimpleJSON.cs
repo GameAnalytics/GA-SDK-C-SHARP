@@ -40,6 +40,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 
@@ -767,8 +768,9 @@ namespace GameAnalyticsSDK.Net.Utilities
 			}
 			else
 			{
-				return m_Data.ToString();
-			}
+                var formattable = m_Data as IFormattable;
+                return formattable == null ? m_Data.ToString() : formattable.ToString(null, CultureInfo.InvariantCulture);
+            }
 		}
 		public override string ToString(string aPrefix)
 		{
@@ -779,7 +781,8 @@ namespace GameAnalyticsSDK.Net.Utilities
 			}
 			else
 			{
-				return m_Data.ToString();
+                var formattable = m_Data as IFormattable;
+                return formattable == null ? m_Data.ToString() : formattable.ToString(null, CultureInfo.InvariantCulture);
 			}
 		}
 
