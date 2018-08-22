@@ -76,6 +76,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -1092,7 +1093,7 @@ namespace GameAnalyticsSDK.Net.Utilities
 
 		public override string Value
 		{
-			get { return m_Data.ToString(); }
+			get { return m_Data.ToString(CultureInfo.InvariantCulture); }
 			set
 			{
 				double v;
@@ -1124,7 +1125,7 @@ namespace GameAnalyticsSDK.Net.Utilities
 		}
 		internal override void WriteToStringBuilder(StringBuilder aSB, int aIndent, int aIndentInc, JSONTextMode aMode)
 		{
-			aSB.Append(m_Data);
+			aSB.Append(m_Data.ToString(CultureInfo.InvariantCulture));
 		}
 		private static bool IsNumeric(object value)
 		{
