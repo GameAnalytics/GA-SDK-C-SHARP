@@ -16,8 +16,11 @@ namespace GameAnalyticsSDK.Net.State
 		#region Fields and properties
 
 		private const String CategorySdkError = "sdk_error";
+        private const int MaxCustomFieldsCount = 50;
+        private const int MaxCustomFieldsKeyLength = 64;
+        private const int MaxCustomFieldsValueStringLength = 256;
 
-		private static readonly GAState _instance = new GAState();
+        private static readonly GAState _instance = new GAState();
 		private static GAState Instance
 		{
 			get
@@ -273,30 +276,14 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			get
 			{
+				if (Instance.sdkConfig.AsObject != null && Instance.sdkConfig.Count != 0)
 				{
-					IEnumerator<JSONNode> enumerator = Instance.sdkConfig.Childs.GetEnumerator();
-					if(enumerator.MoveNext())
-					{
-						JSONNode json = enumerator.Current;
-
-						if (json.AsObject != null && Instance.sdkConfig.Count != 0)
-						{
-							return Instance.sdkConfig;
-						}
-					}
+					return Instance.sdkConfig;
 				}
 
+				if (Instance.sdkConfigCached.AsObject != null && Instance.sdkConfigCached.Count != 0)
 				{
-					IEnumerator<JSONNode> enumerator = Instance.sdkConfigCached.Childs.GetEnumerator();
-					if(enumerator.MoveNext())
-					{
-						JSONNode jsonCached = enumerator.Current;
-
-						if (jsonCached.AsObject != null && Instance.sdkConfigCached.Count != 0)
-						{
-							return Instance.sdkConfigCached;
-						}
-					}
+					return Instance.sdkConfigCached;
 				}
 
 				return Instance.sdkConfigDefault;
@@ -304,11 +291,15 @@ namespace GameAnalyticsSDK.Net.State
 		}
 
 		private Dictionary<string, int> progressionTries = new Dictionary<string, int>();
-		private JSONNode sdkConfigDefault = new JSONClass();
-		private JSONNode sdkConfig = new JSONClass();
-		private JSONNode sdkConfigCached = new JSONClass();
+		private JSONNode sdkConfigDefault = new JSONObject();
+		private JSONNode sdkConfig = new JSONObject();
+		private JSONNode sdkConfigCached = new JSONObject();
+        private JSONNode configurations = new JSONObject();
+        private bool commandCenterIsReady;
+        private readonly List<ICommandCenterListener> commandCenterListeners = new List<ICommandCenterListener>();
+        private readonly object configurationsLock = new object();
 
-		public const string InMemoryPrefix = "in_memory_";
+        public const string InMemoryPrefix = "in_memory_";
 		private const string DefaultUserIdKey = "default_user_id";
 		public const string SessionNumKey = "session_num";
 		public const string TransactionNumKey = "transaction_num";
@@ -579,19 +570,19 @@ namespace GameAnalyticsSDK.Net.State
 			GAThreading.StartThread();
 		}
 
-		public static JSONClass GetEventAnnotations()
+		public static JSONObject GetEventAnnotations()
 		{
-			JSONClass annotations = new JSONClass();
+			JSONObject annotations = new JSONObject();
 
 			// ---- REQUIRED ---- //
 
 			// collector event API version
-			annotations.Add("v", new JSONData(2));
+			annotations.Add("v", new JSONNumber(2));
 			// User identifier
 			annotations["user_id"] = Identifier;
 
 			// Client Timestamp (the adjusted timestamp)
-			annotations.Add("client_ts", new JSONData(GetClientTsAdjusted()));
+			annotations.Add("client_ts", new JSONNumber(GetClientTsAdjusted()));
 			// SDK version
 			annotations["sdk_version"] = GADevice.RelevantSdkVersion;
 			// Operation system version
@@ -605,7 +596,7 @@ namespace GameAnalyticsSDK.Net.State
 			// Session identifier
 			annotations["session_id"] = SessionId;
 			// Session number
-			annotations.Add(SessionNumKey, new JSONData(SessionNum));
+			annotations.Add(SessionNumKey, new JSONNumber(SessionNum));
 
 			// type of connection the user is currently on (add if valid)
 			string connection_type = GADevice.ConnectionType;
@@ -653,20 +644,20 @@ namespace GameAnalyticsSDK.Net.State
 			// birth_year (optional)
 			if (Instance.BirthYear != 0)
 			{
-				annotations.Add(BirthYearKey, new JSONData(Instance.BirthYear));
+				annotations.Add(BirthYearKey, new JSONNumber(Instance.BirthYear));
 			}
 
 			return annotations;
 		}
 
-		public static JSONClass GetSdkErrorEventAnnotations()
+		public static JSONObject GetSdkErrorEventAnnotations()
 		{
-			JSONClass annotations = new JSONClass();
+			JSONObject annotations = new JSONObject();
 
 			// ---- REQUIRED ---- //
 
 			// collector event API version
-			annotations.Add("v", new JSONData(2));
+			annotations.Add("v", new JSONNumber(2));
 
 			// Category
 			annotations["category"] = CategorySdkError;
@@ -696,12 +687,14 @@ namespace GameAnalyticsSDK.Net.State
 			return annotations;
 		}
 
-		public static JSONClass GetInitAnnotations()
+		public static JSONObject GetInitAnnotations()
 		{
-			JSONClass initAnnotations = new JSONClass();
+			JSONObject initAnnotations = new JSONObject();
 
-			// SDK version
-			initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
+            initAnnotations["user_id"] = GAState.Identifier;
+
+            // SDK version
+            initAnnotations["sdk_version"] = GADevice.RelevantSdkVersion;
 			// Operation system version
 			initAnnotations["os_version"] = GADevice.OSVersion;
 
@@ -730,6 +723,118 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			return SessionStart != 0;
 		}
+
+        public static JSONObject ValidateAndCleanCustomFields(IDictionary<string, object> fields)
+        {
+            JSONObject result = new JSONObject();
+
+            if(fields != null)
+            {
+                int count = 0;
+
+                foreach(KeyValuePair<string, object> entry in fields)
+                {
+                    if(entry.Key == null || entry.Value == null)
+                    {
+                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key or value is null");
+                    }
+                    else if(count < MaxCustomFieldsCount)
+                    {
+                        if(GAUtilities.StringMatch(entry.Key, "^[a-zA-Z0-9_]{1," + MaxCustomFieldsKeyLength + "}$"))
+                        {
+                            if(entry.Value is string || entry.Value is char)
+                            {
+                                string value = Convert.ToString(entry.Value);
+
+                                if(value.Length <= MaxCustomFieldsValueStringLength && value.Length > 0)
+                                {
+                                    result[entry.Key] = value;
+                                    ++count;
+                                }
+                                else
+                                {
+                                    GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is an empty string or exceeds the max number of characters (" + MaxCustomFieldsValueStringLength + ")");
+                                }
+                            }
+                            else if (entry.Value is double)
+                            {
+								result[entry.Key] = new JSONNumber((double)entry.Value);
+                                ++count;
+                            }
+                            else if (entry.Value is float)
+                            {
+                                result[entry.Key] = new JSONNumber((float)entry.Value);
+                                ++count;
+                            }
+                            else if (entry.Value is long || entry.Value is ulong)
+                            {
+                                result[entry.Key] = new JSONNumber(Convert.ToInt64(entry.Value));
+                                ++count;
+                            }
+                            else if (entry.Value is int || 
+                                entry.Value is byte ||
+                                entry.Value is sbyte ||
+                                entry.Value is byte ||
+                                entry.Value is uint ||
+                                entry.Value is short ||
+                                entry.Value is ushort)
+                            {
+                                result[entry.Key] = new JSONNumber(Convert.ToInt32(entry.Value));
+                                ++count;
+                            }
+                            else
+                            {
+                                GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is not a string or number");
+                            }
+                        }
+                        else
+                        {
+                            GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key illegal characters, an empty or exceeds the max number of characters (" + MaxCustomFieldsKeyLength + ")");
+                        }
+                    }
+                    else
+                    {
+                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because it exceeds the max number of custom fields (" + MaxCustomFieldsCount + ")");
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static string GetConfigurationStringValue(string key, string defaultValue)
+        {
+            lock(Instance.configurationsLock)
+            {
+                return Instance.configurations.HasKey(key) ? Instance.configurations[key].Value : defaultValue;
+            }
+        }
+
+        public static bool IsCommandCenterReady()
+        {
+            return Instance.commandCenterIsReady;
+        }
+
+        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        {
+            if(!Instance.commandCenterListeners.Contains(listener))
+            {
+                Instance.commandCenterListeners.Add(listener);
+            }
+        }
+
+        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        {
+            if(Instance.commandCenterListeners.Contains(listener))
+            {
+                Instance.commandCenterListeners.Remove(listener);
+            }
+        }
+
+        public static string GetConfigurationsAsString()
+        {
+            return Instance.configurations.ToString();
+        }
 
 #endregion // Public methods
 
@@ -835,7 +940,16 @@ namespace GameAnalyticsSDK.Net.State
 				if(!string.IsNullOrEmpty(sdkConfigCachedString))
 				{
 					// decode JSON
-					JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+					JSONNode sdkConfigCached = null;
+					try
+					{
+						sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+					}
+					catch(Exception e )
+					{
+						GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
+					}
+
 					if(sdkConfigCached != null && sdkConfigCached.Count != 0)
 					{
 						instance.SdkConfigCached = sdkConfigCached;
@@ -848,7 +962,7 @@ namespace GameAnalyticsSDK.Net.State
             else
             {
                 // get and extract stored states
-                JSONClass state_dict = new JSONClass();
+				JSONObject state_dict = new JSONObject();
                 JSONArray results_ga_state = GAStore.ExecuteQuerySync("SELECT * FROM ga_state;");
 
                 if (results_ga_state != null && results_ga_state.Count != 0)
@@ -863,7 +977,7 @@ namespace GameAnalyticsSDK.Net.State
                 // insert into GAState instance
                 GAState instance = GAState.Instance;
 
-                instance.DefaultUserId = state_dict[DefaultUserIdKey] != null ? state_dict[DefaultUserIdKey].AsString : Guid.NewGuid().ToString();
+                instance.DefaultUserId = state_dict[DefaultUserIdKey] != null ? state_dict[DefaultUserIdKey].Value : Guid.NewGuid().ToString();
 
                 SessionNum = state_dict[SessionNumKey] != null ? state_dict[SessionNumKey].AsInt : 0;
 
@@ -876,7 +990,7 @@ namespace GameAnalyticsSDK.Net.State
 				}
 				else
 				{
-					instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].AsString : "";
+					instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].Value : "";
 					if(!string.IsNullOrEmpty(instance.FacebookId))
 					{
 						GALogger.D("facebookid found in DB: " + instance.FacebookId);
@@ -889,7 +1003,7 @@ namespace GameAnalyticsSDK.Net.State
 				}
 				else
 				{
-					instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].AsString : "";
+					instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].Value : "";
 					if(!string.IsNullOrEmpty(instance.Gender))
 					{
 						GALogger.D("gender found in DB: " + instance.Gender);
@@ -916,7 +1030,7 @@ namespace GameAnalyticsSDK.Net.State
 				}
 				else
 				{
-					CurrentCustomDimension01 = state_dict[Dimension01Key] != null ? state_dict[Dimension01Key].AsString : "";
+					CurrentCustomDimension01 = state_dict[Dimension01Key] != null ? state_dict[Dimension01Key].Value : "";
 					if(!string.IsNullOrEmpty(CurrentCustomDimension01))
 					{
 						GALogger.D("Dimension01 found in cache: " + CurrentCustomDimension01);
@@ -929,7 +1043,7 @@ namespace GameAnalyticsSDK.Net.State
 				}
 				else
 				{
-					CurrentCustomDimension02 = state_dict[Dimension02Key] != null ? state_dict[Dimension02Key].AsString : "";
+					CurrentCustomDimension02 = state_dict[Dimension02Key] != null ? state_dict[Dimension02Key].Value : "";
 					if(!string.IsNullOrEmpty(CurrentCustomDimension02))
 					{
 						GALogger.D("Dimension02 found in cache: " + CurrentCustomDimension02);
@@ -942,7 +1056,7 @@ namespace GameAnalyticsSDK.Net.State
 				}
 				else
 				{
-					CurrentCustomDimension03 = state_dict[Dimension03Key] != null ? state_dict[Dimension03Key].AsString : "";
+					CurrentCustomDimension03 = state_dict[Dimension03Key] != null ? state_dict[Dimension03Key].Value : "";
 					if(!string.IsNullOrEmpty(CurrentCustomDimension03))
 					{
 						GALogger.D("Dimension03 found in cache: " + CurrentCustomDimension03);
@@ -950,15 +1064,22 @@ namespace GameAnalyticsSDK.Net.State
 				}
 
                 // get cached init call values
-                string sdkConfigCachedString = state_dict[SdkConfigCachedKey] != null ? state_dict[SdkConfigCachedKey].AsString : "";
+                string sdkConfigCachedString = state_dict[SdkConfigCachedKey] != null ? state_dict[SdkConfigCachedKey].Value : "";
                 if (!string.IsNullOrEmpty(sdkConfigCachedString))
                 {
-                    // decode JSON
-                    JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
-                    if (sdkConfigCached != null && sdkConfigCached.Count != 0)
-                    {
-                        instance.SdkConfigCached = sdkConfigCached;
-                    }
+					// decode JSON
+					try
+					{
+						JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+	                    if (sdkConfigCached != null && sdkConfigCached.Count != 0)
+	                    {
+	                        instance.SdkConfigCached = sdkConfigCached;
+	                    }
+					}
+					catch(Exception e )
+					{
+						GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
+					}
                 }
 
                 JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
@@ -970,7 +1091,7 @@ namespace GameAnalyticsSDK.Net.State
                         JSONNode result = results_ga_progression[i];
                         if (result != null && result.Count != 0)
                         {
-                            instance.progressionTries[result["progression"].AsString] = result["tries"].AsInt;
+                            instance.progressionTries[result["progression"].Value] = result["tries"].AsInt;
                         }
                     }
                 }
@@ -991,15 +1112,15 @@ namespace GameAnalyticsSDK.Net.State
 
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
-            KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
+            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
 #else
-            KeyValuePair<EGAHTTPApiResponse, JSONClass> initResponse = GAHTTPApi.Instance.RequestInitReturningDict();
+			KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = GAHTTPApi.Instance.RequestInitReturningDict();
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
         }
 
-        public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONClass initResponseDict)
+        public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONObject initResponseDict)
 		{
 			// init is ok
 			if(initResponse == EGAHTTPApiResponse.Ok && initResponseDict != null)
@@ -1011,7 +1132,7 @@ namespace GameAnalyticsSDK.Net.State
 					long serverTs = initResponseDict["server_ts"].AsLong;
 					timeOffsetSeconds = CalculateServerTimeOffset(serverTs);
 				}
-				initResponseDict.Add("time_offset", new JSONData(timeOffsetSeconds));
+				initResponseDict.Add("time_offset", new JSONNumber(timeOffsetSeconds));
 
 				// insert new config in sql lite cross session storage
 				GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBase64());
@@ -1069,6 +1190,9 @@ namespace GameAnalyticsSDK.Net.State
 			// set offset in state (memory) from current config (config could be from cache etc.)
 			Instance.ClientServerTimeOffset = SdkConfig["time_offset"] != null ? SdkConfig["time_offset"].AsLong : 0;
 
+            // populate configurations
+            PopulateConfigurations(SdkConfig);
+
 			// if SDK is disabled in config
 			if(!IsEnabled())
 			{
@@ -1124,6 +1248,62 @@ namespace GameAnalyticsSDK.Net.State
 			long clientTs = GAUtilities.TimeIntervalSince1970();
 			return serverTs - clientTs;
 		}
+
+        private static void PopulateConfigurations(JSONNode sdkConfig)
+        {
+            lock(Instance.configurationsLock)
+            {
+                JSONArray configurations = sdkConfig["configurations"].AsArray;
+
+                if(configurations != null)
+                {
+                    for(int i = 0; i < configurations.Count; ++i)
+                    {
+                        JSONNode configuration = configurations[i];
+
+                        if(configuration != null)
+                        {
+                            string key = configuration["key"].Value;
+							object value = null;
+							if(configuration["value"].IsNumber)
+							{
+								value = configuration["value"].AsDouble;
+							}
+							else
+							{
+								value = configuration["value"].Value;
+							}
+							long start_ts = (configuration.HasKey("start") && configuration["start"] != null) ? configuration["start"].AsLong : long.MinValue;
+                            long end_ts = (configuration.HasKey("end") && configuration["end"] != null) ? configuration["end"].AsLong : long.MaxValue;
+
+                            long client_ts_adjusted = GetClientTsAdjusted();
+
+							GALogger.D("PopulateConfigurations: key=" + key + ", value=" + value + ", start_ts=" + start_ts + ", end_ts=" + ", client_ts_adjusted=" + client_ts_adjusted);
+
+                            if(key != null && value != null && client_ts_adjusted > start_ts && client_ts_adjusted < end_ts)
+                            {
+                                JSONObject json = new JSONObject();
+								if(configuration["value"].IsNumber)
+								{
+									Instance.configurations.Add(key, new JSONNumber(configuration["value"].AsDouble));
+								}
+								else
+								{
+									Instance.configurations.Add(key, configuration["value"].Value);
+								}
+                                
+                                GALogger.D("configuration added: " + configuration);
+                            }
+                        }
+                    }
+                }
+                Instance.commandCenterIsReady = true;
+                foreach(ICommandCenterListener listener in Instance.commandCenterListeners)
+                {
+                    listener.OnCommandCenterUpdated();
+                }
+            }
+        }
 
 		#endregion // Private methods
 	}

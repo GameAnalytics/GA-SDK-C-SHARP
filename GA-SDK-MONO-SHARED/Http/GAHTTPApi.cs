@@ -130,20 +130,23 @@ namespace GameAnalyticsSDK.Net.Http
         #region Public methods
 
 #if WINDOWS_UWP || WINDOWS_WSA
-        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONClass>> RequestInitReturningDict()
+        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONObject>> RequestInitReturningDict()
 #else
-        public KeyValuePair<EGAHTTPApiResponse, JSONClass> RequestInitReturningDict()
+        public KeyValuePair<EGAHTTPApiResponse, JSONObject> RequestInitReturningDict()
 #endif
         {
-            JSONClass json;
+			JSONObject json;
             EGAHTTPApiResponse result = EGAHTTPApiResponse.NoResponse;
 			string gameKey = GAState.GameKey;
 
 			// Generate URL
 			string url = baseUrl + "/" + gameKey + "/" + initializeUrlPath;
-			GALogger.D("Sending 'init' URL: " + url);
+            url = "https://rubick.gameanalytics.com/v2/command_center?game_key=" + gameKey + "&interval_seconds=1000000";
+            //url = "https://requestb.in/1fvbe2g1";
 
-			JSONClass initAnnotations = GAState.GetInitAnnotations();
+            GALogger.D("Sending 'init' URL: " + url);
+
+		JSONObject initAnnotations = GAState.GetInitAnnotations();
 
 			// make JSON string from data
 			string JSONstring = initAnnotations.ToString();
@@ -152,7 +155,7 @@ namespace GameAnalyticsSDK.Net.Http
 			{
 				result = EGAHTTPApiResponse.JsonEncodeFailed;
 				json = null;
-				return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+				return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
 			}
 
 			string body = "";
@@ -161,8 +164,8 @@ namespace GameAnalyticsSDK.Net.Http
 			string authorization = "";
 			try
 			{
-				byte[] payloadData = CreatePayloadData(JSONstring, useGzip);
-				HttpWebRequest request = CreateRequest(url, payloadData, useGzip);
+				byte[] payloadData = CreatePayloadData(JSONstring, false);
+				HttpWebRequest request = CreateRequest(url, payloadData, false);
 				authorization = request.Headers[HttpRequestHeader.Authorization];
 #if WINDOWS_UWP || WINDOWS_WSA
                 using (Stream dataStream = await request.GetRequestStreamAsync())
@@ -234,7 +237,7 @@ namespace GameAnalyticsSDK.Net.Http
 				GALogger.D("Failed Init Call. URL: " + url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
 				result = requestResponseEnum;
 				json = null;
-                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+                return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
             }
 
 			if (requestJsonDict == null)
@@ -242,33 +245,33 @@ namespace GameAnalyticsSDK.Net.Http
 				GALogger.D("Failed Init Call. Json decoding failed");
 				result = EGAHTTPApiResponse.JsonDecodeFailed;
 				json = null;
-                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+                return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
             }
 
 			// print reason if bad request
 			if (requestResponseEnum == EGAHTTPApiResponse.BadRequest)
 			{
-				GALogger.D("Failed Init Call. Bad request. Response: " + requestJsonDict.AsObject.ToString());
+				GALogger.D("Failed Init Call. Bad request. Response: " + requestJsonDict.ToString());
 				// return bad request result
 				result = requestResponseEnum;
 				json = null;
-                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+                return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
             }
 
 			// validate Init call values
-			JSONClass validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict);
+			JSONObject validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict);
 
 			if (validatedInitValues == null)
 			{
 				result = EGAHTTPApiResponse.BadResponse;
 				json = null;
-                return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+                return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
             }
 
 			// all ok
 			result = EGAHTTPApiResponse.Ok;
 			json = validatedInitValues;
-            return new KeyValuePair<EGAHTTPApiResponse, JSONClass>(result, json);
+            return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
         }
 
 #if WINDOWS_UWP || WINDOWS_WSA
@@ -419,7 +422,7 @@ namespace GameAnalyticsSDK.Net.Http
 
 			string payloadJSONString = "";
 
-			JSONClass json = GAState.GetSdkErrorEventAnnotations();
+			JSONObject json = GAState.GetSdkErrorEventAnnotations();
 
 			string typeString = SdkErrorTypeToString(type);
 			json.Add("type", typeString);

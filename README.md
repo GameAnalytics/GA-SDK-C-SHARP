@@ -28,6 +28,10 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.0.0**
+* added command center functionality
+* fixed event json for computers set up to use commas instead of periods for decimal numbers
+
 **1.1.12**
 * small fix for uwp and wsa for db path
 

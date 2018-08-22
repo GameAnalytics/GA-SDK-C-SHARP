@@ -12,7 +12,7 @@ script:
 notifications:
     slack:
         rooms:
-            - gameanalytics:hDYD7nkOTe3tkrvb68WEpyqw#sdk
+            - gameanalytics:hDYD7nkOTe3tkrvb68WEpyqw#ask-sdk
         on_success: change
         on_failure: change
     email:
