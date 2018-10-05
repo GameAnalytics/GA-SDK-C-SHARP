@@ -10,7 +10,7 @@
         <projectUrl>https://github.com/GameAnalytics/GA-SDK-C-SHARP</projectUrl>
         <iconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>GameAnalytics SDK for UWP</description>
+        <description>GameAnalytics SDK for UWP (C#)</description>
         <tags>gameanalytics</tags>
         <dependencies>
             <group targetFramework="uap10.0">
