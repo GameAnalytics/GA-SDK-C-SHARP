@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.0.2**
+* updated dependencies for UWP library
+
 **2.0.1**
 * updated dependencies for UWP library
 
