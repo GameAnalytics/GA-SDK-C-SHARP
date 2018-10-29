@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata minClientVersion="3.2">
         <id>GameAnalytics.UWP.SDK</id>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
         <title>GameAnalytics UWP SDK</title>
         <authors>GameAnalytics</authors>
         <owners>GameAnalytics</owners>
@@ -14,22 +14,22 @@
         <tags>gameanalytics</tags>
         <dependencies>
             <group targetFramework="uap10.0">
-				<dependency id="MetroLog" version="1.0.1" />
-				<dependency id="System.AppContext" version="4.1.0" />
-				<dependency id="System.Data.Common" version="4.1.0" />
-				<dependency id="System.Diagnostics.Debug" version="4.0.11" />
-				<dependency id="System.Linq" version="4.1.0" />
-				<dependency id="System.Reflection.Extensions" version="4.0.1" />
-				<dependency id="System.Resources.ResourceManager" version="4.0.1" />
-				<dependency id="System.Runtime.Extensions" version="4.1.0" />
-				<dependency id="System.Runtime.InteropServices" version="4.1.0" />
-				<dependency id="System.Text.Encoding" version="4.0.11" />
-				<dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.2.2" />
+                <dependency id="MetroLog" version="1.0.1" />
+                <dependency id="System.AppContext" version="4.1.0" />
+                <dependency id="System.Data.Common" version="4.1.0" />
+                <dependency id="System.Diagnostics.Debug" version="4.0.11" />
+                <dependency id="System.Linq" version="4.1.0" />
+                <dependency id="System.Reflection.Extensions" version="4.0.1" />
+                <dependency id="System.Resources.ResourceManager" version="4.0.1" />
+                <dependency id="System.Runtime.Extensions" version="4.1.0" />
+                <dependency id="System.Runtime.InteropServices" version="4.1.0" />
+                <dependency id="System.Text.Encoding" version="4.0.11" />
+                <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="5.2.2" />
             </group>
         </dependencies>
     </metadata>
     <files>
         <file src="bin/Release/GameAnalytics.UWP.dll" target="lib/uap10.0" />
-		<file src="Microsoft.Data.Sqlite.dll" target="lib/uap10.0" />
+        <file src="Microsoft.Data.Sqlite.dll" target="lib/uap10.0" />
     </files>
 </package>
