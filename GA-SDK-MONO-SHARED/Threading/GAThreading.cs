@@ -16,8 +16,8 @@ namespace GameAnalyticsSDK.Net.Threading
         private static readonly GAThreading _instance = new GAThreading ();
 		private const int ThreadWaitTimeInMs = 1000;
 		private readonly PriorityQueue<long, TimedBlock> blocks = new PriorityQueue<long, TimedBlock>();
-		private readonly Dictionary<long, TimedBlock> id2TimedBlockMap = new Dictionary<long, TimedBlock>();
 		private readonly object threadLock = new object();
+
 
 		private GAThreading()
 		{
@@ -46,11 +46,8 @@ namespace GameAnalyticsSDK.Net.Threading
 
 					while((timedBlock = GetNextBlock()) != null)
 					{
-						if(!timedBlock.ignore)
-						{
-							timedBlock.block();
-						}
-					}
+                        timedBlock.block();
+                    }
 
 
 #if WINDOWS_WSA || WINDOWS_UWP
@@ -82,12 +79,11 @@ namespace GameAnalyticsSDK.Net.Threading
 				time = time.AddSeconds(delayInSeconds);
 
 				TimedBlock timedBlock = new TimedBlock(time, taskBlock, blockName);
-				Instance.id2TimedBlockMap.Add(timedBlock.id, timedBlock);
 				Instance.AddTimedBlock(timedBlock);
 			}
 		}
 
-		public static long ScheduleTimer(double interval, string blockName, Action callback)
+		public static void ScheduleTimer(double interval, string blockName, Action callback)
 		{
 			lock(Instance.threadLock)
 			{
@@ -95,22 +91,7 @@ namespace GameAnalyticsSDK.Net.Threading
 				time = time.AddSeconds(interval);
 
 				TimedBlock timedBlock = new TimedBlock(time, callback, blockName);
-				Instance.id2TimedBlockMap.Add(timedBlock.id, timedBlock);
 				Instance.AddTimedBlock(timedBlock);
-				return timedBlock.id;
-			}
-		}
-
-		public static void IgnoreTimer(long blockIdentifier)
-		{
-			lock(Instance.threadLock)
-			{
-				TimedBlock timedBlock;
-
-				if(Instance.id2TimedBlockMap.TryGetValue(blockIdentifier, out timedBlock))
-				{
-					timedBlock.ignore = true;
-				}
 			}
 		}
 

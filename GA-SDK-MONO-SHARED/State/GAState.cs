@@ -531,9 +531,8 @@ namespace GameAnalyticsSDK.Net.State
 			}
 		}
 
-		public static void EndSessionAndStopQueue()
+		public static void EndSessionAndStopQueue(bool endThread)
 		{
-			GAThreading.IgnoreTimer(Instance.SuspendBlockId);
 			if(Initialized)
 			{
 				GALogger.I("Ending session.");
@@ -557,7 +556,6 @@ namespace GameAnalyticsSDK.Net.State
 			{
 				return;
 			}
-			GAThreading.IgnoreTimer(Instance.SuspendBlockId);
 			GALogger.I("Resuming session.");
 			if(!SessionIsStarted())
 			{
