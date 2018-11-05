@@ -569,7 +569,6 @@ namespace GameAnalyticsSDK.Net.State
                 StartNewSession();
 #endif
             }
-			GAThreading.StartThread();
 		}
 
 		public static JSONObject GetEventAnnotations()

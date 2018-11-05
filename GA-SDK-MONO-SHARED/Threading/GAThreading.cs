@@ -57,13 +57,13 @@ namespace GameAnalyticsSDK.Net.Threading
 #endif
                 }
             }
-			catch(Exception e)
+			catch(Exception)
 			{
-				GALogger.E("Error on GA thread");
-				GALogger.E(e.ToString());
+				//GALogger.E("Error on GA thread");
+				//GALogger.E(e.ToString());
 			}
 
-			GALogger.D("Ending GA thread");
+			//GALogger.D("Ending GA thread");
 		}
 
         public static void PerformTaskOnGAThread(string blockName, Action taskBlock)

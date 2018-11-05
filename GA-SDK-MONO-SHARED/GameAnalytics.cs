@@ -265,7 +265,7 @@ namespace GameAnalyticsSDK.Net
             var deferral = e.SuspendingOperation.GetDeferral();
             if(!GAState.UseManualSessionHandling)
             {
-                OnStop();
+                OnSuspend();
             }
             else
             {
@@ -675,8 +675,8 @@ namespace GameAnalyticsSDK.Net
                 return;
             }
 
-            GALogger.D("OnStop() called");
-            GAThreading.PerformTaskOnGAThread("onStop", () =>
+            GALogger.D("OnSuspend() called");
+            GAThreading.PerformTaskOnGAThread("onSuspend", () =>
             {
                 try
                 {
@@ -695,8 +695,8 @@ namespace GameAnalyticsSDK.Net
                 return;
             }
 
-            GALogger.D("OnStop() called");
-            GAThreading.PerformTaskOnGAThread("onStop", () =>
+            GALogger.D("OnQuit() called");
+            GAThreading.PerformTaskOnGAThread("onQuit", () =>
             {
                 try
                 {
