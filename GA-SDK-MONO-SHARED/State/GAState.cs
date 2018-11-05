@@ -542,9 +542,13 @@ namespace GameAnalyticsSDK.Net.State
 					GAEvents.AddSessionEndEvent();
 					SessionStart = 0;
 				}
-				GAThreading.StopThread();
 			}
-		}
+
+            if(endThread)
+            {
+                GAThreading.StopThread();
+            }
+        }
 
 #if WINDOWS_UWP || WINDOWS_WSA
         public async static void ResumeSessionAndStartQueue()
