@@ -531,9 +531,8 @@ namespace GameAnalyticsSDK.Net.State
 			}
 		}
 
-		public static void EndSessionAndStopQueue()
+		public static void EndSessionAndStopQueue(bool endThread)
 		{
-			GAThreading.IgnoreTimer(Instance.SuspendBlockId);
 			if(Initialized)
 			{
 				GALogger.I("Ending session.");
@@ -543,9 +542,13 @@ namespace GameAnalyticsSDK.Net.State
 					GAEvents.AddSessionEndEvent();
 					SessionStart = 0;
 				}
-				GAThreading.StopThread();
 			}
-		}
+
+            if(endThread)
+            {
+                GAThreading.StopThread();
+            }
+        }
 
 #if WINDOWS_UWP || WINDOWS_WSA
         public async static void ResumeSessionAndStartQueue()
@@ -557,7 +560,6 @@ namespace GameAnalyticsSDK.Net.State
 			{
 				return;
 			}
-			GAThreading.IgnoreTimer(Instance.SuspendBlockId);
 			GALogger.I("Resuming session.");
 			if(!SessionIsStarted())
 			{
@@ -567,7 +569,6 @@ namespace GameAnalyticsSDK.Net.State
                 StartNewSession();
 #endif
             }
-			GAThreading.StartThread();
 		}
 
 		public static JSONObject GetEventAnnotations()

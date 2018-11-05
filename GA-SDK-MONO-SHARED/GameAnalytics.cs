@@ -17,8 +17,11 @@ namespace GameAnalyticsSDK.Net
 {
     public static class GameAnalytics
     {
+        private static bool _endThread;
+
         static GameAnalytics()
         {
+            _endThread = false;
             GADevice.Touch();
         }
 
@@ -36,6 +39,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureAvailableCustomDimensions01(params string[] customDimensions)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureAvailableCustomDimensions01", () =>
             {
                 if (IsSdkReady(true, false))
@@ -49,6 +57,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureAvailableCustomDimensions02(params string[] customDimensions)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureAvailableCustomDimensions02", () =>
             {
                 if (IsSdkReady(true, false))
@@ -62,6 +75,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureAvailableCustomDimensions03(params string[] customDimensions)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureAvailableCustomDimensions03", () =>
             {
                 if (IsSdkReady(true, false))
@@ -75,6 +93,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureAvailableResourceCurrencies(params string[] resourceCurrencies)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureAvailableResourceCurrencies", () =>
             {
                 if (IsSdkReady(true, false))
@@ -88,6 +111,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureAvailableResourceItemTypes(params string[] resourceItemTypes)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureAvailableResourceItemTypes", () =>
             {
                 if (IsSdkReady(true, false))
@@ -101,6 +129,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureBuild(string build)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureBuild", () =>
             {
                 if (IsSdkReady(true, false))
@@ -119,6 +152,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureSdkGameEngineVersion(string sdkGameEngineVersion)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureSdkGameEngineVersion", () =>
             {
                 if (IsSdkReady(true, false))
@@ -136,6 +174,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureGameEngineVersion(string gameEngineVersion)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureGameEngineVersion", () =>
             {
                 if (IsSdkReady(true, false))
@@ -153,6 +196,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void ConfigureUserId(string uId)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("configureUserId", () =>
             {
                 if (IsSdkReady(true, false))
@@ -176,6 +224,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void Initialize(string gameKey, string gameSecret)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
 #if WINDOWS_UWP || WINDOWS_WSA
             CoreApplication.Suspending += OnSuspending;
             CoreApplication.Resuming += OnResuming;
@@ -212,7 +265,7 @@ namespace GameAnalyticsSDK.Net
             var deferral = e.SuspendingOperation.GetDeferral();
             if(!GAState.UseManualSessionHandling)
             {
-                OnStop();
+                OnSuspend();
             }
             else
             {
@@ -243,6 +296,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddBusinessEvent(string currency, int amount, string itemType, string itemId, string cartType/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addBusinessEvent", () =>
@@ -258,6 +316,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, float amount, string itemType, string itemId/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addResourceEvent", () =>
@@ -293,6 +356,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addProgressionEvent", () =>
@@ -310,6 +378,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addProgressionEvent", () =>
@@ -327,6 +400,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddDesignEvent(string eventId, IDictionary<string, object> fields = null)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addDesignEvent", () =>
@@ -341,6 +419,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddDesignEvent(string eventId, double value/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addDesignEvent", () =>
@@ -355,6 +438,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void AddErrorEvent(EGAErrorSeverity severity, string message/*, IDictionary<string, object> fields = null*/)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GADevice.UpdateConnectionType();
 
             GAThreading.PerformTaskOnGAThread("addErrorEvent", () =>
@@ -373,6 +461,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetEnabledInfoLog(bool flag)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setEnabledInfoLog", () =>
             {
                 if (flag)
@@ -390,6 +483,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetEnabledVerboseLog(bool flag)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setEnabledVerboseLog", () =>
             {
                 if (flag)
@@ -407,6 +505,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetEnabledManualSessionHandling(bool flag)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setEnabledManualSessionHandling", () =>
             {
                 GAState.SetManualSessionHandling(flag);
@@ -415,6 +518,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetCustomDimension01(string dimension)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setCustomDimension01", () =>
             {
                 if (!GAValidator.ValidateDimension01(dimension))
@@ -428,6 +536,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetCustomDimension02(string dimension)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setCustomDimension02", () =>
             {
                 if (!GAValidator.ValidateDimension02(dimension))
@@ -441,6 +554,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetCustomDimension03(string dimension)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setCustomDimension03", () =>
             {
                 if (!GAValidator.ValidateDimension03(dimension))
@@ -454,6 +572,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetFacebookId(string facebookId)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setFacebookId", () =>
             {
                 if (GAValidator.ValidateFacebookId(facebookId))
@@ -465,6 +588,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetGender(EGAGender gender)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setGender", () =>
             {
                 if (GAValidator.ValidateGender(gender))
@@ -476,6 +604,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void SetBirthYear(int birthYear)
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("setBirthYear", () =>
             {
                 if (GAValidator.ValidateBirthyear(birthYear))
@@ -489,6 +622,11 @@ namespace GameAnalyticsSDK.Net
 
         public static void StartSession()
         {
+            if(_endThread)
+            {
+                return;
+            }
+
             GAThreading.PerformTaskOnGAThread("startSession", () =>
             {
                 if(GAState.UseManualSessionHandling)
@@ -500,7 +638,7 @@ namespace GameAnalyticsSDK.Net
 
                     if(GAState.IsEnabled() && GAState.SessionIsStarted())
                     {
-                        GAState.EndSessionAndStopQueue();
+                        GAState.EndSessionAndStopQueue(false);
                     }
 
                     GAState.ResumeSessionAndStartQueue();
@@ -512,18 +650,37 @@ namespace GameAnalyticsSDK.Net
         {
             if(GAState.UseManualSessionHandling)
             {
-                OnStop();
+                OnSuspend();
             }
         }
 
-        public static void OnStop()
+        public static void OnResume()
         {
-            GALogger.D("OnStop() called");
-            GAThreading.PerformTaskOnGAThread("onStop", () =>
+            if(_endThread)
+            {
+                return;
+            }
+
+            GALogger.D("OnResume() called");
+            GAThreading.PerformTaskOnGAThread("onResume", () =>
+            {
+                GAState.ResumeSessionAndStartQueue();
+            });
+        }
+
+        public static void OnSuspend()
+        {
+            if(_endThread)
+            {
+                return;
+            }
+
+            GALogger.D("OnSuspend() called");
+            GAThreading.PerformTaskOnGAThread("onSuspend", () =>
             {
                 try
                 {
-                    GAState.EndSessionAndStopQueue();
+                    GAState.EndSessionAndStopQueue(false);
                 }
                 catch(Exception)
                 {
@@ -531,12 +688,24 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        public static void OnResume()
+        public static void OnQuit()
         {
-            GALogger.D("OnResume() called");
-            GAThreading.PerformTaskOnGAThread("onResume", () =>
+            if(_endThread)
             {
-                GAState.ResumeSessionAndStartQueue();
+                return;
+            }
+
+            GALogger.D("OnQuit() called");
+            GAThreading.PerformTaskOnGAThread("onQuit", () =>
+            {
+                try
+                {
+                    _endThread = true;
+                    GAState.EndSessionAndStopQueue(true);
+                }
+                catch(Exception)
+                {
+                }
             });
         }
 
