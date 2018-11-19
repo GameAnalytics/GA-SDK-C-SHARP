@@ -321,7 +321,7 @@ namespace GameAnalyticsSDK.Net.Validators
 			// validate enabled field
 			try
 			{
-				validatedDict.Add("enabled", new JSONBool(initResponse.HasKey("enabled") ? initResponse["enabled"].AsBool : true));
+				validatedDict.Add("enabled", new JSONBool(initResponse["enabled"].IsBoolean ? initResponse["enabled"].AsBool : true));
 			}
 			catch (Exception)
 			{
@@ -332,7 +332,7 @@ namespace GameAnalyticsSDK.Net.Validators
 			// validate server_ts
 			try
 			{
-				long serverTsNumber = initResponse.HasKey("server_ts") ? initResponse["server_ts"].AsLong : -1;
+				long serverTsNumber = initResponse["server_ts"].IsNumber ? initResponse["server_ts"].AsLong : -1;
 				if (serverTsNumber > 0)
 				{
 					validatedDict.Add("server_ts", new JSONNumber(serverTsNumber));
@@ -347,7 +347,7 @@ namespace GameAnalyticsSDK.Net.Validators
 			// validate configurations field
 			try
 			{
-				validatedDict.Add("configurations", initResponse.HasKey("configurations") ? initResponse["configurations"].AsArray : new JSONArray());
+				validatedDict.Add("configurations", initResponse["configurations"].IsArray ? initResponse["configurations"].AsArray : new JSONArray());
 			}
 			catch (Exception e)
 			{

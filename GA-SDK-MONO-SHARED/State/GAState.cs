@@ -323,7 +323,7 @@ namespace GameAnalyticsSDK.Net.State
 		{
 			JSONNode currentSdkConfig = SdkConfig;
 
-			if (currentSdkConfig.HasKey("enabled") && !currentSdkConfig["enabled"].AsBool)
+			if (currentSdkConfig["enabled"].IsBoolean && !currentSdkConfig["enabled"].AsBool)
 			{
 				return false;
 			}
@@ -805,9 +805,9 @@ namespace GameAnalyticsSDK.Net.State
 
         public static string GetConfigurationStringValue(string key, string defaultValue)
         {
-            lock(Instance.configurationsLock)
+            lock (Instance.configurationsLock)
             {
-                return Instance.configurations.HasKey(key) ? Instance.configurations[key].Value : defaultValue;
+                return !Instance.configurations[key].IsNull ? Instance.configurations[key].Value : defaultValue;
             }
         }
 
@@ -944,11 +944,11 @@ namespace GameAnalyticsSDK.Net.State
 					JSONNode sdkConfigCached = null;
 					try
 					{
-						sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
+						sdkConfigCached = JSONNode.LoadFromBinaryBase64(sdkConfigCachedString);
 					}
-					catch(Exception e )
+					catch(Exception)
 					{
-						GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
+						//GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
 					}
 
 					if(sdkConfigCached != null && sdkConfigCached.Count != 0)
@@ -1068,19 +1068,22 @@ namespace GameAnalyticsSDK.Net.State
                 string sdkConfigCachedString = state_dict[SdkConfigCachedKey] != null ? state_dict[SdkConfigCachedKey].Value : "";
                 if (!string.IsNullOrEmpty(sdkConfigCachedString))
                 {
-					// decode JSON
-					try
+                    // decode JSON
+                    JSONNode sdkConfigCached = null;
+
+                    try
 					{
-						JSONNode sdkConfigCached = JSONNode.LoadFromBase64(sdkConfigCachedString);
-	                    if (sdkConfigCached != null && sdkConfigCached.Count != 0)
-	                    {
-	                        instance.SdkConfigCached = sdkConfigCached;
-	                    }
+						sdkConfigCached = JSONNode.LoadFromBinaryBase64(sdkConfigCachedString);
 					}
-					catch(Exception e )
+					catch(Exception)
 					{
-						GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
+						//GALogger.E("EnsurePersistedStates: Error decoding json, " + e);
 					}
+
+                    if (sdkConfigCached != null && sdkConfigCached.Count != 0)
+                    {
+                        instance.SdkConfigCached = sdkConfigCached;
+                    }
                 }
 
                 JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
@@ -1136,7 +1139,7 @@ namespace GameAnalyticsSDK.Net.State
 				initResponseDict.Add("time_offset", new JSONNumber(timeOffsetSeconds));
 
 				// insert new config in sql lite cross session storage
-				GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBase64());
+				GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBinaryBase64());
 
 				// set new config and cache in memory
 				Instance.sdkConfigCached = initResponseDict;
@@ -1274,8 +1277,8 @@ namespace GameAnalyticsSDK.Net.State
 							{
 								value = configuration["value"].Value;
 							}
-							long start_ts = (configuration.HasKey("start") && configuration["start"] != null) ? configuration["start"].AsLong : long.MinValue;
-                            long end_ts = (configuration.HasKey("end") && configuration["end"] != null) ? configuration["end"].AsLong : long.MaxValue;
+							long start_ts = configuration["start"].IsNumber ? configuration["start"].AsLong : long.MinValue;
+                            long end_ts = configuration["end"].IsNumber ? configuration["end"].AsLong : long.MaxValue;
 
                             long client_ts_adjusted = GetClientTsAdjusted();
 
