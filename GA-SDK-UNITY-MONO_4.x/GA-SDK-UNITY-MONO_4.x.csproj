@@ -10,6 +10,8 @@
     <RootNamespace>GameAnalyticsSDK.Mono</RootNamespace>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <AssemblyName>GameAnalytics</AssemblyName>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +48,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup />
   <Import Project="..\GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems')" />
   <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" />
 </Project>

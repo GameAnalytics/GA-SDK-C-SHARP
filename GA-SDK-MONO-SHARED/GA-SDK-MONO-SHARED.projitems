@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Threading\TimedBlock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\GAUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SimpleJSON.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utilities\SimpleJSONBinary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validators\GAValidator.cs" />
   </ItemGroup>
 </Project>

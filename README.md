@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.0.4**
+* fixed json deserializing bugs
+
 **2.0.3**
 * fixes to shutdown freeze
 

@@ -446,17 +446,20 @@ namespace GameAnalyticsSDK.Net.Events
                 for(int i = 0; i < events.Count; ++i)
                 {
                     JSONNode ev = events[i];
+                    JSONNode eventDict = null;
+
                     try
                     {
-                        JSONNode eventDict = JSONNode.LoadFromBase64(ev["event"].Value);
-                        if(eventDict.Count != 0)
-                        {
-                            payloadArray.Add(eventDict);
-                        }
+                        eventDict = JSONNode.LoadFromBinaryBase64(ev["event"].Value);
                     }
-                    catch(Exception e)
+                    catch(Exception)
                     {
-                        GALogger.E("ProcessEvents: Error decoding json, " + e);
+                        //GALogger.E("ProcessEvents: Error decoding json, " + e);
+                    }
+
+                    if (eventDict != null && eventDict.Count != 0)
+                    {
+                        payloadArray.Add(eventDict);
                     }
                 }
 
@@ -548,9 +551,19 @@ namespace GameAnalyticsSDK.Net.Events
             for (int i = 0; i < sessions.Count; ++i)
             {
                 JSONNode session = sessions[i];
+                JSONNode sessionEndEvent = null;
+
                 try
                 {
-                    JSONNode sessionEndEvent = JSONNode.LoadFromBase64(session["event"].Value);
+                    sessionEndEvent = JSONNode.LoadFromBinaryBase64(session["event"].Value);
+                }
+                catch(Exception)
+                {
+                    //GALogger.E("FixMissingSessionEndEvents: Error decoding json, " + e);
+                }
+
+                if(sessionEndEvent != null)
+                {
                     long event_ts = sessionEndEvent["client_ts"].AsLong;
                     long start_ts = session["timestamp"].AsLong;
 
@@ -565,9 +578,9 @@ namespace GameAnalyticsSDK.Net.Events
                     // Add to store
                     AddEventToStore(sessionEndEvent.AsObject);
                 }
-                catch(Exception e)
+                else
                 {
-                    GALogger.E("FixMissingSessionEndEvents: Error decoding json, " + e);
+                    GALogger.I("Problem decoding session_end event. Skipping  this session_end event.");
                 }
             }
         }
@@ -606,7 +619,7 @@ namespace GameAnalyticsSDK.Net.Events
                 JSONObject ev = GAState.GetEventAnnotations();
 
                 // Create json with only default annotations
-                string jsonDefaults = ev.SaveToBase64();
+                string jsonDefaults = ev.SaveToBinaryBase64();
 
                 // Merge with eventData
                 foreach(KeyValuePair<string,JSONNode> pair in eventData)
@@ -627,7 +640,7 @@ namespace GameAnalyticsSDK.Net.Events
                 parameters.Add("$category", ev["category"].Value);
                 parameters.Add("$session_id", ev["session_id"].Value);
                 parameters.Add("$client_ts", ev["client_ts"].Value);
-                parameters.Add("$event", ev.SaveToBase64());
+                parameters.Add("$event", ev.SaveToBinaryBase64());
                 string sql = "INSERT INTO ga_events (status, category, session_id, client_ts, event) VALUES($status, $category, $session_id, $client_ts, $event);";
 
                 GAStore.ExecuteQuerySync(sql, parameters);
@@ -743,7 +756,7 @@ namespace GameAnalyticsSDK.Net.Events
             if(GAState.SessionIsStarted())
             {
                 JSONObject ev = GAState.GetEventAnnotations();
-                string jsonDefaults = ev.SaveToBase64();
+                string jsonDefaults = ev.SaveToBinaryBase64();
                 string sql = "INSERT OR REPLACE INTO ga_session(session_id, timestamp, event) VALUES($session_id, $timestamp, $event);";
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters.Add("$session_id", ev["session_id"].Value);
