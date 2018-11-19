@@ -148,9 +148,9 @@ namespace GameAnalyticsSDK.Net
 			isValid = GAValidator.ValidateBusinessEvent("USD", 0, "", "itemType", "itemId");
 			Assert.True(isValid, "Business event should allow amount 0");
 
-			// Should allow negative amount
+			// Should not allow negative amount
 			isValid = GAValidator.ValidateBusinessEvent("USD", -99, "", "itemType", "itemId");
-			Assert.True(isValid, "Business event should allow amount less than 0");
+			Assert.False(isValid, "Business event should allow amount less than 0");
 
 			// Should fail on empty item type
 			isValid = GAValidator.ValidateBusinessEvent("USD", 99, "", "", "itemId");

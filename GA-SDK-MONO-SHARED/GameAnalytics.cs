@@ -629,7 +629,9 @@ namespace GameAnalyticsSDK.Net
 
             GAThreading.PerformTaskOnGAThread("startSession", () =>
             {
+#if WINDOWS_UWP || WINDOWS_WSA
                 if(GAState.UseManualSessionHandling)
+#endif
                 {
                     if(!GAState.Initialized)
                     {
@@ -648,7 +650,9 @@ namespace GameAnalyticsSDK.Net
 
         public static void EndSession()
         {
+#if WINDOWS_UWP || WINDOWS_WSA
             if(GAState.UseManualSessionHandling)
+#endif
             {
                 OnSuspend();
             }
@@ -709,7 +713,7 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        #region COMMAND CENTER
+#region COMMAND CENTER
 
         public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
         {
@@ -736,9 +740,9 @@ namespace GameAnalyticsSDK.Net
             return GAState.GetConfigurationsAsString();
         }
 
-        #endregion // COMMAND CENTER
+#endregion // COMMAND CENTER
 
-        #region PRIVATE HELPERS
+#region PRIVATE HELPERS
 
         private static bool IsSdkReady(bool needsInitialized)
         {
@@ -796,6 +800,6 @@ namespace GameAnalyticsSDK.Net
             return true;
         }
 
-        #endregion // PRIVATE HELPERS
+#endregion // PRIVATE HELPERS
     }
 }

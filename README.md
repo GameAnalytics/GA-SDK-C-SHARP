@@ -28,6 +28,12 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.0.6**
+* removed manual session handling check for startsession and endsession for non-uwp and non-wsa builds
+
+**2.0.5**
+* fixed validation for business events
+
 **2.0.4**
 * fixed json deserializing bugs
 
