@@ -62,6 +62,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddSessionStartEvent()
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             string categorySessionStart = CategorySessionStart;
 
             // Event specific data
@@ -87,6 +92,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddSessionEndEvent()
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             long session_start_ts = GAState.SessionStart;
             long client_ts_adjusted = GAState.GetClientTsAdjusted();
             long sessionLength = client_ts_adjusted - session_start_ts;
@@ -126,6 +136,11 @@ namespace GameAnalyticsSDK.Net.Events
             IDictionary<string, object> fields
         )
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             // Validate event params
             if (!GAValidator.ValidateBusinessEvent(currency, amount, cartType, itemType, itemId))
             {
@@ -168,6 +183,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId, IDictionary<string, object> fields)
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             // Validate event params
             if (!GAValidator.ValidateResourceEvent(flowType, currency, (long)amount, itemType, itemId))
             {
@@ -205,6 +225,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore, IDictionary<string, object> fields)
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             string progressionStatusString = ProgressionStatusToString(progressionStatus);
 
             // Validate event params
@@ -282,6 +307,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddDesignEvent(string eventId, double value, bool sendValue, IDictionary<string, object> fields)
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             // Validate
             if (!GAValidator.ValidateDesignEvent(eventId, value))
             {
@@ -316,6 +346,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields)
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             string severityString = ErrorSeverityToString(severity);
 
             // Validate
@@ -369,6 +404,11 @@ namespace GameAnalyticsSDK.Net.Events
         private static void ProcessEvents(string category, bool performCleanUp)
 #endif
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
             try
             {
                 string requestIdentifier = Guid.NewGuid().ToString();
@@ -532,6 +572,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         private static void FixMissingSessionEndEvents()
         {
+            if(!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+            
             // Get all sessions that are not current
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("$session_id", GAState.SessionId);

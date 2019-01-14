@@ -516,6 +516,28 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
+        public static void SetEnabledEventSubmission(bool flag)
+        {
+            if(_endThread)
+            {
+                return;
+            }
+
+            GAThreading.PerformTaskOnGAThread("setEnabledEventSubmission", () =>
+            {
+                if (flag)
+                {
+                    GAState.SetEnabledEventSubmission(flag);
+                    GALogger.I("Event submission enabled");
+                }
+                else
+                {
+                    GALogger.I("Event submission disabled");
+                    GAState.SetEnabledEventSubmission(flag);
+                }
+            });
+        }
+
         public static void SetCustomDimension01(string dimension)
         {
             if(_endThread)
