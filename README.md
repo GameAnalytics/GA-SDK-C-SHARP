@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.1.0**
+* added enable/disable event submission function
+
 **2.0.6**
 * removed manual session handling check for startsession and endsession for non-uwp and non-wsa builds
 
