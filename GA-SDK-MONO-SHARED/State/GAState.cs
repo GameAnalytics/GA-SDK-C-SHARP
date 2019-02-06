@@ -225,7 +225,7 @@ namespace GameAnalyticsSDK.Net.State
             private set { Instance._useManualSessionHandling = value; }
         }
 
-        private bool _isEventSubmissionEnabled;
+        private bool _isEventSubmissionEnabled = true;
         public static bool IsEventSubmissionEnabled
         {
             get { return Instance._isEventSubmissionEnabled; }
