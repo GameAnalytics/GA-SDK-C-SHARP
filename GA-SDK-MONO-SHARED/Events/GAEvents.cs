@@ -576,7 +576,7 @@ namespace GameAnalyticsSDK.Net.Events
             {
                 return;
             }
-            
+
             // Get all sessions that are not current
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("$session_id", GAState.SessionId);
@@ -585,7 +585,7 @@ namespace GameAnalyticsSDK.Net.Events
             string sql = "SELECT timestamp, event FROM ga_session WHERE session_id != $session_id;";
             JSONArray sessions = GAStore.ExecuteQuerySync(sql, parameters);
 
-            if (sessions == null)
+            if (sessions == null || sessions.Count == 0)
             {
                 return;
             }
