@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 #if WINDOWS_WSA || WINDOWS_UWP
 using Windows.System.Threading;
+using Windows.Foundation;
 using System.Threading.Tasks;
 #else
 using System.Threading;
@@ -12,19 +13,25 @@ namespace GameAnalyticsSDK.Net.Threading
 {
 	public class GAThreading
 	{
-        private static bool shouldThreadrun = false;
+        private static bool endThread = false;
+        private static DateTime threadDeadline;
         private static readonly GAThreading _instance = new GAThreading ();
 		private const int ThreadWaitTimeInMs = 1000;
 		private readonly PriorityQueue<long, TimedBlock> blocks = new PriorityQueue<long, TimedBlock>();
 		private readonly object threadLock = new object();
+        private TimedBlock scheduledBlock;
+        private bool hasScheduledBlockRun;
+#if WINDOWS_WSA || WINDOWS_UWP
+        private IAsyncAction thread;
+#else
+        private Thread thread;
+#endif
 
-
-		private GAThreading()
+        private GAThreading()
 		{
-			GALogger.D("Initializing GA thread...");
-
-            StartThread();
-		}
+            threadDeadline = DateTime.Now;
+            hasScheduledBlockRun = true;
+        }
 
 		private static GAThreading Instance
 		{
@@ -40,7 +47,7 @@ namespace GameAnalyticsSDK.Net.Threading
 
 			try
 			{
-				while(shouldThreadrun)
+				while(!endThread && threadDeadline.CompareTo(DateTime.Now) > 0)
 				{
 					TimedBlock timedBlock;
 
@@ -49,6 +56,10 @@ namespace GameAnalyticsSDK.Net.Threading
                         timedBlock.block();
                     }
 
+                    if((timedBlock = GetScheduledBlock()) != null)
+                    {
+                        timedBlock.block();
+                    }
 
 #if WINDOWS_WSA || WINDOWS_UWP
                     Task.Delay(1000).Wait();
@@ -56,14 +67,17 @@ namespace GameAnalyticsSDK.Net.Threading
                     Thread.Sleep(ThreadWaitTimeInMs);
 #endif
                 }
+
+                if(!endThread)
+                {
+                    GALogger.D("Ending GA thread");
+                }
             }
 			catch(Exception)
 			{
 				//GALogger.E("Error on GA thread");
 				//GALogger.E(e.ToString());
 			}
-
-			//GALogger.D("Ending GA thread");
 		}
 
         public static void PerformTaskOnGAThread(string blockName, Action taskBlock)
@@ -73,6 +87,11 @@ namespace GameAnalyticsSDK.Net.Threading
 
 		public static void PerformTaskOnGAThread(string blockName, Action taskBlock, long delayInSeconds)
 		{
+            if(endThread)
+            {
+                return;
+            }
+
 			lock(Instance.threadLock)
 			{
 				DateTime time = DateTime.Now;
@@ -80,19 +99,59 @@ namespace GameAnalyticsSDK.Net.Threading
 
 				TimedBlock timedBlock = new TimedBlock(time, taskBlock, blockName);
 				Instance.AddTimedBlock(timedBlock);
-			}
-		}
+                threadDeadline = time.AddSeconds(10);
+#if WINDOWS_WSA || WINDOWS_UWP
+                if (Instance.thread == null || Instance.thread.Status != AsyncStatus.Started)
+                {
+                    StartThread();
+                }
+#else
+                if (Instance.thread == null || !Instance.thread.IsAlive)
+                {
+                    if(Instance.thread != null)
+                    {
+                        Instance.thread.Join();
+                    }
+                    StartThread();
+                }
+#endif
+
+            }
+        }
 
 		public static void ScheduleTimer(double interval, string blockName, Action callback)
 		{
-			lock(Instance.threadLock)
-			{
-				DateTime time = DateTime.Now;
-				time = time.AddSeconds(interval);
+            if (endThread)
+            {
+                return;
+            }
 
-				TimedBlock timedBlock = new TimedBlock(time, callback, blockName);
-				Instance.AddTimedBlock(timedBlock);
-			}
+            lock (Instance.threadLock)
+			{
+                if(Instance.hasScheduledBlockRun)
+                {
+                    DateTime time = DateTime.Now;
+                    time = time.AddSeconds(interval);
+                    Instance.scheduledBlock = new TimedBlock(time, callback, blockName);
+                    Instance.hasScheduledBlockRun = false;
+                    threadDeadline = time.AddSeconds(2);
+#if WINDOWS_WSA || WINDOWS_UWP
+                    if (Instance.thread == null || Instance.thread.Status != AsyncStatus.Started)
+                    {
+                        StartThread();
+                    }
+#else
+                if (Instance.thread == null || !Instance.thread.IsAlive)
+                {
+                    if(Instance.thread != null)
+                    {
+                        Instance.thread.Join();
+                    }
+                    StartThread();
+                }
+#endif
+                }
+            }
 		}
 
 		private void AddTimedBlock(TimedBlock timedBlock)
@@ -115,30 +174,37 @@ namespace GameAnalyticsSDK.Net.Threading
 			}
 		}
 
-#if WINDOWS_WSA || WINDOWS_UWP
-        public async static void StartThread()
-#else
-        public static void StartThread()
-#endif
+        private static TimedBlock GetScheduledBlock()
         {
-            GALogger.D("StartThread called");
-            if (!shouldThreadrun)
-			{
-				shouldThreadrun = true;
+            lock (Instance.threadLock)
+            {
+                DateTime now = DateTime.Now;
+
+                if (!Instance.hasScheduledBlockRun && Instance.scheduledBlock != null && Instance.scheduledBlock.deadline.CompareTo(now) <= 0)
+                {
+                    Instance.hasScheduledBlockRun = true;
+                    return Instance.scheduledBlock;
+                }
+
+                return null;
+            }
+        }
+
+        public static void StartThread()
+        {
 #if WINDOWS_WSA || WINDOWS_UWP
-            	await ThreadPool.RunAsync(o => Run());
+            Instance.thread = ThreadPool.RunAsync(o => Run());
 #else
-				Thread thread = new Thread(new ThreadStart(Run));
-				thread.Priority = ThreadPriority.Lowest;
-				thread.Start();
+            Instance.thread = new Thread(new ThreadStart(Run));
+            Instance.thread.Priority = ThreadPriority.Lowest;
+            Instance.thread.Start();
 #endif
-			}
         }
 
 		public static void StopThread()
 		{
             GALogger.D("StopThread called");
-            shouldThreadrun = false;
+            endThread = true;
 		}
     }
 }

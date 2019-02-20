@@ -56,7 +56,7 @@ namespace GameAnalyticsSDK.Net.Events
             if(!Instance.isRunning)
             {
                 Instance.isRunning = true;
-                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+                //GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
             }
         }
 
@@ -179,6 +179,11 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Send to store
             AddEventToStore(eventDict);
+            // add process request in case has not been added yet
+            if (Instance.keepRunning)
+            {
+                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+            }
         }
 
         public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId, IDictionary<string, object> fields)
@@ -221,6 +226,11 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Send to store
             AddEventToStore(eventDict);
+            // add process request in case has not been added yet
+            if (Instance.keepRunning)
+            {
+                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+            }
         }
 
         public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore, IDictionary<string, object> fields)
@@ -303,6 +313,11 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Send to store
             AddEventToStore(eventDict);
+            // add process request in case has not been added yet
+            if (Instance.keepRunning)
+            {
+                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+            }
         }
 
         public static void AddDesignEvent(string eventId, double value, bool sendValue, IDictionary<string, object> fields)
@@ -342,6 +357,11 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Send to store
             AddEventToStore(eventData);
+            // add process request in case has not been added yet
+            if (Instance.keepRunning)
+            {
+                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+            }
         }
 
         public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields)
@@ -379,6 +399,11 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Send to store
             AddEventToStore(eventData);
+            // add process request in case has not been added yet
+            if (Instance.keepRunning)
+            {
+                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+            }
         }
 
         #endregion // Public methods
@@ -390,7 +415,7 @@ namespace GameAnalyticsSDK.Net.Events
             ProcessEvents("", true);
             if(Instance.keepRunning)
             {
-                GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
+                //GAThreading.ScheduleTimer(ProcessEventsIntervalInSeconds, "processEventQueue", ProcessEventQueue);
             }
             else
             {
@@ -576,7 +601,7 @@ namespace GameAnalyticsSDK.Net.Events
             {
                 return;
             }
-            
+
             // Get all sessions that are not current
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             parameters.Add("$session_id", GAState.SessionId);
@@ -585,7 +610,7 @@ namespace GameAnalyticsSDK.Net.Events
             string sql = "SELECT timestamp, event FROM ga_session WHERE session_id != $session_id;";
             JSONArray sessions = GAStore.ExecuteQuerySync(sql, parameters);
 
-            if (sessions == null)
+            if (sessions == null || sessions.Count == 0)
             {
                 return;
             }
