@@ -63,8 +63,9 @@ namespace GameAnalyticsSDK.Net.Logging
 
 		private GALogger()
 		{
+            debugEnabled = true;
 #if DEBUG
-			debugEnabled = true;
+            debugEnabled = true;
 #endif
 #if WINDOWS_UWP || WINDOWS_WSA
             session = new FileLoggingSession("ga-session");
