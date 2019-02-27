@@ -28,6 +28,12 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**2.1.5**
+* thread bug fix
+
+**2.1.4**
+* session length fixes
+
 **2.1.3**
 * small correction for logging
 

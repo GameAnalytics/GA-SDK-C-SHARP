@@ -33,6 +33,11 @@ namespace GameAnalyticsSDK.Net.Threading
             hasScheduledBlockRun = true;
         }
 
+        ~GAThreading()
+        {
+            StopThread();
+        }
+
 		private static GAThreading Instance
 		{
 			get 
@@ -41,7 +46,22 @@ namespace GameAnalyticsSDK.Net.Threading
 			}
 		}
 
-		public static void Run()
+        private static void RunBlocks()
+        {
+            TimedBlock timedBlock;
+
+            while ((timedBlock = GetNextBlock()) != null)
+            {
+                timedBlock.block();
+            }
+
+            if ((timedBlock = GetScheduledBlock()) != null)
+            {
+                timedBlock.block();
+            }
+        }
+
+        public static void Run()
 		{
 			GALogger.D("Starting GA thread");
 
@@ -49,26 +69,19 @@ namespace GameAnalyticsSDK.Net.Threading
 			{
 				while(!endThread && threadDeadline.CompareTo(DateTime.Now) > 0)
 				{
-					TimedBlock timedBlock;
-
-					while((timedBlock = GetNextBlock()) != null)
-					{
-                        timedBlock.block();
-                    }
-
-                    if((timedBlock = GetScheduledBlock()) != null)
-                    {
-                        timedBlock.block();
-                    }
+                    RunBlocks();
 
 #if WINDOWS_WSA || WINDOWS_UWP
-                    Task.Delay(1000).Wait();
+                    Task.Delay(ThreadWaitTimeInMs).Wait();
 #else
                     Thread.Sleep(ThreadWaitTimeInMs);
 #endif
                 }
 
-                if(!endThread)
+                // run any last blocks added
+                RunBlocks();
+
+                if (!endThread)
                 {
                     GALogger.D("Ending GA thread");
                 }
@@ -101,12 +114,12 @@ namespace GameAnalyticsSDK.Net.Threading
 				Instance.AddTimedBlock(timedBlock);
                 threadDeadline = time.AddSeconds(10);
 #if WINDOWS_WSA || WINDOWS_UWP
-                if (Instance.thread == null || Instance.thread.Status != AsyncStatus.Started)
+                if (IsThreadFinished())
                 {
                     StartThread();
                 }
 #else
-                if (Instance.thread == null || !Instance.thread.IsAlive)
+                if (IsThreadFinished())
                 {
                     if(Instance.thread != null)
                     {
@@ -136,19 +149,19 @@ namespace GameAnalyticsSDK.Net.Threading
                     Instance.hasScheduledBlockRun = false;
                     threadDeadline = time.AddSeconds(2);
 #if WINDOWS_WSA || WINDOWS_UWP
-                    if (Instance.thread == null || Instance.thread.Status != AsyncStatus.Started)
+                    if (IsThreadFinished())
                     {
                         StartThread();
                     }
 #else
-                if (Instance.thread == null || !Instance.thread.IsAlive)
-                {
-                    if(Instance.thread != null)
+                    if (IsThreadFinished())
                     {
-                        Instance.thread.Join();
+                        if(Instance.thread != null)
+                        {
+                            Instance.thread.Join();
+                        }
+                        StartThread();
                     }
-                    StartThread();
-                }
 #endif
                 }
             }
@@ -203,9 +216,17 @@ namespace GameAnalyticsSDK.Net.Threading
 
 		public static void StopThread()
 		{
-            GALogger.D("StopThread called");
             endThread = true;
 		}
+
+        public static bool IsThreadFinished()
+        {
+#if WINDOWS_WSA || WINDOWS_UWP
+            return Instance.thread == null || Instance.thread.Status != AsyncStatus.Started;
+#else
+            return Instance.thread == null || !Instance.thread.IsAlive;
+#endif
+        }
     }
 }
 

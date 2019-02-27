@@ -8,9 +8,11 @@ using GameAnalyticsSDK.Net.Device;
 using GameAnalyticsSDK.Net.Events;
 using GameAnalyticsSDK.Net.Store;
 #if WINDOWS_UWP || WINDOWS_WSA
-using Windows.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
+using System.Threading.Tasks;
+#else
+using System.Threading;
 #endif
 
 namespace GameAnalyticsSDK.Net
@@ -260,18 +262,28 @@ namespace GameAnalyticsSDK.Net
         }
 
 #if WINDOWS_UWP || WINDOWS_WSA
-        private static void OnSuspending(object sender, SuspendingEventArgs e)
+        private static async void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            if(!GAState.UseManualSessionHandling)
+            await WaitOnSuspend();
+            deferral.Complete();
+        }
+
+        private static async Task WaitOnSuspend()
+        {
+            if (!GAState.UseManualSessionHandling)
             {
                 OnSuspend();
+
+                while (!GAThreading.IsThreadFinished())
+                {
+                    await Task.Delay(100);
+                }
             }
             else
             {
                 GALogger.I("OnSuspending: Not calling GameAnalytics.OnStop() as using manual session handling");
             }
-            deferral.Complete();
         }
 
         private static void OnResuming(object sender, object e)
@@ -735,7 +747,7 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-#region COMMAND CENTER
+        #region COMMAND CENTER
 
         public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
         {
