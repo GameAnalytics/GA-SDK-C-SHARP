@@ -232,6 +232,11 @@ namespace GameAnalyticsSDK.Net.State
             private set { Instance._isEventSubmissionEnabled = value; }
         }
 
+        private bool Enabled
+        {
+            get;
+            set;
+        }
         private string FacebookId
         {
             get;
@@ -322,26 +327,19 @@ namespace GameAnalyticsSDK.Net.State
 
         private GAState()
         {
+            Enabled = false;
+        }
+
+        ~GAState()
+        {
+            EndSessionAndStopQueue(false);
         }
 
         #region Public methods
 
         public static bool IsEnabled()
         {
-            JSONNode currentSdkConfig = SdkConfig;
-
-            if (currentSdkConfig["enabled"].IsBoolean && !currentSdkConfig["enabled"].AsBool)
-            {
-                return false;
-            }
-            else if (!Instance.InitAuthorized)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return Instance.Enabled;
         }
 
         public static void SetCustomDimension01(string dimension)
@@ -1201,6 +1199,23 @@ namespace GameAnalyticsSDK.Net.State
                     GALogger.I("Init call (session start) failed - using cached init values.");
                 }
                 Instance.InitAuthorized = true;
+            }
+
+            {
+                JSONNode currentSdkConfig = SdkConfig;
+
+                if (currentSdkConfig["enabled"].IsBoolean && !currentSdkConfig["enabled"].AsBool)
+                {
+                    Instance.Enabled = false;
+                }
+                else if (!Instance.InitAuthorized)
+                {
+                    Instance.Enabled = false;
+                }
+                else
+                {
+                    Instance.Enabled = true;
+                }
             }
 
             // set offset in state (memory) from current config (config could be from cache etc.)

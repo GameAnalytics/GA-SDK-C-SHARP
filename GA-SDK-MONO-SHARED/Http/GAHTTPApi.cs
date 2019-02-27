@@ -25,13 +25,20 @@ namespace GameAnalyticsSDK.Net.Http
         #region Fields and properties
 
         private static readonly GAHTTPApi _instance = new GAHTTPApi();
-        private string protocol;
-        private string hostName;
-        private string version;
-        private string baseUrl;
-        private string initializeUrlPath;
-        private string eventsUrlPath;
+
+        // base url settings
+        private static string protocol = "https";
+        private static string hostName = "api.gameanalytics.com";
+        private static string version = "v2";
+        private static string baseUrl = getBaseUrl();
+        private static string initializeUrlPath = "init";
+        private static string eventsUrlPath = "events";
         private bool useGzip;
+
+        private static string getBaseUrl()
+        {
+            return protocol + "://" + hostName + "/" + version;
+        }
 
         public static GAHTTPApi Instance
         {
@@ -46,18 +53,10 @@ namespace GameAnalyticsSDK.Net.Http
         // Constructor - setup the basic information for HTTP
         private GAHTTPApi()
         {
-            // base url settings
-            this.protocol = "https";
-            this.hostName = "api.gameanalytics.com";
-            this.version = "v2";
-
-            // create base url
-            this.baseUrl = this.protocol + "://" + this.hostName + "/" + this.version;
-
-            this.initializeUrlPath = "init";
-            this.eventsUrlPath = "events";
-
             this.useGzip = true;
+#if DEBUG
+            this.useGzip = false;
+#endif
 #if !WINDOWS_UWP && !WINDOWS_WSA
             ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
 #endif
@@ -127,7 +126,7 @@ namespace GameAnalyticsSDK.Net.Http
         }
 #endif
 
-        #region Public methods
+#region Public methods
 
 #if WINDOWS_UWP || WINDOWS_WSA
         public async Task<KeyValuePair<EGAHTTPApiResponse, JSONObject>> RequestInitReturningDict()
