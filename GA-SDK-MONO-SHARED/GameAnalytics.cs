@@ -740,15 +740,6 @@ namespace GameAnalyticsSDK.Net
                 {
                     _endThread = true;
                     GAState.EndSessionAndStopQueue(true);
-
-                    while(!GAThreading.IsThreadFinished())
-                    {
-#if WINDOWS_WSA || WINDOWS_UWP
-                        Task.Delay(100).Wait();
-#else
-                        Thread.Sleep(100);
-#endif
-                    }
                 }
                 catch(Exception)
                 {
@@ -756,7 +747,7 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-#region COMMAND CENTER
+        #region COMMAND CENTER
 
         public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
         {

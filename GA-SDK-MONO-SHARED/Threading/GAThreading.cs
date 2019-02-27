@@ -36,15 +36,6 @@ namespace GameAnalyticsSDK.Net.Threading
         ~GAThreading()
         {
             StopThread();
-
-            while(!IsThreadFinished())
-            {
-#if WINDOWS_WSA || WINDOWS_UWP
-                Task.Delay(100).Wait();
-#else
-                Thread.Sleep(100);
-#endif
-            }
         }
 
 		private static GAThreading Instance
