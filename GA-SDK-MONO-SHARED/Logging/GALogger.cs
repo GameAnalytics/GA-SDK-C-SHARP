@@ -88,7 +88,7 @@ namespace GameAnalyticsSDK.Net.Logging
 			var fileTarget = new FileTarget();
 			config.AddTarget("file", fileTarget);
 
-			consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
+			//consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
 			fileTarget.FileName = GADevice.WritablePath + Path.DirectorySeparatorChar + "ga_log.txt";
 			fileTarget.Layout = "${message}";
 
