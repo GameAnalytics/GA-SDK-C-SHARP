@@ -545,10 +545,10 @@ namespace GameAnalyticsSDK.Net.State
         {
             if(Initialized)
             {
-                GALogger.I("Ending session.");
-                GAEvents.StopEventQueue();
                 if (IsEnabled() && SessionIsStarted())
                 {
+                    GALogger.I("Ending session.");
+                    GAEvents.StopEventQueue();
                     GAEvents.AddSessionEndEvent();
                     SessionStart = 0;
                 }

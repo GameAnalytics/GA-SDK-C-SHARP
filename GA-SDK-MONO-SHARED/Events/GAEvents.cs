@@ -441,6 +441,7 @@ namespace GameAnalyticsSDK.Net.Events
                 if(events == null || events.Count == 0)
                 {
                     GALogger.I("Event queue: No events to send");
+                    UpdateSessionTime();
                     return;
                 }
 
