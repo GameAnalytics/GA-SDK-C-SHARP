@@ -780,12 +780,12 @@ namespace GameAnalyticsSDK.Net
 
         public static string GetABTestingId()
         {
-
+            return GAState.GetABTestingId();
         }
 
         public static string GetABTestingVariantId()
         {
-
+            return GAState.GetABTestingVariantId();
         }
 
 #endregion // AB TESTING

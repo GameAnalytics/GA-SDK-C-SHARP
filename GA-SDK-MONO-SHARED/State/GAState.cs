@@ -864,9 +864,19 @@ namespace GameAnalyticsSDK.Net.State
             return Instance.configurations.ToString();
         }
 
-#endregion // Public methods
+        public static string GetABTestingId()
+        {
+            return Instance.AbId;
+        }
 
-#region Private methods
+        public static string GetABTestingVariantId()
+        {
+            return Instance.AbVariantId;
+        }
+
+        #endregion // Public methods
+
+        #region Private methods
 
         private static void CacheIdentifier()
         {
@@ -1114,10 +1124,10 @@ namespace GameAnalyticsSDK.Net.State
                 }
 
                 {
-                    JSONObject currentSdkConfig = SdkConfig;
-                    instance.ConfigsHash = currentSdkConfig["configs_hash"] != null && currentSdkConfig["configs_hash"].IsString ? currentSdkConfig["configs_hash"].AsString : "";
-                    instance.AbId = currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString ? currentSdkConfig["ab_id"].AsString : "";
-                    instance.AbVariantId = currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString ? currentSdkConfig["ab_variant_id"].AsString : "";
+                    JSONNode currentSdkConfig = SdkConfig;
+                    instance.ConfigsHash = currentSdkConfig["configs_hash"] != null && currentSdkConfig["configs_hash"].IsString ? currentSdkConfig["configs_hash"].Value : "";
+                    instance.AbId = currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString ? currentSdkConfig["ab_id"].Value : "";
+                    instance.AbVariantId = currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString ? currentSdkConfig["ab_variant_id"].Value : "";
                 }
 
                 JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
@@ -1150,9 +1160,9 @@ namespace GameAnalyticsSDK.Net.State
 
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
-            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
+            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict(Instance.ConfigsHash);
 #else
-            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = GAHTTPApi.Instance.RequestInitReturningDict();
+            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = GAHTTPApi.Instance.RequestInitReturningDict(Instance.ConfigsHash);
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
@@ -1174,7 +1184,7 @@ namespace GameAnalyticsSDK.Net.State
 
                 if(initResponse != EGAHTTPApiResponse.Created)
                 {
-                    JSONObject currentSdkConfig = GAState.SdkConfig;
+                    JSONNode currentSdkConfig = GAState.SdkConfig;
                     // use cached if not Created
                     if(currentSdkConfig["configs"] != null && currentSdkConfig["configs"].IsArray)
                     {
@@ -1182,11 +1192,11 @@ namespace GameAnalyticsSDK.Net.State
                     }
                     if(currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString)
                     {
-                        initResponseDict["ab_id"] = currentSdkConfig["ab_id"].AsString;
+                        initResponseDict["ab_id"] = currentSdkConfig["ab_id"].Value;
                     }
                     if(currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString)
                     {
-                        initResponseDict["ab_variant_id"] = currentSdkConfig["ab_variant_id"].AsString;
+                        initResponseDict["ab_variant_id"] = currentSdkConfig["ab_variant_id"].Value;
                     }
                 }
 
