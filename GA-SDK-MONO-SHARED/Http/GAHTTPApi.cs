@@ -28,7 +28,7 @@ namespace GameAnalyticsSDK.Net.Http
 
         // base url settings
         private static string protocol = "https";
-        private static string hostName = "api.gameanalytics.com";
+        private static string hostName = "api.integration.gameanalytics.com";
         private static string version = "v2";
         private static string remoteConfigsVersion = "v1";
         private static string baseUrl = getBaseUrl();
@@ -529,6 +529,11 @@ namespace GameAnalyticsSDK.Net.Http
             if (responseCode == HttpStatusCode.OK)
             {
                 return EGAHTTPApiResponse.Ok;
+            }
+            // ok
+            if (responseCode == HttpStatusCode.Created)
+            {
+                return EGAHTTPApiResponse.Created;
             }
 
             // 401 can return 0 status
