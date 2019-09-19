@@ -30,7 +30,9 @@ namespace GameAnalyticsSDK.Net.Http
         private static string protocol = "https";
         private static string hostName = "api.gameanalytics.com";
         private static string version = "v2";
+        private static string remoteConfigsVersion = "v1";
         private static string baseUrl = getBaseUrl();
+        private static string remoteConfigsBaseUrl = getRemoteConfigsBaseUrl();
         private static string initializeUrlPath = "init";
         private static string eventsUrlPath = "events";
         private bool useGzip;
@@ -38,6 +40,11 @@ namespace GameAnalyticsSDK.Net.Http
         private static string getBaseUrl()
         {
             return protocol + "://" + hostName + "/" + version;
+        }
+
+        private static string getRemoteConfigsBaseUrl()
+        {
+            return protocol + "://" + hostName + "/remote_configs/" + remoteConfigsVersion;
         }
 
         public static GAHTTPApi Instance
@@ -129,9 +136,9 @@ namespace GameAnalyticsSDK.Net.Http
 #region Public methods
 
 #if WINDOWS_UWP || WINDOWS_WSA
-        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONObject>> RequestInitReturningDict()
+        public async Task<KeyValuePair<EGAHTTPApiResponse, JSONObject>> RequestInitReturningDict(string configsHash)
 #else
-        public KeyValuePair<EGAHTTPApiResponse, JSONObject> RequestInitReturningDict()
+        public KeyValuePair<EGAHTTPApiResponse, JSONObject> RequestInitReturningDict(string configsHash)
 #endif
         {
             JSONObject json;
@@ -139,9 +146,7 @@ namespace GameAnalyticsSDK.Net.Http
             string gameKey = GAState.GameKey;
 
             // Generate URL
-            string url = baseUrl + "/" + gameKey + "/" + initializeUrlPath;
-            url = "https://rubick.gameanalytics.com/v2/command_center?game_key=" + gameKey + "&interval_seconds=1000000";
-            //url = "https://requestb.in/1fvbe2g1";
+            string url = remoteConfigsBaseUrl + "/" + initializeUrlPath + "?game_key=" + gameKey + "&interval_seconds=0&configs_hash=" + configsHash;
 
             GALogger.D("Sending 'init' URL: " + url);
 
@@ -231,7 +236,7 @@ namespace GameAnalyticsSDK.Net.Http
             EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Init");
 
             // if not 200 result
-            if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+            if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.Created && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
             {
                 GALogger.D("Failed Init Call. URL: " + url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
                 result = requestResponseEnum;
@@ -258,7 +263,7 @@ namespace GameAnalyticsSDK.Net.Http
             }
 
             // validate Init call values
-            JSONObject validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict);
+            JSONObject validatedInitValues = GAValidator.ValidateAndCleanInitRequestResponse(requestJsonDict, requestResponseEnum == EGAHTTPApiResponse.Created);
 
             if (validatedInitValues == null)
             {
@@ -268,7 +273,7 @@ namespace GameAnalyticsSDK.Net.Http
             }
 
             // all ok
-            result = EGAHTTPApiResponse.Ok;
+            result = requestResponseEnum;
             json = validatedInitValues;
             return new KeyValuePair<EGAHTTPApiResponse, JSONObject>(result, json);
         }
@@ -374,7 +379,7 @@ namespace GameAnalyticsSDK.Net.Http
             EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Events");
 
             // if not 200 result
-            if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
+            if (requestResponseEnum != EGAHTTPApiResponse.Ok && requestResponseEnum != EGAHTTPApiResponse.Created && requestResponseEnum != EGAHTTPApiResponse.BadRequest)
             {
                 GALogger.D("Failed events Call. URL: " + url + ", Authorization: " + authorization + ", JSONString: " + JSONstring);
                 json = null;
@@ -410,7 +415,7 @@ namespace GameAnalyticsSDK.Net.Http
             {
                 return;
             }
-            
+
             string gameKey = GAState.GameKey;
             string secretKey = GAState.GameSecret;
 

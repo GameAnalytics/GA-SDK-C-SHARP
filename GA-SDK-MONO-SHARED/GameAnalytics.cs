@@ -776,6 +776,20 @@ namespace GameAnalyticsSDK.Net
 
 #endregion // COMMAND CENTER
 
+#region AB TESTING
+
+        public static string GetABTestingId()
+        {
+
+        }
+
+        public static string GetABTestingVariantId()
+        {
+
+        }
+
+#endregion // AB TESTING
+
 #region PRIVATE HELPERS
 
         private static bool IsSdkReady(bool needsInitialized)

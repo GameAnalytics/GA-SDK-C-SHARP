@@ -272,6 +272,21 @@ namespace GameAnalyticsSDK.Net.State
             get;
             set;
         }
+        public string ConfigsHash
+        {
+            get;
+            set;
+        }
+        public string AbId
+        {
+            get;
+            set;
+        }
+        public string AbVariantId
+        {
+            get;
+            set;
+        }
 
         private string _defaultUserId;
         private string DefaultUserId
@@ -712,6 +727,8 @@ namespace GameAnalyticsSDK.Net.State
             // Platform (operating system)
             initAnnotations["platform"] = GADevice.BuildPlatform;
 
+            initAnnotations["random_salt"] = GAState.SessionNum;
+
             return initAnnotations;
         }
 
@@ -1096,6 +1113,13 @@ namespace GameAnalyticsSDK.Net.State
                     }
                 }
 
+                {
+                    JSONObject currentSdkConfig = SdkConfig;
+                    instance.ConfigsHash = currentSdkConfig["configs_hash"] != null && currentSdkConfig["configs_hash"].IsString ? currentSdkConfig["configs_hash"].AsString : "";
+                    instance.AbId = currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString ? currentSdkConfig["ab_id"].AsString : "";
+                    instance.AbVariantId = currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString ? currentSdkConfig["ab_variant_id"].AsString : "";
+                }
+
                 JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
 
                 if (results_ga_progression != null && results_ga_progression.Count != 0)
@@ -1137,7 +1161,7 @@ namespace GameAnalyticsSDK.Net.State
         public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONObject initResponseDict)
         {
             // init is ok
-            if(initResponse == EGAHTTPApiResponse.Ok && initResponseDict != null)
+            if((initResponse == EGAHTTPApiResponse.Ok || initResponse == EGAHTTPApiResponse.Created) && initResponseDict != null)
             {
                 // set the time offset - how many seconds the local time is different from servertime
                 long timeOffsetSeconds = 0;
@@ -1147,6 +1171,16 @@ namespace GameAnalyticsSDK.Net.State
                     timeOffsetSeconds = CalculateServerTimeOffset(serverTs);
                 }
                 initResponseDict.Add("time_offset", new JSONNumber(timeOffsetSeconds));
+
+                if(initResponse != EGAHTTPApiResponse.Created)
+                {
+                    JSONObject currentSdkConfig = GAState.SdkConfig;
+                    // use cached if not Created
+                    if(currentSdkConfig["configs"] != null && )
+                    {
+                        initResponseDict.Add("configs", currentSdkConfig["configs"])
+                    }
+                }
 
                 // insert new config in sql lite cross session storage
                 GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBinaryBase64());
@@ -1284,7 +1318,7 @@ namespace GameAnalyticsSDK.Net.State
         {
             lock(Instance.configurationsLock)
             {
-                JSONArray configurations = sdkConfig["configurations"].AsArray;
+                JSONArray configurations = sdkConfig["configs"].AsArray;
 
                 if(configurations != null)
                 {
@@ -1304,8 +1338,8 @@ namespace GameAnalyticsSDK.Net.State
                             {
                                 value = configuration["value"].Value;
                             }
-                            long start_ts = configuration["start"].IsNumber ? configuration["start"].AsLong : long.MinValue;
-                            long end_ts = configuration["end"].IsNumber ? configuration["end"].AsLong : long.MaxValue;
+                            long start_ts = configuration["start_ts"].IsNumber ? configuration["start_ts"].AsLong : long.MinValue;
+                            long end_ts = configuration["end_ts"].IsNumber ? configuration["end_ts"].AsLong : long.MaxValue;
 
                             long client_ts_adjusted = GetClientTsAdjusted();
 
