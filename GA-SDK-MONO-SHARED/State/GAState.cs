@@ -1176,9 +1176,17 @@ namespace GameAnalyticsSDK.Net.State
                 {
                     JSONObject currentSdkConfig = GAState.SdkConfig;
                     // use cached if not Created
-                    if(currentSdkConfig["configs"] != null && )
+                    if(currentSdkConfig["configs"] != null && currentSdkConfig["configs"].IsArray)
                     {
-                        initResponseDict.Add("configs", currentSdkConfig["configs"])
+                        initResponseDict["configs"] = currentSdkConfig["configs"].AsArray;
+                    }
+                    if(currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString)
+                    {
+                        initResponseDict["ab_id"] = currentSdkConfig["ab_id"].AsString;
+                    }
+                    if(currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString)
+                    {
+                        initResponseDict["ab_variant_id"] = currentSdkConfig["ab_variant_id"].AsString;
                     }
                 }
 
