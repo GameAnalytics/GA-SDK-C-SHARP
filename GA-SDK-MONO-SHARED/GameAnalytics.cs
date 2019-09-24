@@ -747,34 +747,52 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        #region COMMAND CENTER
+        #region REMOTE CONFIGS
 
+        [Obsolete("GetCommandCenterValueAsString is deprecated, please use GetRemoteConfigsValueAsString instead. This function will be removed in a future release.")]
         public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
         {
-            return GAState.GetConfigurationStringValue(key, defaultValue);
+            return GetRemoteConfigsValueAsString(key, defaultValue);
         }
 
+        public static string GetRemoteConfigsValueAsString(string key, string defaultValue = null)
+        {
+            return GAState.GetRemoteConfigsStringValue(key, defaultValue);
+        }
+
+        [Obsolete("IsCommandCenterReady is deprecated, please use IsRemoteConfigsReady instead. This function will be removed in a future release.")]
         public static bool IsCommandCenterReady()
         {
-            return GAState.IsCommandCenterReady();
+            return IsRemoteConfigsReady();
         }
 
-        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        public static bool IsRemoteConfigsReady()
         {
-            GAState.AddCommandCenterListener(listener);
+            return GAState.IsRemoteConfigsReady();
         }
 
-        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        public static void AddRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            GAState.RemoveCommandCenterListener(listener);
+            GAState.AddRemoteConfigsListener(listener);
         }
 
+        public static void RemoveRemoteConfigsListener(IRemoteConfigsListener listener)
+        {
+            GAState.RemoveRemoteConfigsListener(listener);
+        }
+
+        [Obsolete("GetConfigurationsAsString is deprecated, please use GetRemoteConfigsAsString instead. This function will be removed in a future release.")]
         public static string GetConfigurationsAsString()
         {
-            return GAState.GetConfigurationsAsString();
+            return GetRemoteConfigsAsString();
         }
 
-#endregion // COMMAND CENTER
+        public static string GetRemoteConfigsAsString()
+        {
+            return GAState.GetRemoteConfigsAsString();
+        }
+
+#endregion // REMOTE CONFIGS
 
 #region AB TESTING
 

@@ -321,10 +321,10 @@ namespace GameAnalyticsSDK.Net.State
         private JSONNode sdkConfigDefault = new JSONObject();
         private JSONNode sdkConfig = new JSONObject();
         private JSONNode sdkConfigCached = new JSONObject();
-        private JSONNode configurations = new JSONObject();
-        private bool commandCenterIsReady;
-        private readonly List<ICommandCenterListener> commandCenterListeners = new List<ICommandCenterListener>();
-        private readonly object configurationsLock = new object();
+        private JSONNode remoteConfigs = new JSONObject();
+        private bool remoteConfigsIsReady;
+        private readonly List<IRemoteConfigsListener> remoteConfigsListeners = new List<IRemoteConfigsListener>();
+        private readonly object remoteConfigsLock = new object();
 
         public const string InMemoryPrefix = "in_memory_";
         private const string DefaultUserIdKey = "default_user_id";
@@ -830,38 +830,38 @@ namespace GameAnalyticsSDK.Net.State
             return result;
         }
 
-        public static string GetConfigurationStringValue(string key, string defaultValue)
+        public static string GetRemoteConfigsStringValue(string key, string defaultValue)
         {
-            lock (Instance.configurationsLock)
+            lock (Instance.remoteConfigsLock)
             {
-                return !Instance.configurations[key].IsNull ? Instance.configurations[key].Value : defaultValue;
+                return !Instance.remoteConfigs[key].IsNull ? Instance.remoteConfigs[key].Value : defaultValue;
             }
         }
 
-        public static bool IsCommandCenterReady()
+        public static bool IsRemoteConfigsReady()
         {
-            return Instance.commandCenterIsReady;
+            return Instance.remoteConfigsIsReady;
         }
 
-        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        public static void AddRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            if(!Instance.commandCenterListeners.Contains(listener))
+            if(!Instance.remoteConfigsListeners.Contains(listener))
             {
-                Instance.commandCenterListeners.Add(listener);
+                Instance.remoteConfigsListeners.Add(listener);
             }
         }
 
-        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        public static void RemoveCommandCenterListener(IRemoteConfigsListener listener)
         {
-            if(Instance.commandCenterListeners.Contains(listener))
+            if(Instance.remoteConfigsListeners.Contains(listener))
             {
-                Instance.commandCenterListeners.Remove(listener);
+                Instance.remoteConfigsListeners.Remove(listener);
             }
         }
 
-        public static string GetConfigurationsAsString()
+        public static string GetRemoteConfigsAsString()
         {
-            return Instance.configurations.ToString();
+            return Instance.remoteConfigs.ToString();
         }
 
         public static string GetABTestingId()
@@ -1273,7 +1273,7 @@ namespace GameAnalyticsSDK.Net.State
             // set offset in state (memory) from current config (config could be from cache etc.)
             Instance.ClientServerTimeOffset = SdkConfig["time_offset"] != null ? SdkConfig["time_offset"].AsLong : 0;
 
-            // populate configurations
+            // populate remoteConfigs
             PopulateConfigurations(SdkConfig);
 
             // if SDK is disabled in config
@@ -1334,15 +1334,15 @@ namespace GameAnalyticsSDK.Net.State
 
         private static void PopulateConfigurations(JSONNode sdkConfig)
         {
-            lock(Instance.configurationsLock)
+            lock(Instance.remoteConfigsLock)
             {
-                JSONArray configurations = sdkConfig["configs"].AsArray;
+                JSONArray remoteConfigs = sdkConfig["configs"].AsArray;
 
-                if(configurations != null)
+                if(remoteConfigs != null)
                 {
-                    for(int i = 0; i < configurations.Count; ++i)
+                    for(int i = 0; i < remoteConfigs.Count; ++i)
                     {
-                        JSONNode configuration = configurations[i];
+                        JSONNode configuration = remoteConfigs[i];
 
                         if(configuration != null)
                         {
@@ -1368,11 +1368,11 @@ namespace GameAnalyticsSDK.Net.State
                                 JSONObject json = new JSONObject();
                                 if(configuration["value"].IsNumber)
                                 {
-                                    Instance.configurations.Add(key, new JSONNumber(configuration["value"].AsDouble));
+                                    Instance.remoteConfigs.Add(key, new JSONNumber(configuration["value"].AsDouble));
                                 }
                                 else
                                 {
-                                    Instance.configurations.Add(key, configuration["value"].Value);
+                                    Instance.remoteConfigs.Add(key, configuration["value"].Value);
                                 }
 
                                 GALogger.D("configuration added: " + configuration);

@@ -4,8 +4,8 @@ using System.Text;
 
 namespace GameAnalyticsSDK.Net
 {
-    public interface ICommandCenterListener
+    public interface IRemoteConfigsListener
     {
-        void OnCommandCenterUpdated();
+        void OnRemoteConfigsUpdated();
     }
 }
