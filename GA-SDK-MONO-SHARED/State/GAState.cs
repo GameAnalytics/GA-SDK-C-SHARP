@@ -1380,8 +1380,8 @@ namespace GameAnalyticsSDK.Net.State
                         }
                     }
                 }
-                Instance.commandCenterIsReady = true;
-                foreach(ICommandCenterListener listener in Instance.commandCenterListeners)
+                Instance.remoteConfigsIsReady = true;
+                foreach(IRemoteConfigsListener listener in Instance.remoteConfigsListeners)
                 {
                     listener.OnCommandCenterUpdated();
                 }
