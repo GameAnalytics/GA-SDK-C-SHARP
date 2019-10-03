@@ -851,7 +851,7 @@ namespace GameAnalyticsSDK.Net.State
             }
         }
 
-        public static void RemoveCommandCenterListener(IRemoteConfigsListener listener)
+        public static void RemoveRemoteConfigsListener(IRemoteConfigsListener listener)
         {
             if(Instance.remoteConfigsListeners.Contains(listener))
             {
@@ -1383,7 +1383,7 @@ namespace GameAnalyticsSDK.Net.State
                 Instance.remoteConfigsIsReady = true;
                 foreach(IRemoteConfigsListener listener in Instance.remoteConfigsListeners)
                 {
-                    listener.OnCommandCenterUpdated();
+                    listener.OnRemoteConfigsUpdated();
                 }
             }
         }
