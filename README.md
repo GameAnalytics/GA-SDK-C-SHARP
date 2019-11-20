@@ -28,6 +28,10 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.0.0**
+* command center is now called remote configs
+* A/B testing support added
+
 **2.1.7**
 * session length fixes
 
