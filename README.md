@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.0.1**
+* small bug fix for http requests
+
 **3.0.0**
 * command center is now called remote configs
 * A/B testing support added
