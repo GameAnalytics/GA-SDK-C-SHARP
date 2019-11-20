@@ -636,6 +636,22 @@ namespace GameAnalyticsSDK.Net.State
                 annotations["engine_version"] = GADevice.GameEngineVersion;
             }
 
+            // remote configs
+            if(Instance.remoteConfigs != null && Instance.remoteConfigs.Count > 0)
+            {
+                annotations["configurations"] = Instance.remoteConfigs;
+            }
+
+            // A/B testing
+            if (!string.IsNullOrEmpty(Instance.AbId))
+            {
+                annotations["ab_id"] = Instance.AbId;
+            }
+            if (!string.IsNullOrEmpty(Instance.AbVariantId))
+            {
+                annotations["ab_variant_id"] = Instance.AbVariantId;
+            }
+
 #if WINDOWS_UWP
             if (!string.IsNullOrEmpty(GADevice.AdvertisingId))
             {
@@ -1340,6 +1356,7 @@ namespace GameAnalyticsSDK.Net.State
 
                 if(remoteConfigs != null)
                 {
+                    Instance.remoteConfigs = new JSONObject();
                     for(int i = 0; i < remoteConfigs.Count; ++i)
                     {
                         JSONNode configuration = remoteConfigs[i];

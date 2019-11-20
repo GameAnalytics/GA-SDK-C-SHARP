@@ -749,21 +749,9 @@ namespace GameAnalyticsSDK.Net
 
         #region REMOTE CONFIGS
 
-        [Obsolete("GetCommandCenterValueAsString is deprecated, please use GetRemoteConfigsValueAsString instead. This function will be removed in a future release.")]
-        public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
-        {
-            return GetRemoteConfigsValueAsString(key, defaultValue);
-        }
-
         public static string GetRemoteConfigsValueAsString(string key, string defaultValue = null)
         {
             return GAState.GetRemoteConfigsStringValue(key, defaultValue);
-        }
-
-        [Obsolete("IsCommandCenterReady is deprecated, please use IsRemoteConfigsReady instead. This function will be removed in a future release.")]
-        public static bool IsCommandCenterReady()
-        {
-            return IsRemoteConfigsReady();
         }
 
         public static bool IsRemoteConfigsReady()
@@ -779,12 +767,6 @@ namespace GameAnalyticsSDK.Net
         public static void RemoveRemoteConfigsListener(IRemoteConfigsListener listener)
         {
             GAState.RemoveRemoteConfigsListener(listener);
-        }
-
-        [Obsolete("GetConfigurationsAsString is deprecated, please use GetRemoteConfigsAsString instead. This function will be removed in a future release.")]
-        public static string GetConfigurationsAsString()
-        {
-            return GetRemoteConfigsAsString();
         }
 
         public static string GetRemoteConfigsAsString()
