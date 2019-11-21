@@ -747,34 +747,48 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        #region COMMAND CENTER
+        #region REMOTE CONFIGS
 
-        public static string GetCommandCenterValueAsString(string key, string defaultValue = null)
+        public static string GetRemoteConfigsValueAsString(string key, string defaultValue = null)
         {
-            return GAState.GetConfigurationStringValue(key, defaultValue);
+            return GAState.GetRemoteConfigsStringValue(key, defaultValue);
         }
 
-        public static bool IsCommandCenterReady()
+        public static bool IsRemoteConfigsReady()
         {
-            return GAState.IsCommandCenterReady();
+            return GAState.IsRemoteConfigsReady();
         }
 
-        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        public static void AddRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            GAState.AddCommandCenterListener(listener);
+            GAState.AddRemoteConfigsListener(listener);
         }
 
-        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        public static void RemoveRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            GAState.RemoveCommandCenterListener(listener);
+            GAState.RemoveRemoteConfigsListener(listener);
         }
 
-        public static string GetConfigurationsAsString()
+        public static string GetRemoteConfigsAsString()
         {
-            return GAState.GetConfigurationsAsString();
+            return GAState.GetRemoteConfigsAsString();
         }
 
-#endregion // COMMAND CENTER
+#endregion // REMOTE CONFIGS
+
+#region AB TESTING
+
+        public static string GetABTestingId()
+        {
+            return GAState.GetABTestingId();
+        }
+
+        public static string GetABTestingVariantId()
+        {
+            return GAState.GetABTestingVariantId();
+        }
+
+#endregion // AB TESTING
 
 #region PRIVATE HELPERS
 

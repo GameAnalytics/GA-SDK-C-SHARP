@@ -272,6 +272,21 @@ namespace GameAnalyticsSDK.Net.State
             get;
             set;
         }
+        public string ConfigsHash
+        {
+            get;
+            set;
+        }
+        public string AbId
+        {
+            get;
+            set;
+        }
+        public string AbVariantId
+        {
+            get;
+            set;
+        }
 
         private string _defaultUserId;
         private string DefaultUserId
@@ -306,10 +321,10 @@ namespace GameAnalyticsSDK.Net.State
         private JSONNode sdkConfigDefault = new JSONObject();
         private JSONNode sdkConfig = new JSONObject();
         private JSONNode sdkConfigCached = new JSONObject();
-        private JSONNode configurations = new JSONObject();
-        private bool commandCenterIsReady;
-        private readonly List<ICommandCenterListener> commandCenterListeners = new List<ICommandCenterListener>();
-        private readonly object configurationsLock = new object();
+        private JSONNode remoteConfigs = new JSONObject();
+        private bool remoteConfigsIsReady;
+        private readonly List<IRemoteConfigsListener> remoteConfigsListeners = new List<IRemoteConfigsListener>();
+        private readonly object remoteConfigsLock = new object();
 
         public const string InMemoryPrefix = "in_memory_";
         private const string DefaultUserIdKey = "default_user_id";
@@ -621,6 +636,22 @@ namespace GameAnalyticsSDK.Net.State
                 annotations["engine_version"] = GADevice.GameEngineVersion;
             }
 
+            // remote configs
+            if(Instance.remoteConfigs != null && Instance.remoteConfigs.Count > 0)
+            {
+                annotations["configurations"] = Instance.remoteConfigs;
+            }
+
+            // A/B testing
+            if (!string.IsNullOrEmpty(Instance.AbId))
+            {
+                annotations["ab_id"] = Instance.AbId;
+            }
+            if (!string.IsNullOrEmpty(Instance.AbVariantId))
+            {
+                annotations["ab_variant_id"] = Instance.AbVariantId;
+            }
+
 #if WINDOWS_UWP
             if (!string.IsNullOrEmpty(GADevice.AdvertisingId))
             {
@@ -711,6 +742,8 @@ namespace GameAnalyticsSDK.Net.State
 
             // Platform (operating system)
             initAnnotations["platform"] = GADevice.BuildPlatform;
+
+            initAnnotations["random_salt"] = GAState.SessionNum;
 
             return initAnnotations;
         }
@@ -813,43 +846,53 @@ namespace GameAnalyticsSDK.Net.State
             return result;
         }
 
-        public static string GetConfigurationStringValue(string key, string defaultValue)
+        public static string GetRemoteConfigsStringValue(string key, string defaultValue)
         {
-            lock (Instance.configurationsLock)
+            lock (Instance.remoteConfigsLock)
             {
-                return !Instance.configurations[key].IsNull ? Instance.configurations[key].Value : defaultValue;
+                return !Instance.remoteConfigs[key].IsNull ? Instance.remoteConfigs[key].Value : defaultValue;
             }
         }
 
-        public static bool IsCommandCenterReady()
+        public static bool IsRemoteConfigsReady()
         {
-            return Instance.commandCenterIsReady;
+            return Instance.remoteConfigsIsReady;
         }
 
-        public static void AddCommandCenterListener(ICommandCenterListener listener)
+        public static void AddRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            if(!Instance.commandCenterListeners.Contains(listener))
+            if(!Instance.remoteConfigsListeners.Contains(listener))
             {
-                Instance.commandCenterListeners.Add(listener);
+                Instance.remoteConfigsListeners.Add(listener);
             }
         }
 
-        public static void RemoveCommandCenterListener(ICommandCenterListener listener)
+        public static void RemoveRemoteConfigsListener(IRemoteConfigsListener listener)
         {
-            if(Instance.commandCenterListeners.Contains(listener))
+            if(Instance.remoteConfigsListeners.Contains(listener))
             {
-                Instance.commandCenterListeners.Remove(listener);
+                Instance.remoteConfigsListeners.Remove(listener);
             }
         }
 
-        public static string GetConfigurationsAsString()
+        public static string GetRemoteConfigsAsString()
         {
-            return Instance.configurations.ToString();
+            return Instance.remoteConfigs.ToString();
         }
 
-#endregion // Public methods
+        public static string GetABTestingId()
+        {
+            return Instance.AbId;
+        }
 
-#region Private methods
+        public static string GetABTestingVariantId()
+        {
+            return Instance.AbVariantId;
+        }
+
+        #endregion // Public methods
+
+        #region Private methods
 
         private static void CacheIdentifier()
         {
@@ -1096,6 +1139,13 @@ namespace GameAnalyticsSDK.Net.State
                     }
                 }
 
+                {
+                    JSONNode currentSdkConfig = SdkConfig;
+                    instance.ConfigsHash = currentSdkConfig["configs_hash"] != null && currentSdkConfig["configs_hash"].IsString ? currentSdkConfig["configs_hash"].Value : "";
+                    instance.AbId = currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString ? currentSdkConfig["ab_id"].Value : "";
+                    instance.AbVariantId = currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString ? currentSdkConfig["ab_variant_id"].Value : "";
+                }
+
                 JSONArray results_ga_progression = GAStore.ExecuteQuerySync("SELECT * FROM ga_progression;");
 
                 if (results_ga_progression != null && results_ga_progression.Count != 0)
@@ -1126,9 +1176,9 @@ namespace GameAnalyticsSDK.Net.State
 
             // call the init call
 #if WINDOWS_UWP || WINDOWS_WSA
-            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict();
+            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = await GAHTTPApi.Instance.RequestInitReturningDict(Instance.ConfigsHash);
 #else
-            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = GAHTTPApi.Instance.RequestInitReturningDict();
+            KeyValuePair<EGAHTTPApiResponse, JSONObject> initResponse = GAHTTPApi.Instance.RequestInitReturningDict(Instance.ConfigsHash);
 #endif
 
             StartNewSession(initResponse.Key, initResponse.Value);
@@ -1137,7 +1187,7 @@ namespace GameAnalyticsSDK.Net.State
         public static void StartNewSession(EGAHTTPApiResponse initResponse, JSONObject initResponseDict)
         {
             // init is ok
-            if(initResponse == EGAHTTPApiResponse.Ok && initResponseDict != null)
+            if((initResponse == EGAHTTPApiResponse.Ok || initResponse == EGAHTTPApiResponse.Created) && initResponseDict != null)
             {
                 // set the time offset - how many seconds the local time is different from servertime
                 long timeOffsetSeconds = 0;
@@ -1147,6 +1197,24 @@ namespace GameAnalyticsSDK.Net.State
                     timeOffsetSeconds = CalculateServerTimeOffset(serverTs);
                 }
                 initResponseDict.Add("time_offset", new JSONNumber(timeOffsetSeconds));
+
+                if(initResponse != EGAHTTPApiResponse.Created)
+                {
+                    JSONNode currentSdkConfig = GAState.SdkConfig;
+                    // use cached if not Created
+                    if(currentSdkConfig["configs"] != null && currentSdkConfig["configs"].IsArray)
+                    {
+                        initResponseDict["configs"] = currentSdkConfig["configs"].AsArray;
+                    }
+                    if(currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString)
+                    {
+                        initResponseDict["ab_id"] = currentSdkConfig["ab_id"].Value;
+                    }
+                    if(currentSdkConfig["ab_variant_id"] != null && currentSdkConfig["ab_variant_id"].IsString)
+                    {
+                        initResponseDict["ab_variant_id"] = currentSdkConfig["ab_variant_id"].Value;
+                    }
+                }
 
                 // insert new config in sql lite cross session storage
                 GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBinaryBase64());
@@ -1221,7 +1289,7 @@ namespace GameAnalyticsSDK.Net.State
             // set offset in state (memory) from current config (config could be from cache etc.)
             Instance.ClientServerTimeOffset = SdkConfig["time_offset"] != null ? SdkConfig["time_offset"].AsLong : 0;
 
-            // populate configurations
+            // populate remoteConfigs
             PopulateConfigurations(SdkConfig);
 
             // if SDK is disabled in config
@@ -1282,15 +1350,16 @@ namespace GameAnalyticsSDK.Net.State
 
         private static void PopulateConfigurations(JSONNode sdkConfig)
         {
-            lock(Instance.configurationsLock)
+            lock(Instance.remoteConfigsLock)
             {
-                JSONArray configurations = sdkConfig["configurations"].AsArray;
+                JSONArray remoteConfigs = sdkConfig["configs"].AsArray;
 
-                if(configurations != null)
+                if(remoteConfigs != null)
                 {
-                    for(int i = 0; i < configurations.Count; ++i)
+                    Instance.remoteConfigs = new JSONObject();
+                    for(int i = 0; i < remoteConfigs.Count; ++i)
                     {
-                        JSONNode configuration = configurations[i];
+                        JSONNode configuration = remoteConfigs[i];
 
                         if(configuration != null)
                         {
@@ -1304,8 +1373,8 @@ namespace GameAnalyticsSDK.Net.State
                             {
                                 value = configuration["value"].Value;
                             }
-                            long start_ts = configuration["start"].IsNumber ? configuration["start"].AsLong : long.MinValue;
-                            long end_ts = configuration["end"].IsNumber ? configuration["end"].AsLong : long.MaxValue;
+                            long start_ts = configuration["start_ts"].IsNumber ? configuration["start_ts"].AsLong : long.MinValue;
+                            long end_ts = configuration["end_ts"].IsNumber ? configuration["end_ts"].AsLong : long.MaxValue;
 
                             long client_ts_adjusted = GetClientTsAdjusted();
 
@@ -1316,11 +1385,11 @@ namespace GameAnalyticsSDK.Net.State
                                 JSONObject json = new JSONObject();
                                 if(configuration["value"].IsNumber)
                                 {
-                                    Instance.configurations.Add(key, new JSONNumber(configuration["value"].AsDouble));
+                                    Instance.remoteConfigs.Add(key, new JSONNumber(configuration["value"].AsDouble));
                                 }
                                 else
                                 {
-                                    Instance.configurations.Add(key, configuration["value"].Value);
+                                    Instance.remoteConfigs.Add(key, configuration["value"].Value);
                                 }
 
                                 GALogger.D("configuration added: " + configuration);
@@ -1328,10 +1397,10 @@ namespace GameAnalyticsSDK.Net.State
                         }
                     }
                 }
-                Instance.commandCenterIsReady = true;
-                foreach(ICommandCenterListener listener in Instance.commandCenterListeners)
+                Instance.remoteConfigsIsReady = true;
+                foreach(IRemoteConfigsListener listener in Instance.remoteConfigsListeners)
                 {
-                    listener.OnCommandCenterUpdated();
+                    listener.OnRemoteConfigsUpdated();
                 }
             }
         }

@@ -27,7 +27,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Http\EGAHTTPApiResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Http\EGASdkErrorType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Http\GAHTTPApi.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ICommandCenterListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IRemoteConfigsListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logging\GALogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)State\GAState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Store\GAStore.cs" />
