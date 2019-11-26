@@ -343,9 +343,6 @@ namespace GameAnalyticsSDK.Net.Validators
                 try
                 {
                     validatedDict.Add("configs", initResponse["configs"].IsArray ? initResponse["configs"].AsArray : new JSONArray());
-                    validatedDict.Add("configs_hash", initResponse["configs_hash"].IsString ? initResponse["configs_hash"].AsString : "");
-                    validatedDict.Add("ab_id", initResponse["ab_id"].IsString ? initResponse["ab_id"].AsString : "");
-                    validatedDict.Add("ab_variant_id", initResponse["ab_variant_id"].IsString ? initResponse["ab_variant_id"].AsString : "");
                 }
                 catch (Exception e)
                 {
@@ -355,7 +352,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
                 try
                 {
-                    validatedDict.Add("configs_hash", initResponse["configs_hash"].IsString ? initResponse["configs_hash"].AsString : "");
+                    validatedDict.Add("configs_hash", initResponse["configs_hash"].IsString ? initResponse["configs_hash"].Value : "");
                 }
                 catch (Exception e)
                 {
@@ -365,7 +362,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
                 try
                 {
-                    validatedDict.Add("ab_id", initResponse["ab_id"].IsString ? initResponse["ab_id"].AsString : "");
+                    validatedDict.Add("ab_id", initResponse["ab_id"].IsString ? initResponse["ab_id"].Value : "");
                 }
                 catch (Exception e)
                 {
@@ -375,7 +372,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
                 try
                 {
-                    validatedDict.Add("ab_variant_id", initResponse["ab_variant_id"].IsString ? initResponse["ab_variant_id"].AsString : "");
+                    validatedDict.Add("ab_variant_id", initResponse["ab_variant_id"].IsString ? initResponse["ab_variant_id"].Value : "");
                 }
                 catch (Exception e)
                 {
