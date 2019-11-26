@@ -1206,6 +1206,10 @@ namespace GameAnalyticsSDK.Net.State
                     {
                         initResponseDict["configs"] = currentSdkConfig["configs"].AsArray;
                     }
+                    if(currentSdkConfig["configs_hash"] != null && currentSdkConfig["configs_hash"].IsString)
+                    {
+                        initResponseDict["configs_hash"] = currentSdkConfig["configs_hash"].Value;
+                    }
                     if(currentSdkConfig["ab_id"] != null && currentSdkConfig["ab_id"].IsString)
                     {
                         initResponseDict["ab_id"] = currentSdkConfig["ab_id"].Value;
