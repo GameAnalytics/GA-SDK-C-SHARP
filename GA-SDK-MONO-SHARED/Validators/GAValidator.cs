@@ -343,10 +343,43 @@ namespace GameAnalyticsSDK.Net.Validators
                 try
                 {
                     validatedDict.Add("configs", initResponse["configs"].IsArray ? initResponse["configs"].AsArray : new JSONArray());
+                    validatedDict.Add("configs_hash", initResponse["configs_hash"].IsString ? initResponse["configs_hash"].AsString : "");
+                    validatedDict.Add("ab_id", initResponse["ab_id"].IsString ? initResponse["ab_id"].AsString : "");
+                    validatedDict.Add("ab_variant_id", initResponse["ab_variant_id"].IsString ? initResponse["ab_variant_id"].AsString : "");
                 }
                 catch (Exception e)
                 {
                     GALogger.W("validateInitRequestResponse failed - invalid type in 'configs' field. type=" + initResponse["configs"].GetType() + ", value=" + initResponse["configs"] + ", " + e);
+                    return null;
+                }
+
+                try
+                {
+                    validatedDict.Add("configs_hash", initResponse["configs_hash"].IsString ? initResponse["configs_hash"].AsString : "");
+                }
+                catch (Exception e)
+                {
+                    GALogger.W("validateInitRequestResponse failed - invalid type in 'configs_hash' field. type=" + initResponse["configs_hash"].GetType() + ", value=" + initResponse["configs_hash"] + ", " + e);
+                    return null;
+                }
+
+                try
+                {
+                    validatedDict.Add("ab_id", initResponse["ab_id"].IsString ? initResponse["ab_id"].AsString : "");
+                }
+                catch (Exception e)
+                {
+                    GALogger.W("validateInitRequestResponse failed - invalid type in 'ab_id' field. type=" + initResponse["ab_id"].GetType() + ", value=" + initResponse["ab_id"] + ", " + e);
+                    return null;
+                }
+
+                try
+                {
+                    validatedDict.Add("ab_variant_id", initResponse["ab_variant_id"].IsString ? initResponse["ab_variant_id"].AsString : "");
+                }
+                catch (Exception e)
+                {
+                    GALogger.W("validateInitRequestResponse failed - invalid type in 'ab_variant_id' field. type=" + initResponse["ab_variant_id"].GetType() + ", value=" + initResponse["ab_variant_id"] + ", " + e);
                     return null;
                 }
             }
