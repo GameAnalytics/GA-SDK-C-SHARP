@@ -743,6 +743,16 @@ namespace GameAnalyticsSDK.Net.State
             // Platform (operating system)
             initAnnotations["platform"] = GADevice.BuildPlatform;
 
+            // Build
+            if (!string.IsNullOrEmpty(Build))
+            {
+                initAnnotations["build"] = Build;
+            }
+            else
+            {
+                initAnnotations["build"] = null;
+            }
+
             initAnnotations["random_salt"] = GAState.SessionNum;
 
             return initAnnotations;
