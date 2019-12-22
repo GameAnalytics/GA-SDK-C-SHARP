@@ -733,6 +733,11 @@ namespace GameAnalyticsSDK.Net.State
         {
             JSONObject initAnnotations = new JSONObject();
 
+            if(string.IsNullOrEmpty(GAState.Identifier))
+            {
+                CacheIdentifier();
+            }
+
             initAnnotations["user_id"] = GAState.Identifier;
 
             // SDK version

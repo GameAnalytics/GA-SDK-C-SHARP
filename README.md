@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.0.5**
+* A/B testing fixes
+
 **3.0.4**
 * remote configs fixes
 
