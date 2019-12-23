@@ -230,7 +230,7 @@ namespace GameAnalyticsSDK.Net.Http
             }
 
             // process the response
-            GALogger.D("init request content : " + body);
+            GALogger.D("init request content : " + body + ", JSONstring: " + JSONstring);
 
             JSONNode requestJsonDict = JSON.Parse(body);
             EGAHTTPApiResponse requestResponseEnum = ProcessRequestResponse(responseCode, responseDescription, body, "Init");
