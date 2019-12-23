@@ -733,6 +733,11 @@ namespace GameAnalyticsSDK.Net.State
         {
             JSONObject initAnnotations = new JSONObject();
 
+            if(string.IsNullOrEmpty(GAState.Identifier))
+            {
+                CacheIdentifier();
+            }
+
             initAnnotations["user_id"] = GAState.Identifier;
 
             // SDK version
@@ -1230,8 +1235,13 @@ namespace GameAnalyticsSDK.Net.State
                     }
                 }
 
+                Instance.ConfigsHash = initResponseDict["configs_hash"] != null && initResponseDict["configs_hash"].IsString ? initResponseDict["configs_hash"].Value : "";
+                Instance.AbId = initResponseDict["ab_id"] != null && initResponseDict["ab_id"].IsString ? initResponseDict["ab_id"].Value : "";
+                Instance.AbVariantId = initResponseDict["ab_variant_id"] != null && initResponseDict["ab_variant_id"].IsString ? initResponseDict["ab_variant_id"].Value : "";
+
                 // insert new config in sql lite cross session storage
                 GAStore.SetState(SdkConfigCachedKey, initResponseDict.SaveToBinaryBase64());
+                GALogger.D("initResponseDict: " + initResponseDict.ToString());
 
                 // set new config and cache in memory
                 Instance.sdkConfigCached = initResponseDict;
