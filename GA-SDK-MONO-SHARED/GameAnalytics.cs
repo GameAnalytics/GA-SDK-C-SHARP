@@ -604,54 +604,6 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
-        public static void SetFacebookId(string facebookId)
-        {
-            if(_endThread)
-            {
-                return;
-            }
-
-            GAThreading.PerformTaskOnGAThread("setFacebookId", () =>
-            {
-                if (GAValidator.ValidateFacebookId(facebookId))
-                {
-                    GAState.SetFacebookId(facebookId);
-                }
-            });
-        }
-
-        public static void SetGender(EGAGender gender)
-        {
-            if(_endThread)
-            {
-                return;
-            }
-
-            GAThreading.PerformTaskOnGAThread("setGender", () =>
-            {
-                if (GAValidator.ValidateGender(gender))
-                {
-                    GAState.SetGender(gender);
-                }
-            });
-        }
-
-        public static void SetBirthYear(int birthYear)
-        {
-            if(_endThread)
-            {
-                return;
-            }
-
-            GAThreading.PerformTaskOnGAThread("setBirthYear", () =>
-            {
-                if (GAValidator.ValidateBirthyear(birthYear))
-                {
-                    GAState.SetBirthYear(birthYear);
-                }
-            });
-        }
-
         #endregion // SET STATE CHANGES WHILE RUNNING
 
         public static void StartSession()

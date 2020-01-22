@@ -237,21 +237,6 @@ namespace GameAnalyticsSDK.Net.State
             get;
             set;
         }
-        private string FacebookId
-        {
-            get;
-            set;
-        }
-        private string Gender
-        {
-            get;
-            set;
-        }
-        private int BirthYear
-        {
-            get;
-            set;
-        }
         private JSONNode SdkConfigCached
         {
             get;
@@ -330,9 +315,6 @@ namespace GameAnalyticsSDK.Net.State
         private const string DefaultUserIdKey = "default_user_id";
         public const string SessionNumKey = "session_num";
         public const string TransactionNumKey = "transaction_num";
-        private const string FacebookIdKey = "facebook_id";
-        private const string GenderKey = "gender";
-        private const string BirthYearKey = "birth_year";
         private const string Dimension01Key = "dimension01";
         private const string Dimension02Key = "dimension02";
         private const string Dimension03Key = "dimension03";
@@ -385,36 +367,6 @@ namespace GameAnalyticsSDK.Net.State
                 GAStore.SetState(Dimension03Key, dimension);
             }
             GALogger.I("Set custom03 dimension value: " + dimension);
-        }
-
-        public static void SetFacebookId(string facebookId)
-        {
-            Instance.FacebookId = facebookId;
-            if(GAStore.IsTableReady)
-            {
-                GAStore.SetState(FacebookIdKey, facebookId);
-            }
-            GALogger.I("Set facebook id: " + facebookId);
-        }
-
-        public static void SetGender(EGAGender gender)
-        {
-            Instance.Gender = gender.ToString().ToLowerInvariant();
-            if(GAStore.IsTableReady)
-            {
-                GAStore.SetState(GenderKey, Instance.Gender);
-            }
-            GALogger.I("Set gender: " + gender);
-        }
-
-        public static void SetBirthYear(int birthYear)
-        {
-            Instance.BirthYear = birthYear;
-            if(GAStore.IsTableReady)
-            {
-                GAStore.SetState(BirthYearKey, birthYear.ToString());
-            }
-            GALogger.I("Set birth year: " + birthYear);
         }
 
         public static void IncrementSessionNum()
@@ -669,24 +621,6 @@ namespace GameAnalyticsSDK.Net.State
             if (!string.IsNullOrEmpty(Build))
             {
                 annotations["build"] = Build;
-            }
-
-            // ---- OPTIONAL cross-session ---- //
-
-            // facebook id (optional)
-            if (!string.IsNullOrEmpty(Instance.FacebookId))
-            {
-                annotations[FacebookIdKey] = Instance.FacebookId;
-            }
-            // gender (optional)
-            if (!string.IsNullOrEmpty(Instance.Gender))
-            {
-                annotations[GenderKey] = Instance.Gender;
-            }
-            // birth_year (optional)
-            if (Instance.BirthYear != 0)
-            {
-                annotations.Add(BirthYearKey, new JSONNumber(Instance.BirthYear));
             }
 
             return annotations;
@@ -954,32 +888,6 @@ namespace GameAnalyticsSDK.Net.State
                     int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + TransactionNumKey, "0"), out tmp);
                     TransactionNum = tmp;
                 }
-                if(!string.IsNullOrEmpty(instance.FacebookId))
-                {
-                    UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + FacebookIdKey, instance.FacebookId);
-                }
-                else
-                {
-                    instance.FacebookId = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + FacebookIdKey, "");
-                }
-                if(!string.IsNullOrEmpty(instance.Gender))
-                {
-                    UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + GenderKey, instance.Gender);
-                }
-                else
-                {
-                    instance.Gender = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + GenderKey, "");
-                }
-                if(instance.BirthYear != 0)
-                {
-                    UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + BirthYearKey, instance.BirthYear.ToString());
-                }
-                else
-                {
-                    int tmp;
-                    int.TryParse(UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + BirthYearKey, "0"), out tmp);
-                    instance.BirthYear = tmp;
-                }
                 if(!string.IsNullOrEmpty(CurrentCustomDimension01))
                 {
                     UnityEngine.PlayerPrefs.SetString(InMemoryPrefix + Dimension01Key, CurrentCustomDimension01);
@@ -1051,46 +959,6 @@ namespace GameAnalyticsSDK.Net.State
                 SessionNum = state_dict[SessionNumKey] != null ? state_dict[SessionNumKey].AsInt : 0;
 
                 TransactionNum = state_dict[TransactionNumKey] != null ? state_dict[TransactionNumKey].AsInt : 0;
-
-                // restore cross session user values
-                if(!string.IsNullOrEmpty(instance.FacebookId))
-                {
-                    GAStore.SetState(FacebookIdKey, instance.FacebookId);
-                }
-                else
-                {
-                    instance.FacebookId = state_dict[FacebookIdKey] != null ? state_dict[FacebookIdKey].Value : "";
-                    if(!string.IsNullOrEmpty(instance.FacebookId))
-                    {
-                        GALogger.D("facebookid found in DB: " + instance.FacebookId);
-                    }
-                }
-
-                if(!string.IsNullOrEmpty(instance.Gender))
-                {
-                    GAStore.SetState(GenderKey, instance.Gender);
-                }
-                else
-                {
-                    instance.Gender = state_dict[GenderKey] != null ? state_dict[GenderKey].Value : "";
-                    if(!string.IsNullOrEmpty(instance.Gender))
-                    {
-                        GALogger.D("gender found in DB: " + instance.Gender);
-                    }
-                }
-
-                if(instance.BirthYear != 0)
-                {
-                    GAStore.SetState(BirthYearKey, instance.BirthYear.ToString());
-                }
-                else
-                {
-                    instance.BirthYear = state_dict[BirthYearKey] != null ? state_dict[BirthYearKey].AsInt : 0;
-                    if(instance.BirthYear != 0)
-                    {
-                        GALogger.D("birthYear found in DB: " + instance.BirthYear);
-                    }
-                }
 
                 // restore dimension settings
                 if(!string.IsNullOrEmpty(CurrentCustomDimension01))
