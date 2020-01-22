@@ -476,17 +476,6 @@ namespace GameAnalyticsSDK.Net
 	    }
 
 		[Test]
-		public void TestValidateBirthyear()
-		{
-			Assert.True(GAValidator.ValidateBirthyear(1982));
-			Assert.True(GAValidator.ValidateBirthyear(9999));
-			Assert.True(GAValidator.ValidateBirthyear(0));
-
-			Assert.False(GAValidator.ValidateBirthyear(10000));
-			Assert.False(GAValidator.ValidateBirthyear(-1));
-		}
-
-		[Test]
 		public void TestValidateClientTs()
 		{
 			Assert.True(GAValidator.ValidateClientTs(GAUtilities.TimeIntervalSince1970()));

@@ -609,36 +609,6 @@ namespace GameAnalyticsSDK.Net.Validators
             return true;
         }
 
-        public static bool ValidateFacebookId(string facebookId)
-        {
-            if (!ValidateString(facebookId, false))
-            {
-                GALogger.W("Validation fail - facebook id: id cannot be (null), empty or above 64 characters.");
-                return false;
-            }
-            return true;
-        }
-
-        public static bool ValidateGender(EGAGender gender)
-        {
-            if (gender == EGAGender.Undefined || !(gender == EGAGender.Male || gender == EGAGender.Female))
-            {
-                GALogger.W("Validation fail - gender: Has to be 'male' or 'female'.");
-                return false;
-            }
-            return true;
-        }
-
-        public static bool ValidateBirthyear(long birthYear)
-        {
-            if (birthYear < 0 || birthYear > 9999)
-            {
-                GALogger.W("Validation fail - birthYear: Cannot be (null) or invalid range.");
-                return false;
-            }
-            return true;
-        }
-
         public static bool ValidateClientTs(long clientTs)
         {
             // TODO(nikolaj): validate other way? (instead of max possible)
