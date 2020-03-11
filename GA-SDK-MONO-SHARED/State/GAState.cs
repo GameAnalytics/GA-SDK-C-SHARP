@@ -692,6 +692,7 @@ namespace GameAnalyticsSDK.Net.State
                 initAnnotations["build"] = null;
             }
 
+            initAnnotations["session_num"] = GAState.SessionNum;
             initAnnotations["random_salt"] = GAState.SessionNum;
 
             return initAnnotations;

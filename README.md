@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.0.8**
+* added session_num to init request
+
 **3.0.7**
 * removed facebook, gender and birthyear methods
 
