@@ -6,7 +6,7 @@ using SqliteCommand = System.Data.SQLite.SQLiteCommand;
 using SqliteDataReader = System.Data.SQLite.SQLiteDataReader;
 using SqliteException = System.Data.SQLite.SQLiteException;
 using SqliteConnectionStringBuilder = System.Data.SQLite.SQLiteConnectionStringBuilder;
-#elif WINDOWS_WSA || !UNITY || WINDOWS_UWP
+#elif WINDOWS_WSA || NETCOREAPP || !UNITY || WINDOWS_UWP
 using Microsoft.Data.Sqlite;
 using System.Reflection;
 #else
