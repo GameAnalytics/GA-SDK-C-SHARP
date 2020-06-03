@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.1.0**
+* added support for .Net Core
+
 **3.0.8**
 * added session_num to init request
 
