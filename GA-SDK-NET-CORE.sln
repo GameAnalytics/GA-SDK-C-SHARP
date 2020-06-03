@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GA-SDK-NET-CORE", "GA-SDK-NET-CORE\GA-SDK-NET-CORE.csproj", "{9E1F1E34-4957-4B79-9742-87CCF1BF16B1}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-SHARED", "GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.shproj", "{1577D2E0-959B-4106-A7D8-D77B41C09F0C}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{9e1f1e34-4957-4b79-9742-87ccf1bf16b1}*SharedItemsImports = 5
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9E1F1E34-4957-4B79-9742-87CCF1BF16B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1F1E34-4957-4B79-9742-87CCF1BF16B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1F1E34-4957-4B79-9742-87CCF1BF16B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1F1E34-4957-4B79-9742-87CCF1BF16B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F5B8B31-EF80-49E5-9A24-7FA055497F6A}
+	EndGlobalSection
+EndGlobal

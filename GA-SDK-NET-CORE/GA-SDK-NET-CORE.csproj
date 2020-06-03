@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>GA_SDK_NET_CORE</RootNamespace>
+    <AssemblyName>GameAnalytics.Net.Core</AssemblyName>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>GameAnalytics.Net.Core.SDK</PackageId>
+    <PackageVersion>3.1.0</PackageVersion>
+    <Authors>GameAnalytics</Authors>
+    <PackageIconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</PackageIconUrl>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <Owners>GameAnalytics</Owners>
+    <PackageProjectUrl>https://github.com/GameAnalytics/GA-SDK-C-SHARP</PackageProjectUrl>
+    <PackageTags>gameanalytics</PackageTags>
+    <Title>GameAnalytics .Net Core SDK</Title>
+    <Description>GameAnalytics SDK for .Net Core 3.0</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.4" />
+    <PackageReference Include="NLog" Version="4.7.2" />
+  </ItemGroup>
+  <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems')" />
+</Project>

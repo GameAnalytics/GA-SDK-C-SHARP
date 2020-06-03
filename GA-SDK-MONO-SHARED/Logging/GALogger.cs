@@ -3,7 +3,7 @@
 using Windows.Foundation.Diagnostics;
 using MetroLog;
 using MetroLog.Targets;
-#elif MONO
+#elif MONO || NETCOREAPP
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -29,7 +29,7 @@ namespace GameAnalyticsSDK.Net.Logging
         private IFileLoggingSession session;
         private ILoggingChannel logger;
         private ILogger log;
-#elif MONO
+#elif MONO || NETCOREAPP
 		private static ILogger logger;
 #elif !UNITY
         private ILogger logger;
@@ -78,8 +78,8 @@ namespace GameAnalyticsSDK.Net.Logging
 
             LogManagerFactory.DefaultConfiguration.AddTarget(LogLevel.Trace, LogLevel.Fatal, new StreamingFileTarget());
             log = LogManagerFactory.DefaultLogManager.GetLogger<GALogger>();
-#elif MONO
-			logger = LogManager.GetCurrentClassLogger();
+#elif MONO || NETCOREAPP
+            logger = LogManager.GetCurrentClassLogger();
 			var config = new LoggingConfiguration();
 
 			var consoleTarget = new ColoredConsoleTarget();
@@ -165,8 +165,8 @@ namespace GameAnalyticsSDK.Net.Logging
                         logger.LogMessage(message, LoggingLevel.Error);
                         log.Error(message);
                         GameAnalytics.MessageLogged(message, type);
-#elif MONO
-						logger.Error(message);
+#elif MONO || NETCOREAPP
+                        logger.Error(message);
 #else
                         logger.LogError(message);
                         GameAnalytics.MessageLogged(message, type);
@@ -182,7 +182,7 @@ namespace GameAnalyticsSDK.Net.Logging
                         logger.LogMessage(message, LoggingLevel.Warning);
                         log.Warn(message);
                         GameAnalytics.MessageLogged(message, type);
-#elif MONO
+#elif MONO || NETCOREAPP
 						logger.Warn(message);
 #else
                         logger.LogWarning(message);
@@ -199,8 +199,8 @@ namespace GameAnalyticsSDK.Net.Logging
                         logger.LogMessage(message, LoggingLevel.Information);
                         log.Debug(message);
                         GameAnalytics.MessageLogged(message, type);
-#elif MONO
-						logger.Debug(message);
+#elif MONO || NETCOREAPP
+                        logger.Debug(message);
 #else
                         logger.LogDebug(message);
                         GameAnalytics.MessageLogged(message, type);
@@ -216,8 +216,8 @@ namespace GameAnalyticsSDK.Net.Logging
                         logger.LogMessage(message, LoggingLevel.Information);
                         log.Info(message);
                         GameAnalytics.MessageLogged(message, type);
-#elif MONO
-						logger.Info(message);
+#elif MONO || NETCOREAPP
+                        logger.Info(message);
 #else
                         logger.LogInformation(message);
                         GameAnalytics.MessageLogged(message, type);
