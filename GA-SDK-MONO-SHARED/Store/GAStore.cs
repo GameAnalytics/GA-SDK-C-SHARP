@@ -174,7 +174,7 @@ namespace GameAnalyticsSDK.Net.Store
 					transaction.Commit();
 				}
 			}
-			catch (SqliteException e)
+			catch (Exception e)
 			{
 				// TODO(nikolaj): Should we do a db validation to see if the db is corrupt here?
 				GALogger.E("SQLITE3 ERROR: " + e);
@@ -188,7 +188,7 @@ namespace GameAnalyticsSDK.Net.Store
 						{
 							transaction.Rollback();
 						}
-						catch (SqliteException ex)
+						catch (Exception ex)
 						{
 							GALogger.E("SQLITE3 ROLLBACK ERROR: " + ex);
 						}
