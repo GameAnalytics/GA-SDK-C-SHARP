@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.1.1**
+* fixed null exception in some cases in gastore
+
 **3.1.0**
 * added support for .Net Core
 
