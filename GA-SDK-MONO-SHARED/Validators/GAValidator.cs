@@ -611,8 +611,7 @@ namespace GameAnalyticsSDK.Net.Validators
 
         public static bool ValidateClientTs(long clientTs)
         {
-            // TODO(nikolaj): validate other way? (instead of max possible)
-            if (clientTs < (long.MinValue+1) || clientTs > (long.MaxValue-1))
+            if (clientTs < (0) || clientTs > (99999999999))
             {
                 return false;
             }

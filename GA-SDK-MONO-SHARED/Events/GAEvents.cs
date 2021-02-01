@@ -500,6 +500,15 @@ namespace GameAnalyticsSDK.Net.Events
 
                     if (eventDict != null && eventDict.Count != 0)
                     {
+                        if(!eventDict["client_ts"].IsNull)
+                        {
+                            long clientTs = eventDict["client_ts"].AsLong;
+                            if(!GAValidator.ValidateClientTs(clientTs))
+                            {
+                                eventDict.Remove("client_ts");
+                            }
+                        }
+
                         payloadArray.Add(eventDict);
                     }
                 }
