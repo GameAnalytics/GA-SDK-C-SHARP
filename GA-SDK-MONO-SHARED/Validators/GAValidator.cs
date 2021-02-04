@@ -188,7 +188,7 @@ namespace GameAnalyticsSDK.Net.Validators
         {
             if (!ValidateEventIdLength(eventId))
             {
-                GALogger.W("Validation fail - design event - eventId: Cannot be (null) or empty. Only 5 event parts allowed seperated by :. Each part need to be 32 characters or less. String: " + eventId);
+                GALogger.W("Validation fail - design event - eventId: Cannot be (null) or empty. Only 5 event parts allowed seperated by :. Each part need to be 64 characters or less. String: " + eventId);
                 return false;
             }
             if (!ValidateEventIdCharacters(eventId))
