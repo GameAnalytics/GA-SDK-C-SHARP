@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.2.0**
+* added custom event fields feature
+
 **3.1.2**
 * updated client ts validator
 

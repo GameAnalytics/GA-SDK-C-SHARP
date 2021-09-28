@@ -6,7 +6,7 @@
     <AssemblyName>GameAnalytics.Net.Core</AssemblyName>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>GameAnalytics.Net.Core.SDK</PackageId>
-    <PackageVersion>3.1.2</PackageVersion>
+    <PackageVersion>3.2.0</PackageVersion>
     <Authors>GameAnalytics</Authors>
     <PackageIconUrl>http://public.gameanalytics.com/resources/images/sdk_doc/general/ga_logo_large.png</PackageIconUrl>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
