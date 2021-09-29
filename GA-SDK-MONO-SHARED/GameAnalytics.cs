@@ -306,7 +306,7 @@ namespace GameAnalyticsSDK.Net
 
         #region ADD EVENTS
 
-        public static void AddBusinessEvent(string currency, int amount, string itemType, string itemId, string cartType/*, IDictionary<string, object> fields = null*/)
+        public static void AddBusinessEvent(string currency, int amount, string itemType, string itemId, string cartType, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -322,11 +322,11 @@ namespace GameAnalyticsSDK.Net
                     return;
                 }
                 // Send to events
-                GAEvents.AddBusinessEvent(currency, amount, itemType, itemId, cartType, null);
+                GAEvents.AddBusinessEvent(currency, amount, itemType, itemId, cartType, customFields);
             });
         }
 
-        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, float amount, string itemType, string itemId/*, IDictionary<string, object> fields = null*/)
+        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, float amount, string itemType, string itemId, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -342,31 +342,31 @@ namespace GameAnalyticsSDK.Net
                     return;
                 }
 
-                GAEvents.AddResourceEvent(flowType, currency, amount, itemType, itemId, null);
+                GAEvents.AddResourceEvent(flowType, currency, amount, itemType, itemId, customFields);
             });
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, IDictionary<string, object> customFields = null)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", ""/*, fields*/);
+            AddProgressionEvent(progressionStatus, progression01, "", "", customFields);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, double score, IDictionary<string, object> customFields = null)
         {
-            AddProgressionEvent(progressionStatus, progression01, "", "", score/*, fields*/);
+            AddProgressionEvent(progressionStatus, progression01, "", "", score, customFields);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, IDictionary<string, object> customFields = null)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, ""/*, fields*/);
+            AddProgressionEvent(progressionStatus, progression01, progression02, "", customFields);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, double score, IDictionary<string, object> customFields = null)
         {
-            AddProgressionEvent(progressionStatus, progression01, progression02, "", score/*, fields*/);
+            AddProgressionEvent(progressionStatus, progression01, progression02, "", score, customFields);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -384,11 +384,11 @@ namespace GameAnalyticsSDK.Net
 
                 // Send to events
                 // TODO(nikolaj): check if this cast from int to double is OK
-                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0, false, null);
+                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, 0, false, customFields);
             });
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score/*, IDictionary<string, object> fields = null*/)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -406,11 +406,11 @@ namespace GameAnalyticsSDK.Net
 
                 // Send to events
                 // TODO(nikolaj): check if this cast from int to double is OK
-                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score, true, null);
+                GAEvents.AddProgressionEvent(progressionStatus, progression01, progression02, progression03, score, true, customFields);
             });
         }
 
-        public static void AddDesignEvent(string eventId, IDictionary<string, object> fields = null)
+        public static void AddDesignEvent(string eventId, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -425,11 +425,11 @@ namespace GameAnalyticsSDK.Net
                 {
                     return;
                 }
-                GAEvents.AddDesignEvent(eventId, 0, false, fields);
+                GAEvents.AddDesignEvent(eventId, 0, false, customFields);
             });
         }
 
-        public static void AddDesignEvent(string eventId, double value/*, IDictionary<string, object> fields = null*/)
+        public static void AddDesignEvent(string eventId, double value, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -444,11 +444,11 @@ namespace GameAnalyticsSDK.Net
                 {
                     return;
                 }
-                GAEvents.AddDesignEvent(eventId, value, true, null);
+                GAEvents.AddDesignEvent(eventId, value, true, customFields);
             });
         }
 
-        public static void AddErrorEvent(EGAErrorSeverity severity, string message/*, IDictionary<string, object> fields = null*/)
+        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> customFields = null)
         {
             if(_endThread)
             {
@@ -463,7 +463,7 @@ namespace GameAnalyticsSDK.Net
                 {
                     return;
                 }
-                GAEvents.AddErrorEvent(severity, message, null);
+                GAEvents.AddErrorEvent(severity, message, customFields);
             });
         }
 
