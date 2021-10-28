@@ -672,6 +672,8 @@ namespace GameAnalyticsSDK.Net.State
                 CacheIdentifier();
             }
 
+            GAStore.SetState("last_used_identifier", GAState.Identifier);
+
             initAnnotations["user_id"] = GAState.Identifier;
 
             // SDK version
@@ -930,6 +932,15 @@ namespace GameAnalyticsSDK.Net.State
 
                     if(sdkConfigCached != null && sdkConfigCached.Count != 0)
                     {
+                        string lastUsedIdentifier = UnityEngine.PlayerPrefs.GetString(InMemoryPrefix + "last_used_identifier", "");
+                        if(!string.IsNullOrEmpty(lastUsedIdentifier) && lastUsedIdentifier != GAState.Identifier)
+                        {
+                            GALogger.W("New identifier spotted compared to last one used, clearing cached configs hash!!");
+                            if(sdkConfigCached["configs_hash"] != null)
+                            {
+                                sdkConfigCached["configs_hash"] = null;
+                            }
+                        }
                         instance.SdkConfigCached = sdkConfigCached;
                     }
                 }
@@ -1019,6 +1030,15 @@ namespace GameAnalyticsSDK.Net.State
 
                     if (sdkConfigCached != null && sdkConfigCached.Count != 0)
                     {
+                        string lastUsedIdentifier = state_dict["last_used_identifier"] != null ? state_dict["last_used_identifier"].Value : "";
+                        if(!string.IsNullOrEmpty(lastUsedIdentifier) && lastUsedIdentifier != GAState.Identifier)
+                        {
+                            GALogger.W("New identifier spotted compared to last one used, clearing cached configs hash!!");
+                            if(sdkConfigCached["configs_hash"] != null)
+                            {
+                                sdkConfigCached["configs_hash"] = null;
+                            }
+                        }
                         instance.SdkConfigCached = sdkConfigCached;
                     }
                 }
