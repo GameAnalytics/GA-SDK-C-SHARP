@@ -103,6 +103,12 @@ namespace GameAnalyticsSDK.Net.State
             private set { Instance._currentCustomDimension03 = value; }
         }
 
+        private IDictionary<string, object> _currentGlobalCustomEventFields = new Dictionary<string, object>();
+        public static IDictionary<string, object> CurrentGlobalCustomEventFields
+        {
+            get { return Instance._currentGlobalCustomEventFields; }
+        }
+
         private string _gameKey;
         public static string GameKey
         {
@@ -367,6 +373,22 @@ namespace GameAnalyticsSDK.Net.State
                 GAStore.SetState(Dimension03Key, dimension);
             }
             GALogger.I("Set custom03 dimension value: " + dimension);
+        }
+
+        public static void SetGlobalCustomEventFields(IDictionary<string, object> customFields)
+        {
+            if(customFields == null || customFields.Count == 0)
+            {
+                CurrentGlobalCustomEventFields.Clear();
+                return;
+            }
+
+            CurrentGlobalCustomEventFields.Clear();
+            foreach(var pair in customFields)
+            {
+                CurrentGlobalCustomEventFields.Add(pair);
+            }
+            GALogger.I("Set global custom event fields");
         }
 
         public static void IncrementSessionNum()

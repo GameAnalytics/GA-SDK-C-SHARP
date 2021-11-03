@@ -80,6 +80,10 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
+            IDictionary<string, object> fieldsToUse = GAState.CurrentGlobalCustomEventFields;
+            // Add custom fields
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+
             // Add to store
             AddEventToStore(eventDict);
 
@@ -116,6 +120,10 @@ namespace GameAnalyticsSDK.Net.Events
 
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
+
+            IDictionary<string, object> fieldsToUse = GAState.CurrentGlobalCustomEventFields;
+            // Add custom fields
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Add to store
             AddEventToStore(eventDict);
@@ -171,8 +179,9 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
+            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
             // Add custom fields
-            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Log
             GALogger.I("Add BUSINESS event: {currency:" + currency + ", amount:" + amount + ", itemType:" + itemType + ", itemId:" + itemId + ", cartType:" + cartType + "}");
@@ -213,8 +222,9 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
+            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
             // Add custom fields
-            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Log
             GALogger.I("Add RESOURCE event: {currency:" + currency + ", amount:" + amount + ", itemType:" + itemType + ", itemId:" + itemId + "}");
@@ -295,8 +305,9 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
+            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
             // Add custom fields
-            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fields));
+            AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Log
             GALogger.I("Add PROGRESSION event: {status:" + progressionStatusString + ", progression01:" + progression01 + ", progression02:" + progression02 + ", progression03:" + progression03 + ", score:" + score + ", attempt:" + attempt_num + "}");
@@ -334,8 +345,9 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventData);
 
+            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
             // Add custom fields
-            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
+            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Log
             GALogger.I("Add DESIGN event: {eventId:" + eventId + ", value:" + value + "}");
@@ -371,8 +383,9 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventData);
 
+            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
             // Add custom fields
-            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fields));
+            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
             // Log
             GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
@@ -811,6 +824,14 @@ namespace GameAnalyticsSDK.Net.Events
             if(GAState.SessionIsStarted())
             {
                 JSONObject ev = GAState.GetEventAnnotations();
+
+                // Add custom dimensions
+                AddDimensionsToEvent(ev);
+
+                IDictionary<string, object> fieldsToUse = GAState.CurrentGlobalCustomEventFields;
+                // Add custom fields
+                AddFieldsToEvent(ev, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+
                 string jsonDefaults = ev.SaveToBinaryBase64();
                 string sql = "INSERT OR REPLACE INTO ga_session(session_id, timestamp, event) VALUES($session_id, $timestamp, $event);";
                 Dictionary<string, object> parameters = new Dictionary<string, object>();

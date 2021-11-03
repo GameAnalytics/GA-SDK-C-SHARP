@@ -604,6 +604,19 @@ namespace GameAnalyticsSDK.Net
             });
         }
 
+        public static void SetGlobalCustomEventFields(IDictionary<string, object> customFields)
+        {
+            if (_endThread)
+            {
+                return;
+            }
+
+            GAThreading.PerformTaskOnGAThread("setGlobalCustomEventFields", () =>
+            {
+                GAState.SetGlobalCustomEventFields(customFields);
+            });
+        }
+
         #endregion // SET STATE CHANGES WHILE RUNNING
 
         public static void StartSession()
