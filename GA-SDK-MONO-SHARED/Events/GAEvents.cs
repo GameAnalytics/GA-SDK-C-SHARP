@@ -686,9 +686,6 @@ namespace GameAnalyticsSDK.Net.Events
                 // Get default annotations
                 JSONObject ev = GAState.GetEventAnnotations();
 
-                // Create json with only default annotations
-                string jsonDefaults = ev.SaveToBinaryBase64();
-
                 // Merge with eventData
                 foreach(KeyValuePair<string,JSONNode> pair in eventData)
                 {
@@ -723,12 +720,7 @@ namespace GameAnalyticsSDK.Net.Events
                 }
                 else
                 {
-                    sql = "INSERT OR REPLACE INTO ga_session(session_id, timestamp, event) VALUES($session_id, $timestamp, $event);";
-                    parameters.Clear();
-                    parameters.Add("$session_id", ev["session_id"].Value);
-                    parameters.Add("$timestamp", GAState.SessionStart);
-                    parameters.Add("$event", jsonDefaults);
-                    GAStore.ExecuteQuerySync(sql, parameters);
+                    UpdateSessionTime();
                 }
             }
             catch (Exception e)
