@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.3.1**
+* fixed missing custom event fields for when trying to fix missing session end events
+
 **3.3.0**
 * added global custom event fields function to allow to add custom fields to events sent automatically by the SDK
 
