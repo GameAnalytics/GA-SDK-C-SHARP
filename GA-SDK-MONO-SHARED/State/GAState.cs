@@ -753,7 +753,7 @@ namespace GameAnalyticsSDK.Net.State
                 return;
             }
 
-            long now = DateTime.Now;
+            DateTime now = DateTime.Now;
             if(!timestampMap.ContainsKey(baseMessage))
             {
                 timestampMap.Add(baseMessage, now);
@@ -763,7 +763,7 @@ namespace GameAnalyticsSDK.Net.State
                 countMap.Add(baseMessage, 0);
             }
             TimeSpan diff = now - timestampMap[baseMessage];
-            int diffMinutes = diff.TotalMinutes;
+            int diffMinutes = (int)diff.TotalMinutes;
             if(diffMinutes >= 60)
             {
                 countMap[baseMessage] = 0;
