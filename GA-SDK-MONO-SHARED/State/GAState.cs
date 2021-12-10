@@ -20,7 +20,7 @@ namespace GameAnalyticsSDK.Net.State
         private const int MaxCustomFieldsKeyLength = 64;
         private const int MaxCustomFieldsValueStringLength = 256;
 
-        private static const int MaxErrorCount = 10;
+        private const int MaxErrorCount = 10;
         private static Dictionary<string, int> countMap = new Dictionary<string, int>();
         private static Dictionary<string, DateTime> timestampMap = new Dictionary<string, DateTime>();
 
