@@ -358,6 +358,11 @@ namespace GameAnalyticsSDK.Net.Events
 
         public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields)
         {
+            AddErrorEvent(severity, message, fields, false);
+        }
+
+        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields, bool skipAddingFields)
+        {
             if(!GAState.IsEventSubmissionEnabled)
             {
                 return;
@@ -383,9 +388,12 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventData);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
-            // Add custom fields
-            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+            if(!skipAddingFields)
+            {
+                IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
+                // Add custom fields
+                AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+            }
 
             // Log
             GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
