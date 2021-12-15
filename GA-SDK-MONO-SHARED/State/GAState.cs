@@ -777,7 +777,7 @@ namespace GameAnalyticsSDK.Net.State
 
             GAThreading.PerformTaskOnGAThread("addErrorEvent", () =>
             {
-                GAEvents.AddErrorEvent(severity, message, null, true);
+                GAEvents.AddErrorEvent(severity, message, null, false, true);
                 countMap[baseMessage] = countMap[baseMessage] + 1;
             });
         }
