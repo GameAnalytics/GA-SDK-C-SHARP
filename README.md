@@ -28,6 +28,10 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.3.2**
+* added error events to be sent for invalid custom event fields used
+* added optional mergeFields argument to event methods to merge with global custom fields instead of overwriting them
+
 **3.3.1**
 * fixed missing custom event fields for when trying to fix missing session end events
 
