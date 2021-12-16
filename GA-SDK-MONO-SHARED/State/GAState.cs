@@ -20,6 +20,10 @@ namespace GameAnalyticsSDK.Net.State
         private const int MaxCustomFieldsKeyLength = 64;
         private const int MaxCustomFieldsValueStringLength = 256;
 
+        private const int MaxErrorCount = 10;
+        private static Dictionary<string, int> countMap = new Dictionary<string, int>();
+        private static Dictionary<string, DateTime> timestampMap = new Dictionary<string, DateTime>();
+
         private static readonly GAState _instance = new GAState();
         private static GAState Instance
         {
@@ -742,6 +746,42 @@ namespace GameAnalyticsSDK.Net.State
             return SessionStart != 0;
         }
 
+        private static void AddErrorEvent(string baseMessage, EGAErrorSeverity severity, string message)
+        {
+            if (!GAState.IsEventSubmissionEnabled)
+            {
+                return;
+            }
+
+            DateTime now = DateTime.Now;
+            if(!timestampMap.ContainsKey(baseMessage))
+            {
+                timestampMap.Add(baseMessage, now);
+            }
+            if (!countMap.ContainsKey(baseMessage))
+            {
+                countMap.Add(baseMessage, 0);
+            }
+            TimeSpan diff = now - timestampMap[baseMessage];
+            int diffMinutes = (int)diff.TotalMinutes;
+            if(diffMinutes >= 60)
+            {
+                countMap[baseMessage] = 0;
+                timestampMap[baseMessage] = now;
+            }
+
+            if(countMap[baseMessage] >= MaxErrorCount)
+            {
+                return;
+            }
+
+            GAThreading.PerformTaskOnGAThread("addErrorEvent", () =>
+            {
+                GAEvents.AddErrorEvent(severity, message, null, false, true);
+                countMap[baseMessage] = countMap[baseMessage] + 1;
+            });
+        }
+
         public static JSONObject ValidateAndCleanCustomFields(IDictionary<string, object> fields)
         {
             JSONObject result = new JSONObject();
@@ -754,7 +794,10 @@ namespace GameAnalyticsSDK.Net.State
                 {
                     if(entry.Key == null || entry.Value == null)
                     {
-                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key or value is null");
+                        string baseMessage = "ValidateAndCleanCustomFields: entry with key={0}, value={1} has been omitted because its key or value is null";
+                        string message = String.Format(baseMessage, entry.Key, entry.Value);
+                        GALogger.W(message);
+                        AddErrorEvent(baseMessage, EGAErrorSeverity.Warning, message);
                     }
                     else if(count < MaxCustomFieldsCount)
                     {
@@ -771,7 +814,10 @@ namespace GameAnalyticsSDK.Net.State
                                 }
                                 else
                                 {
-                                    GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is an empty string or exceeds the max number of characters (" + MaxCustomFieldsValueStringLength + ")");
+                                    string baseMessage = "ValidateAndCleanCustomFields: entry with key={0}, value={1} has been omitted because its value is an empty string or exceeds the max number of characters ({2})";
+                                    string message = String.Format(baseMessage, entry.Key, entry.Value, MaxCustomFieldsValueStringLength);
+                                    GALogger.W(message);
+                                    AddErrorEvent(baseMessage, EGAErrorSeverity.Warning, message);
                                 }
                             }
                             else if (entry.Value is double)
@@ -802,17 +848,26 @@ namespace GameAnalyticsSDK.Net.State
                             }
                             else
                             {
-                                GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its value is not a string or number");
+                                string baseMessage = "ValidateAndCleanCustomFields: entry with key={0}, value={1} has been omitted because its value is not a string or number";
+                                string message = String.Format(baseMessage, entry.Key, entry.Value);
+                                GALogger.W(message);
+                                AddErrorEvent(baseMessage, EGAErrorSeverity.Warning, message);
                             }
                         }
                         else
                         {
-                            GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because its key illegal characters, an empty or exceeds the max number of characters (" + MaxCustomFieldsKeyLength + ")");
+                            string baseMessage = "ValidateAndCleanCustomFields: entry with key={0}, value={1} has been omitted because its key illegal characters, an empty or exceeds the max number of characters ({2})";
+                            string message = String.Format(baseMessage, entry.Key, entry.Value, MaxCustomFieldsKeyLength);
+                            GALogger.W(message);
+                            AddErrorEvent(baseMessage, EGAErrorSeverity.Warning, message);
                         }
                     }
                     else
                     {
-                        GALogger.W("ValidateAndCleanCustomFields: entry with key=" + entry.Key + ", value=" + entry.Value + " has been omitted because it exceeds the max number of custom fields (" + MaxCustomFieldsCount + ")");
+                        string baseMessage = "ValidateAndCleanCustomFields: entry with key={0}, value={1} has been omitted because it exceeds the max number of custom fields ({2})";
+                        string message = String.Format(baseMessage, entry.Key, entry.Value, MaxCustomFieldsCount);
+                        GALogger.W(message);
+                        AddErrorEvent(baseMessage, EGAErrorSeverity.Warning, message);
                     }
                 }
             }

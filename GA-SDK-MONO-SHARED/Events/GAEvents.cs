@@ -141,7 +141,8 @@ namespace GameAnalyticsSDK.Net.Events
             string itemType,
             string itemId,
             string cartType,
-            IDictionary<string, object> fields
+            IDictionary<string, object> fields,
+            bool mergeFields
         )
         {
             if(!GAState.IsEventSubmissionEnabled)
@@ -179,7 +180,18 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
+            IDictionary<string, object> fieldsToUse = new Dictionary<string, object>(fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields);
+
+            if(mergeFields && fields != null && fields.Count > 0)
+            {
+                foreach(KeyValuePair<string, object> pair in GAState.CurrentGlobalCustomEventFields)
+                {
+                    if(!fieldsToUse.ContainsKey(pair.Key))
+                    {
+                        fieldsToUse.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
             // Add custom fields
             AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
@@ -190,7 +202,7 @@ namespace GameAnalyticsSDK.Net.Events
             AddEventToStore(eventDict);
         }
 
-        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId, IDictionary<string, object> fields)
+        public static void AddResourceEvent(EGAResourceFlowType flowType, string currency, double amount, string itemType, string itemId, IDictionary<string, object> fields, bool mergeFields)
         {
             if(!GAState.IsEventSubmissionEnabled)
             {
@@ -222,7 +234,18 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
+            IDictionary<string, object> fieldsToUse = new Dictionary<string, object>(fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields);
+
+            if(mergeFields && fields != null && fields.Count > 0)
+            {
+                foreach(KeyValuePair<string, object> pair in GAState.CurrentGlobalCustomEventFields)
+                {
+                    if(!fieldsToUse.ContainsKey(pair.Key))
+                    {
+                        fieldsToUse.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
             // Add custom fields
             AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
@@ -233,7 +256,7 @@ namespace GameAnalyticsSDK.Net.Events
             AddEventToStore(eventDict);
         }
 
-        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore, IDictionary<string, object> fields)
+        public static void AddProgressionEvent(EGAProgressionStatus progressionStatus, string progression01, string progression02, string progression03, double score, bool sendScore, IDictionary<string, object> fields, bool mergeFields)
         {
             if(!GAState.IsEventSubmissionEnabled)
             {
@@ -305,7 +328,18 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventDict);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
+            IDictionary<string, object> fieldsToUse = new Dictionary<string, object>(fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields);
+
+            if(mergeFields && fields != null && fields.Count > 0)
+            {
+                foreach(KeyValuePair<string, object> pair in GAState.CurrentGlobalCustomEventFields)
+                {
+                    if(!fieldsToUse.ContainsKey(pair.Key))
+                    {
+                        fieldsToUse.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
             // Add custom fields
             AddFieldsToEvent(eventDict, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
@@ -316,7 +350,7 @@ namespace GameAnalyticsSDK.Net.Events
             AddEventToStore(eventDict);
         }
 
-        public static void AddDesignEvent(string eventId, double value, bool sendValue, IDictionary<string, object> fields)
+        public static void AddDesignEvent(string eventId, double value, bool sendValue, IDictionary<string, object> fields, bool mergeFields)
         {
             if(!GAState.IsEventSubmissionEnabled)
             {
@@ -345,7 +379,18 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventData);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
+            IDictionary<string, object> fieldsToUse = new Dictionary<string, object>(fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields);
+
+            if(mergeFields && fields != null && fields.Count > 0)
+            {
+                foreach(KeyValuePair<string, object> pair in GAState.CurrentGlobalCustomEventFields)
+                {
+                    if(!fieldsToUse.ContainsKey(pair.Key))
+                    {
+                        fieldsToUse.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
             // Add custom fields
             AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
 
@@ -356,7 +401,12 @@ namespace GameAnalyticsSDK.Net.Events
             AddEventToStore(eventData);
         }
 
-        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields)
+        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields, bool mergeFields)
+        {
+            AddErrorEvent(severity, message, fields, mergeFields, false);
+        }
+
+        public static void AddErrorEvent(EGAErrorSeverity severity, string message, IDictionary<string, object> fields, bool mergeFields, bool skipAddingFields)
         {
             if(!GAState.IsEventSubmissionEnabled)
             {
@@ -383,9 +433,23 @@ namespace GameAnalyticsSDK.Net.Events
             // Add custom dimensions
             AddDimensionsToEvent(eventData);
 
-            IDictionary<string, object> fieldsToUse = fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields;
-            // Add custom fields
-            AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+            if(!skipAddingFields)
+            {
+                IDictionary<string, object> fieldsToUse = new Dictionary<string, object>(fields != null && fields.Count > 0 ? fields : GAState.CurrentGlobalCustomEventFields);
+
+                if(mergeFields && fields != null && fields.Count > 0)
+                {
+                    foreach(KeyValuePair<string, object> pair in GAState.CurrentGlobalCustomEventFields)
+                    {
+                        if(!fieldsToUse.ContainsKey(pair.Key))
+                        {
+                            fieldsToUse.Add(pair.Key, pair.Value);
+                        }
+                    }
+                }
+                // Add custom fields
+                AddFieldsToEvent(eventData, GAState.ValidateAndCleanCustomFields(fieldsToUse));
+            }
 
             // Log
             GALogger.I("Add ERROR event: {severity:" + severityString + ", message:" + message + "}");
