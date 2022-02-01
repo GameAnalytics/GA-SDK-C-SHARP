@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.3.3**
+* updated dependencies to fix errors for uwp
+
 **3.3.2**
 * added error events to be sent for invalid custom event fields used
 * added optional mergeFields argument to event methods to merge with global custom fields instead of overwriting them
