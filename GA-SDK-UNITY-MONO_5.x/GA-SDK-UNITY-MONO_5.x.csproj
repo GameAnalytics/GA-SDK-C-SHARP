@@ -8,7 +8,8 @@
     <ProjectGuid>{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GameAnalyticsSDK.Mono</RootNamespace>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -76,7 +77,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<AssemblyName>GameAnalytics.Tizen</AssemblyName>
+    <AssemblyName>GameAnalytics.Tizen</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TizenDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -86,7 +87,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-	<AssemblyName>GameAnalytics.Tizen</AssemblyName>
+    <AssemblyName>GameAnalytics.Tizen</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
