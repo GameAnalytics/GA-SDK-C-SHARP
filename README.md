@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.3.4**
+* added event uuid to events sent
+
 **3.3.3**
 * updated dependencies to fix errors for uwp
 
