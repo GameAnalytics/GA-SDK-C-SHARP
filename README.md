@@ -28,6 +28,9 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.3.5**
+* changed event uuid field name
+
 **3.3.4**
 * added event uuid to events sent
 
