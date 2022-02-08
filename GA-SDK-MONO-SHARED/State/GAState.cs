@@ -582,6 +582,8 @@ namespace GameAnalyticsSDK.Net.State
 
             // collector event API version
             annotations.Add("v", new JSONNumber(2));
+            // Event UUID
+            annotations["uuid"] = Guid.NewGuid().ToString().ToLowerInvariant();
             // User identifier
             annotations["user_id"] = Identifier;
 
