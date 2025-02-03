@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,7 +8,7 @@
     <ProjectGuid>{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GameAnalyticsSDK.Mono</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AssemblyName>GameAnalytics</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -30,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AssemblyName>GameAnalytics</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WebGLDebug|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -41,6 +43,7 @@
     <DefineConstants>DEBUG; UNITY_WEBGL; UNITY_5; UNITY;</DefineConstants>
     <DebugType>full</DebugType>
     <AssemblyName>GameAnalytics.WebGL</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'WebGLRelease|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -50,6 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <DefineConstants>UNITY_WEBGL; UNITY_5; UNITY;</DefineConstants>
     <AssemblyName>GameAnalytics.WebGL</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SamsungTVRelease|AnyCPU'">
     <OutputPath>bin\Release\Unity5\</OutputPath>
@@ -59,6 +63,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'SamsungTVDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -69,6 +74,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>GameAnalytics.SamsungTV</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TizenRelease|AnyCPU'">
     <OutputPath>bin\Release\Unity5\</OutputPath>
@@ -78,6 +84,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>GameAnalytics.Tizen</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'TizenDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -88,6 +95,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>GameAnalytics.Tizen</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

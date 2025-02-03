@@ -1,0 +1,46 @@
+name: build
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: macos-latest  # Run on macOS runner
+
+    env:
+      Solution_Name: GA-SDK-MONO.sln
+      Test_Project_Path: GA_SDK_MONO_TEST/GA_SDK_MONO_TEST.csproj  # Replace with the path to your test project.
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    # Print Mono version to verify it is installed
+    - name: Print Mono version
+      run: mono --version 
+
+    # Restore NuGet packages using the newly installed nuget
+    - name: Restore NuGet packages
+      run: nuget restore GA-SDK-MONO.sln
+
+    # Build the solution using Mono's xbuild
+    - name: Build with xbuild
+      run: msbuild /p:Configuration=${{ matrix.configuration }} GA-SDK-MONO.sln
+
+    # Install NUnit Runner
+    - name: Install NUnit Runner
+      run: |
+        nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+
+    # Run NUnit tests using the NUnit console runner
+    - name: Run NUnit tests
+      run: mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./GA_SDK_MONO_TEST/bin/${{ matrix.configuration }}/GameAnalytics.Mono.Test.dll
