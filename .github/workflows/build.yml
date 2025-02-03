@@ -1,4 +1,3 @@
-# This workflow uses actions that are not certified by GitHub.
 name: build
 
 on:
@@ -8,19 +7,16 @@ on:
     branches: [ "master" ]
 
 jobs:
-
   build:
-
     strategy:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: macos-latest  # Run on macOS runner
 
     env:
       Solution_Name: GA-SDK-MONO.sln
-      Test_Project_Path: GA_SDK_MONO_TEST/GA_SDK_MONO_TEST.csproj               # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Test_Project_Path: GA_SDK_MONO_TEST/GA_SDK_MONO_TEST.csproj  # Replace with the path to your test project.
 
     steps:
     - name: Checkout
@@ -28,32 +24,23 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
-
-    - name: Restore NuGet packages
-      run: nuget restore GA-SDK-MONO.sln
-
-    - name: Install NUnit Runner
-      run: nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
-
-    # Print mono version
+    # Print Mono version to verify it is installed
     - name: Print Mono version
       run: mono --version   
 
-    - name: Build with xbuild
-      run: xbuild /p:Configuration=$env:Configuration GA-SDK-MONO.sln
-      env:
-        Configuration: ${{ matrix.configuration }}
+    # Restore NuGet packages
+    - name: Restore NuGet packages
+      run: mono /usr/local/bin/nuget restore GA-SDK-MONO.sln
 
+    # Build the solution using Mono's xbuild
+    - name: Build with xbuild
+      run: xbuild /p:Configuration=${{ matrix.configuration }} GA-SDK-MONO.sln
+
+    # Install NUnit Runner
+    - name: Install NUnit Runner
+      run: |
+        mono /usr/local/bin/nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+
+    # Run NUnit tests using the NUnit console runner
     - name: Run NUnit tests
       run: mono ./testrunner/NUnit.ConsoleRunner.3.4.1/tools/nunit3-console.exe ./GA_SDK_MONO_TEST/bin/${{ matrix.configuration }}/GameAnalytics.Mono.Test.dll
-      env:
-        Configuration: ${{ matrix.configuration }}
