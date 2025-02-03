@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA-SDK-UNITY-MONO_5.x", "GA-SDK-UNITY-MONO_5.x.csproj", "{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		SamsungTVDebug|Any CPU = SamsungTVDebug|Any CPU
+		SamsungTVRelease|Any CPU = SamsungTVRelease|Any CPU
+		TizenDebug|Any CPU = TizenDebug|Any CPU
+		TizenRelease|Any CPU = TizenRelease|Any CPU
+		WebGLDebug|Any CPU = WebGLDebug|Any CPU
+		WebGLRelease|Any CPU = WebGLRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.SamsungTVDebug|Any CPU.ActiveCfg = SamsungTVDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.SamsungTVDebug|Any CPU.Build.0 = SamsungTVDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.SamsungTVRelease|Any CPU.ActiveCfg = SamsungTVRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.SamsungTVRelease|Any CPU.Build.0 = SamsungTVRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.TizenDebug|Any CPU.ActiveCfg = TizenDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.TizenDebug|Any CPU.Build.0 = TizenDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.TizenRelease|Any CPU.ActiveCfg = TizenRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.TizenRelease|Any CPU.Build.0 = TizenRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.ActiveCfg = WebGLDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLDebug|Any CPU.Build.0 = WebGLDebug|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.ActiveCfg = WebGLRelease|Any CPU
+		{E3A7E6A1-6482-4C90-B9BE-259DA9015EEC}.WebGLRelease|Any CPU.Build.0 = WebGLRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F71BE8DE-3A29-402E-9764-7A4F4C8F96E5}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{e3a7e6a1-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+		..\GA-SDK-MONO-UNITY-SHARED\GA-SDK-MONO-UNITY-SHARED.projitems*{e3a7e6a1-6482-4c90-b9be-259da9015eec}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal
