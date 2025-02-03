@@ -30,11 +30,11 @@ jobs:
 
     # Restore NuGet packages using the newly installed nuget
     - name: Restore NuGet packages
-      run: nuget restore GA-SDK-MONO.sln -MSBuildVersion 15.0 -Verbosity detailed
+      run: nuget restore GA-SDK-MONO.sln
 
     # Build the solution using Mono's xbuild
     - name: Build with xbuild
-      run: xbuild /p:Configuration=${{ matrix.configuration }} GA-SDK-MONO.sln
+      run: msbuild /p:Configuration=${{ matrix.configuration }} GA-SDK-MONO.sln
 
     # Install NUnit Runner
     - name: Install NUnit Runner
