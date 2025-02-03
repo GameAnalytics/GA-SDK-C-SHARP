@@ -34,6 +34,12 @@ Changelog
 * updated projects for vs22
 * update windows sdk to 10.0.18362.0
 
+**3.4.0**
+* add GetUserId and IsInitialized
+* updated .net framework target
+* updated projects for vs22
+* update windows sdk to 10.0.18362.0
+
 **3.3.5**
 * changed event uuid field name
 
