@@ -755,6 +755,28 @@ namespace GameAnalyticsSDK.Net
 
 #endregion // AB TESTING
 
+#region PUBLIC HELPERS
+
+        public static string GetUserId()
+        {
+            if (_endThread)
+            {
+                return null;
+            }
+            return string.IsNullOrEmpty(GAState.Identifier) ? string.Empty : GAState.Identifier;
+        }
+
+        public static bool IsInitialized()
+        {
+            if (_endThread)
+            {
+                return false;
+            }
+            return IsSdkReady(true, true);
+        }
+
+#endregion // USER ID
+
 #region PRIVATE HELPERS
 
         private static bool IsSdkReady(bool needsInitialized)

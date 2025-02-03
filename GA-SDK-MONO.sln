@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-SHARED", "GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.shproj", "{1577D2E0-959B-4106-A7D8-D77B41C09F0C}"
 EndProject

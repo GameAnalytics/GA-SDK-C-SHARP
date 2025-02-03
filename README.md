@@ -28,6 +28,18 @@ Documentation can be found [here](https://gameanalytics.com/docs/c-sharp-sdk).
 Changelog
 ---------
 <!--(CHANGELOG_TOP)-->
+**3.4.0**
+* add GetUserId and IsInitialized
+* updated .net framework target
+* updated projects for vs22
+* update windows sdk to 10.0.18362.0
+
+**3.4.0**
+* add GetUserId and IsInitialized
+* updated .net framework target
+* updated projects for vs22
+* update windows sdk to 10.0.18362.0
+
 **3.3.5**
 * changed event uuid field name
 
