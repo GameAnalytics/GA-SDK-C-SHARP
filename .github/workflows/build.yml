@@ -28,9 +28,13 @@ jobs:
     - name: Print Mono version
       run: mono --version   
 
-    # Restore NuGet packages using the .NET CLI (works with .NET Core and Mono)
+    # Install NuGet with Homebrew
+    - name: Install NuGet via Homebrew
+      run: brew install nuget
+
+    # Restore NuGet packages using the newly installed nuget
     - name: Restore NuGet packages
-      run: dotnet restore GA-SDK-MONO.sln
+      run: nuget restore GA-SDK-MONO.sln
 
     # Build the solution using Mono's xbuild
     - name: Build with xbuild
@@ -39,7 +43,7 @@ jobs:
     # Install NUnit Runner
     - name: Install NUnit Runner
       run: |
-        mono /usr/local/bin/nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
+        nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
 
     # Run NUnit tests using the NUnit console runner
     - name: Run NUnit tests
