@@ -25,10 +25,10 @@ jobs:
         fetch-depth: 0
 
     # Install Mono 16.x via Homebrew
-    - name: Install Mono 16.x
+    - name: Install Mono
       run: |
-        brew install mono@16
-        brew link --force mono@16
+        brew install mono
+        brew link --force mono
 
     # Print Mono version to verify it is installed
     - name: Print Mono version
