@@ -26,11 +26,7 @@ jobs:
 
     # Print Mono version to verify it is installed
     - name: Print Mono version
-      run: mono --version   
-
-    # Install NuGet with Homebrew
-    - name: Install NuGet via Homebrew
-      run: brew install nuget
+      run: mono --version 
 
     # Restore NuGet packages using the newly installed nuget
     - name: Restore NuGet packages
