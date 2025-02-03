@@ -35,7 +35,7 @@ jobs:
       run: nuget install NUnit.Runners -Version 3.4.1 -OutputDirectory testrunner
 
     - name: Build with xbuild
-      run: xbuild /p:Configuration=$env:Configuration GA-SDK-MONO.sln
+      run: msbuild /p:Configuration=$env:Configuration GA-SDK-MONO.sln
       env:
         Configuration: ${{ matrix.configuration }}
 
