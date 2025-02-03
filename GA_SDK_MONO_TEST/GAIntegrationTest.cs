@@ -50,6 +50,9 @@ namespace GameAnalyticsSDK.Net
             Assert.IsTrue(GameAnalytics.IsInitialized(), "GA SDK should be initialized.");
             TestContext.Out.WriteLine($"GA SDK initialized in {elapsedTime / 1000.0} seconds.");
 
+            //Get User ID
+            string userId = GameAnalytics.GetUserId();
+            TestContext.Out.WriteLine($"User ID: {userId}");
             // wait 3 seconds for the SDK to send the initialization event
             Thread.Sleep(3000);
 
