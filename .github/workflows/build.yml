@@ -24,10 +24,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
-
     # Print Mono version to verify it is installed
     - name: Print Mono version
       run: mono --version   
@@ -38,7 +34,7 @@ jobs:
 
     # Restore NuGet packages using the newly installed nuget
     - name: Restore NuGet packages
-      run: nuget restore GA-SDK-MONO.sln
+      run: nuget restore GA-SDK-MONO.sln -MSBuildVersion 15.0 -Verbosity detailed
 
     # Build the solution using Mono's xbuild
     - name: Build with xbuild
