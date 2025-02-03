@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA_SDK_UWP", "GA_SDK_UWP.csproj", "{CD6F03C0-0119-409B-AD0D-D283710A7033}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|ARM.ActiveCfg = Debug|ARM
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|ARM.Build.0 = Debug|ARM
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|x64.ActiveCfg = Debug|x64
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|x64.Build.0 = Debug|x64
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|x86.ActiveCfg = Debug|x86
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Debug|x86.Build.0 = Debug|x86
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM.ActiveCfg = Release|ARM
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM.Build.0 = Release|ARM
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|x64.ActiveCfg = Release|x64
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|x64.Build.0 = Release|x64
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|x86.ActiveCfg = Release|x86
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {946AF1D6-2B34-4D27-A3DF-A0B038F12393}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{cd6f03c0-0119-409b-ad0d-d283710a7033}*SharedItemsImports = 4
+	EndGlobalSection
+EndGlobal
