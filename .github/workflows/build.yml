@@ -28,9 +28,9 @@ jobs:
     - name: Print Mono version
       run: mono --version   
 
-    # Restore NuGet packages
+    # Restore NuGet packages using the .NET CLI (works with .NET Core and Mono)
     - name: Restore NuGet packages
-      run: mono /usr/local/bin/nuget restore GA-SDK-MONO.sln
+      run: dotnet restore GA-SDK-MONO.sln
 
     # Build the solution using Mono's xbuild
     - name: Build with xbuild
