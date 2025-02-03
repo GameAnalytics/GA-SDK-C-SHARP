@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="GAValidatorTest.cs" />
     <Compile Include="GATestUtilities.cs" />
+    <Compile Include="GAIntegrationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

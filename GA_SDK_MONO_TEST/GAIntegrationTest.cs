@@ -1,5 +1,8 @@
 using System;
 using NUnit.Framework;
+using System.Threading;
+using System.Diagnostics;
+
 using GameAnalyticsSDK.Net;
 
 namespace GameAnalyticsSDK.Net
@@ -25,35 +28,77 @@ namespace GameAnalyticsSDK.Net
         }
 
         [Test]
-        public void TestInitialize()
+        public void TestIntegrationBasic()
         {
-            Console.WriteLine("Running TestInitialize...");
+
+            TestContext.Out.WriteLine("Running TestInitialize...");
+
             Assert.IsFalse(GameAnalytics.IsInitialized(), "GA SDK should not be initialized.");
             GameAnalytics.Initialize("bd624ee6f8e6efb32a054f8d7ba11618", "7f5c3f682cbd217841efba92e92ffb1b3b6612bc");
+
+
+            int maxWaitTimeMs = 5000; // Maximum wait time (5 seconds)
+            int waitIntervalMs = 100; // Interval between checks
+            int elapsedTime = 0;
+
+            while (!GameAnalytics.IsInitialized() && elapsedTime < maxWaitTimeMs)
+            {
+                Thread.Sleep(waitIntervalMs);
+                elapsedTime += waitIntervalMs;
+            }
+
             Assert.IsTrue(GameAnalytics.IsInitialized(), "GA SDK should be initialized.");
-            Console.WriteLine("TestInitialize completed.");
+            TestContext.Out.WriteLine($"GA SDK initialized in {elapsedTime / 1000.0} seconds.");
+
+            // wait 3 seconds for the SDK to send the initialization event
+            Thread.Sleep(3000);
+
+            TestContext.Out.WriteLine("Running TestSendEvent...");
+            GameAnalytics.AddDesignEvent("testEvent");
+            Thread.Sleep(3000);
+            TestContext.Out.WriteLine("TestSendEvent completed.");
+
+            TestContext.Out.WriteLine("Running OneTimeTearDown...");
+            GameAnalytics.OnQuit();
+            WaitForGameAnalyticsShutdown(timeoutMs: 5000);
+            Assert.IsFalse(GameAnalytics.IsInitialized(), "GA SDK should be shut down.");
         }
 
-        [Test]
-        public void TestSendEvent()
-        {
-
-            Console.WriteLine("Running TestSendEvent...");
-            Assert.IsTrue(true, "GA SDK should be initialized.");
-            Console.WriteLine("TestInitialize completed.");
-        }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            GameAnalyticsSDK.OnQuit();
+            // TestContext.Out.WriteLine("Running OneTimeTearDown...");
+            // GameAnalytics.OnQuit();
+            // WaitForGameAnalyticsShutdown(timeoutMs: 5000);
+            // Assert.IsFalse(GameAnalytics.IsInitialized(), "GA SDK should be shut down.");
         }
 
-        [Test]
-        public void TestTearDown()
+        private void WaitForGameAnalyticsShutdown(int timeoutMs)
         {
-            OneTimeTearDown();
-            Assert.IsFalse(GA.IsInitialized(), "GA SDK should be shut down.");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            while (GameAnalytics.IsInitialized() && stopwatch.ElapsedMilliseconds < timeoutMs)
+            {
+                Thread.Sleep(100);
+            }
+
+            stopwatch.Stop();
+
+            if (GameAnalytics.IsInitialized())
+            {
+                TestContext.Out.WriteLine("Timeout reached! GameAnalytics.IsInitialized() is still true.");
+            }
+            else
+            {
+                TestContext.Out.WriteLine($"GameAnalytics shut down after {stopwatch.ElapsedMilliseconds / 1000.0} seconds.");
+            }
         }
+
+        // [Test]
+        // public void TestTearDown()
+        // {
+        //     
+        // }
     }
 }
