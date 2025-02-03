@@ -755,7 +755,7 @@ namespace GameAnalyticsSDK.Net
 
 #endregion // AB TESTING
 
-#region USER ID
+#region PUBLIC HELPERS
 
         public static string GetUserId()
         {
@@ -764,6 +764,15 @@ namespace GameAnalyticsSDK.Net
                 return null;
             }
             return string.IsNullOrEmpty(GAState.Identifier) ? string.Empty : GAState.Identifier;
+        }
+
+        public static bool IsInitialized()
+        {
+            if (_endThread)
+            {
+                return false;
+            }
+            return IsSdkReady(true, true);
         }
 
 #endregion // USER ID
