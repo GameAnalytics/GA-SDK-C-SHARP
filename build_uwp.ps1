@@ -1,7 +1,11 @@
 # Define paths
-$MSBuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+$NugetPath = "nuget"
+$MSBuildPath = "msbuild"
 $SolutionPath = "$PSScriptRoot\GA-SDK-UWP.sln"
 $OutputBaseDir = "$PSScriptRoot\BuildOutput\"
+
+# Restore NuGet packages
+& $NugetPath restore $SolutionPath
 
 # Ensure output directory exists
 New-Item -ItemType Directory -Path $OutputBaseDir -Force | Out-Null
@@ -13,7 +17,7 @@ function Build-UWP {
     )
     $OutputDir = "$OutputBaseDir$Platform\"
     New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
-    & $MSBuildPath $SolutionPath /m /t:GA_SDK_UWP /p:Configuration=Release /p:Platform=$Platform /p:OutDir=$OutputDir
+    & $MSBuildPath $SolutionPath /m /t:GA_SDK_UWP /p:Configuration=Release /p:Platform=$Platform  # /p:OutDir=$OutputDir
 }
 
 # Build for all architectures
