@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "GA-SDK-MONO-SHARED", "GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.shproj", "{1577D2E0-959B-4106-A7D8-D77B41C09F0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GA_SDK_UWP", "GA_SDK_UWP\GA_SDK_UWP.csproj", "{CD6F03C0-0119-409B-AD0D-D283710A7033}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
-		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{cd6f03c0-0119-409b-ad0d-d283710a7033}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|ARM = AppStore|ARM
@@ -82,8 +78,8 @@ Global
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM.ActiveCfg = Release|ARM
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM.Build.0 = Release|ARM
-		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM64.Build.0 = Release|Any CPU
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM64.ActiveCfg = Release|ARM64
+		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|ARM64.Build.0 = Release|ARM64
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|iPhone.ActiveCfg = Release|Any CPU
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|iPhone.Build.0 = Release|Any CPU
 		{CD6F03C0-0119-409B-AD0D-D283710A7033}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
@@ -126,6 +122,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {148B93E5-2B67-4167-A62D-A423C0730E61}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{1577d2e0-959b-4106-a7d8-d77b41c09f0c}*SharedItemsImports = 13
+		GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems*{cd6f03c0-0119-409b-ad0d-d283710a7033}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
