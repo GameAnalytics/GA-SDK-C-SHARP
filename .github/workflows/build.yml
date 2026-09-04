@@ -12,7 +12,7 @@ jobs:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: macos-latest  # Run on macOS runner
+    runs-on: macos-14  # macos-15+ images no longer ship Mono
 
     env:
       Solution_Name: GA-SDK-MONO.sln
