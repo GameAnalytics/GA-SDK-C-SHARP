@@ -20,6 +20,14 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.4" />
     <PackageReference Include="NLog" Version="4.7.2" />
+    <!-- Security pins over vulnerable transitive dependencies. These are direct
+         references only so NuGet resolves them ahead of the versions pulled in
+         by Microsoft.EntityFrameworkCore.Sqlite; nothing in the SDK uses them
+         directly.
+         System.Text.Encodings.Web  CVE-2021-26701, transitively 4.7.1 via System.Text.Json.
+         SQLitePCLRaw.bundle_e_sqlite3  CVE-2025-6965, transitively 2.0.2; 2.1.13 bundles SQLite 3.53.3. -->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.7.2" />
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.13" />
   </ItemGroup>
   <Import Project="..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems" Label="Shared" Condition="Exists('..\GA-SDK-MONO-SHARED\GA-SDK-MONO-SHARED.projitems')" />
 </Project>
